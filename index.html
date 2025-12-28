@@ -12,24 +12,36 @@
 <body>
     <div class="app-container">
         <aside class="sidebar">
-            <div class="sidebar-header">
-                <h2>Fogarolli</h2>
-                <span>Logistics Hub</span>
-            </div>
-            <nav id="main-nav">
-                <div class="nav-item active" data-view="dashboard"><i class="fas fa-chart-line"></i> <span>Dashboard</span></div>
-                <div class="nav-item" data-view="calendar"><i class="fas fa-calendar-alt"></i> <span>Kalender</span></div>
-                <div class="nav-item" data-view="create"><i class="fas fa-plus"></i> <span>Skapa</span></div> 
-                <div class="nav-item" data-view="availability"><i class="fas fa-truck-ramp-box"></i> <span>Fleet</span></div>
-            </nav>
-            <div class="sidebar-footer">
+    <div class="sidebar-top">
+        <div class="logo-area">
+            <h2>Fogarolli</h2>
+            <p>Logistics Hub</p>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div class="nav-item" data-view="dashboard"><i class="fas fa-chart-line"></i> Dashboard</div>
+            <div class="nav-item" data-view="calendar"><i class="far fa-calendar-alt"></i> Kalender</div>
+            <div class="nav-item" data-view="create"><i class="fas fa-plus"></i> Skapa</div>
+            <div class="nav-item active" data-view="availability"><i class="fas fa-truck-loading"></i> Fleet</div>
+        </nav>
+    </div>
+
+    <div class="sidebar-bottom">
+        <button class="bug-report-link" onclick="window.openBugModal()">
+            <i class="fas fa-bug"></i> Rapportera bugg
+        </button>
+        
+        <div class="user-profile">
+            <div class="user-avatar">
                 <i class="fas fa-user-circle"></i>
-                <div>
-                    <p>Admin</p>
-                    <small>Logistikansvarig</small>
-                </div>
             </div>
-        </aside>
+            <div class="user-info">
+                <strong>Admin</strong>
+                <span>Logistikansvarig</span>
+            </div>
+        </div>
+    </div>
+</aside>
 
         <main class="main-content">
             <header class="top-header">
