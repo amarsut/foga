@@ -1,6 +1,7 @@
 import { doc, updateDoc, arrayUnion, getDoc, collection, addDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 let dbInstance; 
+let isMaintenanceExpanded = false;
 
 export function initAvailabilityModule(db) {
     dbInstance = db;
