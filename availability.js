@@ -252,7 +252,7 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
     );
 
     const futureEvents = unitEvents.filter(e => new Date(e.startDate) >= now).sort((a,b) => new Date(a.startDate) - new Date(b.startDate));
-    const pastEvents = unitEvents.filter(e => new Date(e.startDate) < now).sort((a,b) => new Date(b.startDate) - new Date(a.startDate)).slice(0, 5);
+    const pastEvents = unitEvents.filter(e => new Date(e.startDate) < now).sort((a,b) => new Date(b.startDate) - new Date(a.startDate)).slice(0, 2);
 
     body.innerHTML = `
         <div class="fm-premium-container compact-mode">
@@ -298,7 +298,7 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
                             </section>
 
                             <section class="fm-sub-section compact">
-                                <label class="fm-mini-label">Senaste 5 uppdrag (Historik)</label>
+                                <label class="fm-mini-label">Senaste 2 uppdrag (Historik)</label>
                                 <div class="fm-timeline-mini">
                                     ${pastEvents.length > 0 ? pastEvents.map(e => `
                                         <div class="fm-tl-item past">
