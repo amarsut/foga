@@ -398,3 +398,69 @@ function renderModernBubble(note, unitId, uType) {
         </div>
     `;
 }
+
+window.closeUnitModal = () => {
+    document.getElementById('unit-modal').style.display = 'none';
+};
+
+// Funktion för att öppna bugg-modalen
+window.openBugModal = () => {
+    const modal = document.getElementById('unit-modal');
+    const body = document.getElementById('modal-body');
+    
+    // Hämta sparad text från webbläsaren
+    const savedNotes = localStorage.getItem('bug_scratchpad') || "";
+
+    body.innerHTML = `
+        <div class="fm-premium-container" style="height: 600px; display: flex; flex-direction: column;">
+            <header class="fm-header-slim">
+                <div class="fm-id-block">
+                    <i class="fas fa-file-alt" style="color: var(--fog-brown);"></i>
+                    <div>
+                        <h3>Systemlogg / Buggrapport</h3>
+                        <small>Informationen sparas automatiskt medan du skriver</small>
+                    </div>
+                </div>
+                <button class="fm-close-icon" onclick="window.closeUnitModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </header>
+            
+            <div style="flex: 1; padding: 20px; background: #fff;">
+                <textarea id="bug-scratchpad" 
+                    style="width: 100%; height: 100%; border: none; outline: none; 
+                           font-family: 'Courier New', monospace; font-size: 0.95rem; 
+                           line-height: 1.6; resize: none; background: transparent;
+                           color: #333;" 
+                    placeholder="Skriv dina observationer här... texten stannar kvar fast du stänger fönstret.">${savedNotes}</textarea>
+            </div>
+        </div>
+    `;
+
+    // Eventlyssnare för att spara vid varje knapptryck
+    const textarea = document.getElementById('bug-scratchpad');
+    textarea.addEventListener('input', (e) => {
+        localStorage.setItem('bug_scratchpad', e.target.value);
+    });
+
+    modal.style.display = 'flex';
+};
+
+// Spara buggrapporten i Firebase
+window.sendBugReport = async () => {
+    const text = document.getElementById('bug-text').value;
+    if (!text) return;
+    
+    try {
+        await addDoc(collection(db, "bugreports"), {
+            text: text,
+            date: new Date().toLocaleString('sv-SE'),
+            status: 'new',
+            author: 'Admin'
+        });
+        alert("Tack! Rapporten har skickats.");
+        window.closeUnitModal();
+    } catch (e) {
+        console.error("Fel vid skickande:", e);
+    }
+};
