@@ -1035,6 +1035,24 @@ body {
     .mo-grid { grid-template-columns: 1fr; }
 }
 
+/* style.css - Uppdaterad layout för Fleet-kort */
+
+.mo-unit {
+    flex-grow: 1; /* Tar upp allt ledigt utrymme och trycker resten till höger */
+    display: flex;
+    flex-direction: column;
+}
+
+.mo-alerts {
+    /* Fast bredd gör att badges "startar på samma linje" vertikalt mellan olika kort */
+    width: 70px; 
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-end; /* Badges linjerar på sin vänstra kant */
+    margin-right: 15px;      /* Konstant avstånd (gap) till pilen */
+}
+
 /* --- BADGE FÖR EXTRA ÅTGÄRDER (+1 YTTERLIGARE) --- */
 
 .mo-header-flex {
