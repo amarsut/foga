@@ -807,6 +807,10 @@
     border: none !important;
     padding: 0 !important;
     height: auto !important;
+
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
 }
 
 /* 4. STATUS-INDIKERING (Endast för fält med varning) */
