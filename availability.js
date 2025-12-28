@@ -1,10 +1,14 @@
-// availability.js
-import { doc, updateDoc, arrayUnion, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { doc, updateDoc, arrayUnion, getDoc, collection, addDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// Variabel för att hålla koll på om listan är utfälld
-let isMaintenanceExpanded = false;
+let dbInstance; 
+
+export function initAvailabilityModule(db) {
+    dbInstance = db;
+}
 
 export async function renderAvailabilityView(area, cars, trailers, carts, db, assignments = []) {
+    dbInstance = db;
+    
     const allUnits = [...cars, ...trailers, ...carts];
     const now = new Date();
     const oneYearAgo = new Date(); 
@@ -399,26 +403,35 @@ function renderModernBubble(note, unitId, uType) {
     `;
 }
 
+const SYSTEM_LOG_ID = "main_system_log";
+
 window.closeUnitModal = () => {
-    document.getElementById('unit-modal').style.display = 'none';
+    const modal = document.getElementById('unit-modal');
+    if (modal) modal.style.display = 'none';
 };
 
-// Funktion för att öppna bugg-modalen
-window.openBugModal = () => {
+window.openBugModal = async () => {
+    if (!dbInstance) {
+        alert("Databaskontakt saknas. Gå till Fleet-vyn en gång först.");
+        return;
+    }
+
     const modal = document.getElementById('unit-modal');
     const body = document.getElementById('modal-body');
     
-    // Hämta sparad text från webbläsaren
-    const savedNotes = localStorage.getItem('bug_scratchpad') || "";
+    // Hämta det gemensamma dokumentet
+    const docRef = doc(dbInstance, "bugreports", SYSTEM_LOG_ID);
+    const docSnap = await getDoc(docRef);
+    const currentContent = docSnap.exists() ? docSnap.data().text : "";
 
     body.innerHTML = `
-        <div class="fm-premium-container" style="height: 600px; display: flex; flex-direction: column;">
+        <div class="fm-premium-container" style="height: 600px; display: flex; flex-direction: column; background: #fff; border-radius:16px;">
             <header class="fm-header-slim">
                 <div class="fm-id-block">
                     <i class="fas fa-file-alt" style="color: var(--fog-brown);"></i>
                     <div>
-                        <h3>Systemlogg / Buggrapport</h3>
-                        <small>Informationen sparas automatiskt medan du skriver</small>
+                        <h3>Gemensam Systemlogg</h3>
+                        <small>Skriv och spara för att uppdatera dokumentet</small>
                     </div>
                 </div>
                 <button class="fm-close-icon" onclick="window.closeUnitModal()">
@@ -426,41 +439,40 @@ window.openBugModal = () => {
                 </button>
             </header>
             
-            <div style="flex: 1; padding: 20px; background: #fff;">
-                <textarea id="bug-scratchpad" 
-                    style="width: 100%; height: 100%; border: none; outline: none; 
-                           font-family: 'Courier New', monospace; font-size: 0.95rem; 
-                           line-height: 1.6; resize: none; background: transparent;
-                           color: #333;" 
-                    placeholder="Skriv dina observationer här... texten stannar kvar fast du stänger fönstret.">${savedNotes}</textarea>
+            <div style="flex: 1; padding: 0;">
+                <textarea id="bug-text-area" 
+                    style="width: 100%; height: 100%; padding: 30px; border: none; outline: none; 
+                           font-family: 'Courier New', monospace; font-size: 1rem; line-height: 1.6; 
+                           resize: none; background: #fff; color: #333;" 
+                    placeholder="Börja skriva i loggen...">${currentContent}</textarea>
             </div>
+            
+            <footer style="padding: 15px 20px; border-top: 1px solid #eee; background: #f9f9f9; display: flex; justify-content: flex-end;">
+                <button class="btn-primary-modern" onclick="window.saveSystemLog()" 
+                    style="background: var(--fog-brown); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                    <i class="fas fa-save"></i> Spara ändringar
+                </button>
+            </footer>
         </div>
     `;
-
-    // Eventlyssnare för att spara vid varje knapptryck
-    const textarea = document.getElementById('bug-scratchpad');
-    textarea.addEventListener('input', (e) => {
-        localStorage.setItem('bug_scratchpad', e.target.value);
-    });
 
     modal.style.display = 'flex';
 };
 
-// Spara buggrapporten i Firebase
-window.sendBugReport = async () => {
-    const text = document.getElementById('bug-text').value;
-    if (!text) return;
-    
+window.saveSystemLog = async () => {
+    const text = document.getElementById('bug-text-area').value;
+
     try {
-        await addDoc(collection(db, "bugreports"), {
+        // setDoc skriver över det fasta dokumentet i Firebase
+        await setDoc(doc(dbInstance, "bugreports", SYSTEM_LOG_ID), {
             text: text,
-            date: new Date().toLocaleString('sv-SE'),
-            status: 'new',
-            author: 'Admin'
+            lastUpdated: new Date().toLocaleString('sv-SE'),
+            updatedBy: 'Admin'
         });
-        alert("Tack! Rapporten har skickats.");
-        window.closeUnitModal();
+
+        alert("Systemloggen har uppdaterats!");
     } catch (e) {
-        console.error("Fel vid skickande:", e);
+        console.error("FirebaseError:", e);
+        alert("Kunde inte spara ändringar. Kontrollera dina Firebase-regler.");
     }
 };
