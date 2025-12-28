@@ -1,0 +1,1289 @@
+/* ==========================================================================
+   1. MODERNA VARIABLER & BASSTILAR
+   ========================================================================== */
+:root {
+    --fog-brown: #5c4033;
+    --fog-red: #e30613;
+    --bg: #f8f6f3;
+    --white: #ffffff;
+    --border: #e0d8d0;
+    --text: #333;
+    --shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+
+body { 
+    background: var(--bg); 
+    color: var(--text); 
+    overflow: hidden; 
+    font-size: 14px; 
+}
+
+.app-container { display: flex; height: 100vh; }
+
+/* ==========================================================================
+   2. LAYOUT (SIDEBAR & MAIN)
+   ========================================================================== */
+.sidebar { 
+    width: 230px; 
+    background: var(--fog-brown); 
+    color: white; 
+    display: flex; 
+    flex-direction: column; 
+    padding: 20px; 
+}
+
+.sidebar-header { margin-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; }
+
+.nav-item { 
+    display: flex; align-items: center; padding: 15px 20px; margin-bottom: 10px; 
+    cursor: pointer; border-radius: 12px; color: rgba(255,255,255,0.7); font-weight: 500; 
+}
+
+.nav-item.active { background: var(--fog-red); color: white; box-shadow: 0 4px 15px rgba(227,6,19,0.3); }
+
+.main-content { flex: 1; padding: 25px; overflow-y: auto; min-width: 0; }
+
+.top-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+
+.nav-item i {
+    margin-right: 5px; /* Mellanrum mellan ikon och text */
+    width: 20px;        /* Säkerställer att texten börjar på samma ställe för alla rader */
+    text-align: center;
+}
+
+/* ==========================================================================
+   3. SKAPA UPPDRAG & FORMULÄR (STEG 1)
+   ========================================================================== */
+/* Ge rubrikområdet luft från kanterna */
+.panel-header {
+    padding: 25px 40px 0 40px; /* Topp, Höger, Botten, Vänster */
+}
+
+   /* Behållare som lyfter upp formuläret och centrerar det horisontellt */
+.create-view-container.single-column {
+    display: flex;
+    justify-content: left;
+    align-items: flex-start; /* Startar från toppen */
+    padding: 15px 20px;      /* Minimal luft i toppen */
+    height: auto;            /* Låter behållaren expandera */
+    min-height: 100%;
+}
+
+/* Den vita boxen - nu smalare och med dynamisk höjd */
+.form-container.compact-form {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    width: 100%;
+    max-width: 750px;       /* Smalare bredd för bättre överblick */
+    border: 1px solid var(--border);
+    overflow: visible;      /* VIKTIGT: Tar bort intern scroll */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Innehållsytan - borttagen scroll-logik */
+.inner-scroll-area {
+    padding: 20px 35px;     /* Lagom luft inuti */
+    overflow: visible;      /* Ingen intern scroll här heller */
+    flex: none;             /* Låter innehållet styra höjden */
+}
+
+/* Kompakt rubrik */
+.section-title {
+    display: flex;
+    align-items: center;  /* Centrerar ikon och text vertikalt */
+    gap: 12px;           /* Avstånd mellan ikon och text */
+    margin: 0;           /* Tar bort h3:ans standardmarginaler */
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--fog-brown);
+}
+
+/* Tajtare rutnät för fälten */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 20px;         /* Mindre vertikalt avstånd mellan raderna */
+    margin-bottom: 10px;
+}
+
+/* Kompakt gruppering av etikett och input */
+.form-group {
+    margin-bottom: 8px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #666;
+    margin-bottom: 3px;     /* Drar input-fältet närmare texten */
+}
+
+/* Slimmade input-fält */
+.modern-input, .modern-select {
+    width: 100%;
+    padding: 10px 12px;     /* Något lägre höjd på fälten */
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: #f9f9f9;
+    font-size: 0.9rem;
+}
+
+/* Kompakta chips för Fogarollibilar */
+.cart-chip-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;               /* Tätare mellan vagnarna */
+    margin-top: 5px;
+}
+
+/* Fogarollibilar knappar */
+.chip-content {
+    padding: 6px 14px;      /* Mindre chips */
+    background: #f0f0f0;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+/* Hover-effekt (när man för musen över) */
+.cart-chip:hover .chip-content { background: #e5e5e5; transform: translateY(-1px); }
+
+/* ACTIVE / VALT LÄGE (När checkboxen är markerad) */
+.cart-chip input:checked + .chip-content {
+    background: var(--fog-red);
+    color: #fff;
+    border-color: var(--fog-red);
+    box-shadow: 0 4px 10px rgba(227, 6, 19, 0.25);
+}
+
+/* Fast footer i botten av boxen */
+.form-footer {
+    padding: 15px 35px;
+    background: #ffffff;
+    border-top: 1px solid #eee;
+    display: flex;
+    gap: 15px;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+}
+
+/* Styling för knappen i footern */
+.form-footer .btn-primary-modern {
+    background: var(--fog-brown);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.form-footer .btn-primary-modern:hover {
+    background: var(--fog-red);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Om du vill att knappen ska ligga till höger i footern (valfritt) */
+.form-footer {
+    justify-content: flex-end; /* Ändra till flex-end om du vill ha knappen till höger */
+    padding: 15px 35px;
+}
+
+/* ==========================================================================
+   4. PACKLISTOR (STEG 2)
+   ========================================================================== */
+.unit-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+
+.unit-tab {
+    padding: 10px 20px; border: none; background: #f0f0f0; border-radius: 8px;
+    font-weight: bold; cursor: pointer;
+}
+
+.unit-tab.active { background: var(--fog-brown); color: white; }
+
+.form-check-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 15px; border-bottom: 1px solid #eee; cursor: pointer;
+}
+
+.form-check-item.checked { color: #2ecc71; background: #f4fff9; }
+
+.list-group-header {
+    background: var(--fog-brown); color: white; padding: 10px 15px;
+    font-size: 0.75rem; border-radius: 6px; margin-top: 15px; cursor: pointer;
+    display: flex; justify-content: space-between;
+}
+
+/* Styling för "Ändra detaljer" uppe till höger */
+.btn-edit-details {
+    background: none;
+    border: none;
+    color: var(--fog-red);
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* En grå/neutral variant för Avbryt-knappen */
+.btn-secondary-modern {
+    background: #eee;
+    color: #555;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-secondary-modern:hover { background: #e0e0e0; }
+
+/* Säkerställ att footern i steg 2 inte tvingar knapparna att bli stora */
+.form-footer .btn-primary-modern,  .form-footer .btn-secondary-modern { flex: none; width: auto; }
+
+/* Ny styling för Välj alla-knappen */
+.btn-select-all {
+    background: #f8f6f3;
+    border: 1px solid var(--border);
+    color: var(--fog-brown);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+
+.btn-select-all:hover {
+    background: var(--fog-brown);
+    color: white;
+}
+
+/* Status-styling för flikarna */
+.unit-tab.done {
+    border-bottom: 2px solid #2ecc71; /* En diskret grön linje under färdiga enheter */
+}
+
+.unit-tab.active.done {
+    background: var(--fog-brown);
+    border-bottom: 2px solid #2ecc71;
+}
+
+/* ==========================================================================
+   5. KALENDER (FULLCALENDAR & CUSTOM EVENTS)
+   ========================================================================== */
+#calendar-container {
+    background: white; padding: 20px; border-radius: 20px;
+    box-shadow: var(--shadow); border: 1px solid var(--border);
+}
+
+.calendar-filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px; /* Mer luft ner till själva kalendern */
+    padding: 20px;       /* Mer luft inuti baren (höjd) */
+    background: #ffffff;
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03); /* Mycket subtil skugga för djup */
+    align-items: center;
+}
+
+/* Snyggare knappar (Chips) i filtret */
+.filter-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    background: #fdfdfd;
+    border-radius: 50px; /* Rundare form */
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #555;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.filter-btn:hover {
+    background: #f5f5f5;
+    border-color: #ccc;
+    transform: translateY(-1px); /* Liten lyft-effekt vid hovring */
+}
+
+/* Separatorn mellan biltyper */
+.filter-separator {
+    width: 1px;
+    height: 25px;
+    background: #eee;
+}
+
+.filter-btn.active { background: var(--fog-red); color: white; }
+
+/* Custom Event Styling */
+.fc-daygrid-event {
+    border-radius: 0 !important; border: none !important;
+    background-color: var(--fog-red) !important; padding: 5px !important;
+}
+
+.fc-event-start { border-top-left-radius: 8px !important; border-bottom-left-radius: 8px !important; margin-left: 5px !important; }
+.fc-event-end { border-top-right-radius: 8px !important; border-bottom-right-radius: 8px !important; margin-right: 5px !important; }
+
+.fc-event-title-bold { font-weight: 700; color: white; font-size: 0.75rem; display: block; }
+.fc-event-details { font-size: 0.65rem; color: rgba(255,255,255,0.9); }
+
+/* Badges för Område (EVE, STR etc) */
+.event-area-badge {
+    position: absolute; top: 2px; right: 5px; font-size: 0.55rem;
+    padding: 2px 5px; border-radius: 4px; color: white; font-weight: bold;
+}
+.tag-eve { background: #3498db !important; }
+.tag-cat { background: #9b59b6 !important; }
+.tag-str { background: #2ecc71 !important; }
+.tag-fpj { background: #f1c40f !important; color: #333 !important; }
+
+/* Incomplete (Skissad bakgrund) */
+.fc-event-incomplete {
+    background-color: #e8e8e8 !important;
+    background-image: linear-gradient(45deg, rgba(0,0,0,0.05) 25%, transparent 25%, transparent 50%, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.05) 75%, transparent 75%, transparent) !important;
+    background-size: 15px 15px !important;
+}
+.fc-event-incomplete .fc-event-title-bold, 
+.fc-event-incomplete .fc-event-details { color: #333 !important; }
+
+.continue-arrow-bottom { position: absolute; bottom: 2px; right: 5px; transform: scaleX(1.5); color: white; }
+
+/* ==========================================================================
+   6. FLEET DASHBOARD - DESKTOP REFINED
+   ========================================================================== */
+
+.fleet-container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    animation: fadeIn 0.4s ease-out;
+}
+
+/* Statustavla - Överst */
+.fleet-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.f-stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.f-stat-label { font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: 700; display: block; }
+.f-stat-value { font-size: 1.8rem; font-weight: 800; color: var(--fog-brown); }
+.f-stat-icon { font-size: 1.5rem; color: #eee; }
+
+.st-ok { border-bottom: 4px solid #2ecc71; }
+.st-warn { border-bottom: 4px solid #f1c40f; }
+.st-danger { border-bottom: 4px solid var(--fog-red); }
+
+/* Rutnät för fordon */
+.fleet-sections-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+.fleet-group-title {
+    margin-bottom: 15px;
+    color: var(--fog-brown);
+    font-size: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.fleet-group-title span { font-size: 0.8rem; opacity: 0.6; }
+
+.fleet-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+}
+
+/* Fordonskort */
+.fleet-card {
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.fleet-card:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.05); border-color: #ccc; }
+
+.fleet-unit-id { font-weight: 800; font-size: 1rem; color: var(--fog-brown); }
+
+.fleet-status-indicator { width: 8px; height: 8px; border-radius: 50%; }
+
+.hs-ok .fleet-status-indicator { background: #2ecc71; box-shadow: 0 0 8px rgba(46,204,113,0.4); }
+.hs-warn .fleet-status-indicator { background: #f1c40f; box-shadow: 0 0 8px rgba(241,196,15,0.4); }
+.hs-danger .fleet-status-indicator { background: var(--fog-red); box-shadow: 0 0 8px rgba(227,6,19,0.4); }
+
+.fleet-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+
+.fleet-meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.7rem; color: #999; }
+.status-text { font-weight: 700; text-transform: uppercase; font-size: 0.6rem; }
+
+.hs-danger .status-text { color: var(--fog-red); }
+
+.fleet-card-arrow { position: absolute; bottom: 10px; right: 10px; font-size: 0.7rem; opacity: 0; transition: 0.2s; }
+.fleet-card:hover .fleet-card-arrow { opacity: 0.3; transform: translateX(3px); }
+
+/* ==========================================================================
+   FLEET MODAL STYLING
+   ========================================================================== */
+
+/* 1. Modal Container & Header */
+.fm-premium-container {
+    display: flex; flex-direction: column; height: 550px; 
+    background: #fff; border-radius: 16px; overflow: hidden;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.fm-header-slim {
+    padding: 12px 20px; background: #fff; border-bottom: 1px solid #eee;
+    display: flex; justify-content: space-between; align-items: center;
+}
+.fm-id-block { display: flex; align-items: center; gap: 12px; }
+.fm-id-block i { font-size: 1.5rem; color: var(--fog-brown); }
+.fm-id-block h3 { margin: 0; font-size: 1.1rem; font-weight: 800; color: var(--fog-brown); }
+.fm-id-block small { color: #aaa; font-weight: 700; font-size: 0.7rem; text-transform: uppercase; }
+
+.fm-close-icon { 
+    background: #f5f5f5; border: none; width: 30px; height: 30px; 
+    border-radius: 50%; cursor: pointer; color: #666; transition: 0.2s;
+}
+.fm-close-icon:hover { background: var(--fog-red); color: white; }
+
+/* 2. Navigerings-flikar (Tabs) */
+.fm-nav-tabs { display: flex; padding: 0 20px; border-bottom: 1px solid #eee; background: #fff; gap: 25px; }
+.fm-tab-link {
+    background: none; border: none; padding: 12px 0; font-weight: 700; font-size: 0.85rem;
+    color: #999; cursor: pointer; position: relative; transition: 0.2s;
+}
+.fm-tab-link.active { color: var(--fog-red); }
+.fm-tab-link.active::after {
+    content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: var(--fog-red); border-radius: 2px 2px 0 0;
+}
+
+/* 3. Innehållsytor */
+.fm-viewport { flex: 1; overflow: hidden; position: relative; background: #fbfbfb; }
+.fm-pane { display: none; height: 100%; padding: 15px 20px; overflow-y: auto; }
+.fm-pane.active { display: block; }
+
+.fm-mini-label { display: block; font-size: 0.65rem; font-weight: 800; color: #bbb; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.5px; }
+.fm-sub-section { margin-bottom: 25px; }
+
+/* 4. Översikt & Status */
+.fm-quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.fm-btn-outline {
+    padding: 10px; border: 1px solid #ddd; background: #fff; border-radius: 8px;
+    font-size: 0.8rem; font-weight: 700; color: #444; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s;
+}
+.fm-btn-outline:hover { border-color: var(--fog-brown); background: #f9f9f9; }
+.fm-btn-outline i { color: #888; }
+
+.fm-status-list { display: flex; flex-direction: column; gap: 6px; }
+.fm-status-item {
+    display: flex; align-items: center; gap: 12px; padding: 10px 15px;
+    border: 1px solid #eee; border-radius: 10px; cursor: pointer; transition: 0.2s; background: #fff;
+}
+.fm-status-item i { font-size: 1.1rem; color: #ddd; }
+.fm-status-item span { font-size: 0.8rem; color: #666; }
+.fm-status-item span strong { font-weight: 800; color: #333; margin-right: 5px; }
+
+.fm-status-item.active.ok { border-color: #2ecc71; border-width: 2px; }
+.fm-status-item.active.ok i { color: #2ecc71; }
+.fm-status-item.active.warn { border-color: #f1c40f; border-width: 2px; }
+.fm-status-item.active.warn i { color: #f1c40f; }
+.fm-status-item.active.danger { border-color: var(--fog-red); border-width: 2px; }
+.fm-status-item.active.danger i { color: var(--fog-red); }
+
+/* 5. Chatt (Historik & Journal) */
+.fm-chat-wrapper { display: flex; flex-direction: column; height: 100%; background: #f3f2f1; border-radius: 12px; overflow: hidden; border: 1px solid #e1dfdd; }
+.fm-chat-feed { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+
+.fm-msg-row { max-width: 85%; align-self: flex-start; display: flex; flex-direction: column; }
+.fm-msg-meta { font-size: 0.65rem; color: #605e5c; margin-bottom: 2px; padding-left: 5px; display: flex; gap: 8px; font-weight: 600; }
+
+.fm-msg-bubble {
+    background: #fff; padding: 8px 12px; border-radius: 6px; border-top-left-radius: 2px;
+    font-size: 0.85rem; line-height: 1.4; color: #323130; box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    display: flex; gap: 10px; align-items: flex-start; border: 1px solid #e1dfdd;
+}
+.fm-msg-bubble i { margin-top: 2px; font-size: 0.8rem; }
+
+/* Chatt-varianter */
+.fm-msg-row.system { align-self: center; max-width: 90%; }
+.fm-msg-row.system .fm-msg-bubble { background: #f3f2f1; border: none; font-style: italic; color: #605e5c; padding: 4px 12px; border-radius: 20px; }
+.fm-msg-row.brist .fm-msg-bubble { border-left: 4px solid var(--fog-red); background: #fff8f8; }
+
+/* Input Bar */
+.fm-chat-input-area { padding: 10px; background: #fff; border-top: 1px solid #edebe9; display: flex; gap: 8px; align-items: center; }
+.fm-mini-select { padding: 6px; border-radius: 4px; border: 1px solid #ddd; font-size: 0.75rem; background: #f5f5f5; font-weight: 700; }
+#chat-text-input { flex: 1; border: 1px solid #ddd; background: #fdfdfd; padding: 8px 15px; border-radius: 20px; font-size: 0.9rem; outline: none; }
+.fm-btn-send { width: 34px; height: 34px; border-radius: 50%; background: var(--fog-brown); color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+.fm-btn-send:hover { background: var(--fog-red); transform: scale(1.1); }
+
+/* ==========================================================================
+   FLEET MODAL - REFACTORED PREMIUM (Teams Style)
+   ========================================================================== */
+
+/* 1. MODAL CONTAINER & VIEWPORT
+   -------------------------------------------------------------------------- */
+.fm-premium-container {
+    display: flex;
+    flex-direction: column;
+    height: 500px; /* Kompakt standardhöjd */
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.fm-viewport {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    background: #fbfbfb;
+    display: flex;
+    flex-direction: column;
+}
+
+.fm-pane {
+    display: none;
+    height: 100%;
+    padding: 12px 18px;
+    overflow-y: auto;
+}
+
+.fm-pane.active {
+    display: flex;
+    flex-direction: column;
+}
+
+/* 2. HEADER & NAVIGATION
+   -------------------------------------------------------------------------- */
+.fm-header-slim {
+    padding: 12px 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+}
+
+.fm-id-block {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.fm-id-block i { font-size: 1.4rem; color: var(--fog-brown); }
+.fm-id-block h3 { margin: 0; font-size: 1.1rem; font-weight: 800; color: var(--fog-brown); }
+
+.fm-reg-header {
+    background: #005a9e;
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    margin-left: 10px;
+    font-weight: 700;
+    vertical-align: middle;
+}
+
+.fm-nav-tabs {
+    display: flex;
+    padding: 0 20px;
+    border-bottom: 1px solid #eee;
+    gap: 25px;
+    background: #fff;
+}
+
+.fm-tab-link {
+    background: none;
+    border: none;
+    padding: 12px 0;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #999;
+    cursor: pointer;
+    position: relative;
+    transition: 0.2s;
+}
+
+.fm-tab-link.active { color: var(--fog-red); }
+.fm-tab-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--fog-red);
+    border-radius: 2px 2px 0 0;
+}
+
+/* 3. OVERVIEW: TECHNICAL DATA & STATUS
+   -------------------------------------------------------------------------- */
+.fm-mini-label {
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #bbb;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+}
+
+.fm-sub-section.compact { margin-bottom: 15px; }
+
+/* Grid för Fordonsdata */
+.fm-data-grid-compact {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 10px;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+}
+
+.fm-input-group { display: flex; flex-direction: column; gap: 3px; }
+.fm-input-group label { font-size: 0.6rem; font-weight: 800; color: #999; text-transform: uppercase; }
+
+.fm-input-group input {
+    height: 32px;
+    padding: 6px 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--fog-brown);
+    outline: none;
+    transition: 0.2s;
+}
+
+.fm-input-group input:focus { border-color: var(--fog-brown); background: #fcfaf8; }
+
+/* Varningar i fält */
+.warning-active input { border-color: #f1c40f !important; background: #fffdf4 !important; }
+.danger-active input { border-color: var(--fog-red) !important; background: #fff5f5 !important; }
+
+/* Status-piller (Horisontella) */
+.fm-status-list-compact {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.fm-status-item-mini {
+    padding: 8px;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+    background: #fff;
+    transition: 0.2s;
+}
+
+.fm-status-item-mini.active.ok { border-color: #2ecc71; color: #107c10; background: #f4fff9; }
+.fm-status-item-mini.active.warn { border-color: #f1c40f; color: #856404; background: #fffdf4; }
+.fm-status-item-mini.active.danger { border-color: var(--fog-red); color: var(--fog-red); background: #fff5f5; }
+
+/* 4. CHATT / JOURNAL (Historik)
+   -------------------------------------------------------------------------- */
+.fm-chat-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #f3f2f1;
+    border-radius: 12px;
+    border: 1px solid #e1dfdd;
+}
+
+.fm-chat-feed {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.fm-msg-row { max-width: 90%; align-self: flex-start; }
+
+.fm-msg-meta {
+    font-size: 0.65rem;
+    color: #605e5c;
+    margin-bottom: 2px;
+    padding-left: 5px;
+    font-weight: 600;
+}
+
+.fm-bubble-flex-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.fm-msg-bubble {
+    flex: 1;
+    max-width: fit-content;
+    background: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border-top-left-radius: 2px;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: #323130;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    border: 1px solid #e1dfdd;
+}
+
+.bubble-content { display: flex; gap: 8px; align-items: flex-start; }
+.bubble-content i { margin-top: 3px; font-size: 0.8rem; }
+
+/* Meddelande-varianter */
+.fm-msg-row.resolved .fm-msg-bubble { background: #f8f9fa; opacity: 0.7; border-left: 4px solid #107c10; }
+.fm-msg-row.brist .fm-msg-bubble { border-left: 4px solid var(--fog-red); background: #fff8f8; }
+.fm-msg-row.system-action .fm-msg-bubble { background: #eef6ff; color: #005a9e; border: 1px solid #deecf9; }
+
+/* 5. INPUT & KONTROLLER
+   -------------------------------------------------------------------------- */
+.fm-chat-input-area {
+    padding: 10px;
+    background: #fff;
+    border-top: 1px solid #edebe9;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+/* Modern Kategoriväljare (Ikon) */
+.fm-cat-selector-modern {
+    position: relative;
+    width: 40px; height: 40px;
+    background: #f0f0f0;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+    border: 1px solid #ddd;
+    flex-shrink: 0;
+}
+
+.fm-cat-selector-modern i { font-size: 1.1rem; pointer-events: none; }
+.fm-cat-selector-modern i.status-info { color: #005a9e; }
+.fm-cat-selector-modern i.status-brist { color: var(--fog-red); }
+
+.fm-cat-selector-modern select {
+    position: absolute;
+    width: 100%; height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+#chat-text-input {
+    flex: 1;
+    border: 1px solid #ddd;
+    background: #fdfdfd;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    outline: none;
+}
+
+/* Knappar */
+.fm-btn-send {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--fog-brown);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+    flex-shrink: 0;
+}
+
+.fm-btn-send i { transform: rotate(45deg); margin-right: 3px; margin-bottom: 2px; transition: 0.2s; }
+.fm-btn-send:hover { background: var(--fog-red); transform: scale(1.1); }
+.fm-btn-send:active i { transform: rotate(45deg) scale(0.9) translateX(5px); }
+
+.fm-btn-save-mini {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px;
+    background: var(--fog-brown);
+    color: white !important;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.fm-btn-save-mini:hover { background: var(--fog-red); transform: translateY(-1px); }
+
+.btn-resolve-note {
+    background: #f3f2f1;
+    border: 1px solid #ddd;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn-resolve-note:hover { background: #107c10; color: white; border-color: #107c10; }
+
+.fm-delete-note-inline {
+    background: none;
+    border: none;
+    color: #ccc;
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 5px;
+    opacity: 0;
+    transition: 0.2s;
+}
+
+.fm-msg-row:hover .fm-delete-note-inline { opacity: 1; }
+.fm-delete-note-inline:hover { color: var(--fog-red); transform: scale(1.1); }
+
+/* 6. RESPONSIVITET (Consolidated)
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+    .fm-premium-container { height: 100dvh; border-radius: 0; }
+    
+    .fm-nav-tabs { justify-content: space-around; }
+    
+    .fm-data-grid-compact,
+    .fm-status-list-compact {
+        grid-template-columns: 1fr;
+    }
+
+    .fm-delete-note-inline { opacity: 0.5; padding: 10px; }
+}
+
+/* Underhålls-översikt (Ersättare för statustavlan) */
+.maintenance-overview {
+    background: #fff;
+    padding: 15px 20px;
+    border-radius: 16px;
+    border: 1px solid #eee;
+    box-shadow: var(--shadow-sm);
+}
+
+.mo-title {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #bbb;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 10px;
+}
+
+.mo-card {
+    background: #fbfbfb;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.mo-card:hover { border-color: var(--fog-brown); background: #fff; transform: translateY(-2px); }
+
+.mo-unit { display: flex; flex-direction: column; gap: 2px; }
+.mo-unit strong { font-size: 0.9rem; color: var(--fog-brown); }
+.mo-unit span { font-size: 0.7rem; color: #aaa; font-weight: 700; }
+
+.mo-alerts { display: flex; flex-direction: column; gap: 4px; }
+.mo-tag {
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.mo-tag.danger { background: #fff5f5; color: var(--fog-red); border: 1px solid #fed7d7; }
+.mo-tag.warn { background: #fffdf0; color: #856404; border: 1px solid #ffecb5; }
+
+.mo-arrow { font-size: 0.8rem; color: #ddd; }
+.mo-empty { font-size: 0.85rem; color: #999; font-style: italic; padding: 10px 0; }
+
+@media (max-width: 768px) {
+    .mo-grid { grid-template-columns: 1fr; }
+}
+
+/* --- BADGE FÖR EXTRA ÅTGÄRDER (+1 YTTERLIGARE) --- */
+
+.mo-header-flex {
+    display: flex;
+    justify-content: space-between; /* Skickar rubriken till vänster och badgen till höger */
+    align-items: center;
+    margin-bottom: 12px;
+    width: 100%;
+}
+
+.mo-more-badge {
+    background: var(--fog-red); /* Din röda Fogarolli-färg */
+    color: white !important;
+    font-size: 0.65rem;
+    font-weight: 900;
+    padding: 4px 12px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(227, 6, 19, 0.3); /* Ger ett litet lyft/djup */
+    white-space: nowrap;
+    display: inline-block;
+}
+
+/* Mobiljustering för att rubriken inte ska krocka med badgen */
+@media (max-width: 768px) {
+    .mo-more-badge {
+        font-size: 0.6rem;
+        padding: 3px 10px;
+    }
+}
+
+.mo-more-badge.clickable {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.mo-more-badge.clickable:hover {
+    background: #c00511; /* En något mörkare röd vid hovring */
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(227, 6, 19, 0.4);
+}
+
+.mo-more-badge.clickable:active {
+    transform: scale(0.95);
+}
+
+/* Om listan är expanderad kan vi lägga till en mjuk animering på gridden */
+.mo-grid {
+    transition: max-height 0.3s ease-out;
+}
+
+/* --- TVÅ-KOLUMNS LAYOUT FÖR ÖVERSIKT --- */
+.fm-two-col-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+}
+
+/* Tidslinje Styling */
+.fm-timeline-mini {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #fff;
+    padding: 12px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.fm-tl-item {
+    display: flex;
+    gap: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px dotted #eee;
+}
+
+.fm-tl-item:last-child { border-bottom: none; }
+
+.fm-tl-date {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #999;
+    min-width: 65px;
+    white-space: nowrap;
+}
+
+.fm-tl-content { display: flex; flex-direction: column; }
+.fm-tl-content strong { font-size: 0.75rem; color: var(--fog-brown); }
+.fm-tl-content span { font-size: 0.65rem; color: #888; }
+
+.fm-tl-item.future { border-left: 3px solid #005a9e; padding-left: 8px; }
+.fm-tl-item.past { opacity: 0.7; border-left: 3px solid #ccc; padding-left: 8px; }
+
+.fm-empty-text { font-size: 0.7rem; color: #ccc; font-style: italic; text-align: center; }
+
+/* MOBIL-FIX: Stapla kolumnerna */
+@media (max-width: 768px) {
+    .fm-two-col-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .fm-premium-container {
+        height: 100dvh;
+    }
+}
+
+/* ==========================================================================
+   FLEET MODAL - HÖGERKOLUMN (SPECIFIKATION & STATUS)
+   ========================================================================== */
+
+/* Behållare för hela högerkolumnen */
+.fm-col-right-compact {
+    padding-left: 15px !important;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* 1. INFORMATION-STYLE INPUTS (FORDONSSPECIFIKATION) */
+.fm-data-grid-minimal {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: #fff;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #f0f0f0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02); /* Matchar tidslinjens kort */
+}
+
+.fm-input-group-minimal {
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid #f8f8f8; /* Mycket diskret linje mellan fälten */
+    padding-bottom: 6px;
+    transition: all 0.2s ease;
+}
+
+.fm-input-group-minimal:last-child {
+    border-bottom: none;
+}
+
+.fm-input-group-minimal label {
+    font-size: 0.6rem;
+    font-weight: 800;
+    color: #bbb;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+}
+
+/* Gör inputfältet till ren text som "aktiveras" vid fokus */
+.fm-input-group-minimal input {
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+    color: #444 !important;
+    height: auto !important;
+    outline: none;
+    cursor: text;
+}
+
+.fm-input-group-minimal:focus-within {
+    border-bottom-color: var(--fog-brown);
+}
+
+/* Varningsfärger för specifika fält */
+.warning-active.fm-input-group-minimal { border-bottom-color: #f1c40f; }
+.danger-active.fm-input-group-minimal { border-bottom-color: var(--fog-red); }
+
+/* 2. SYSTEMSTATUS (MODERNA KNAPPAR) */
+.fm-status-list-compact {
+    display: flex;
+    background: #f8f9fa;
+    padding: 4px;
+    border-radius: 10px;
+    gap: 4px;
+    border: 1px solid #eee;
+}
+
+.fm-status-item-mini {
+    flex: 1;
+    padding: 8px 4px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-align: center;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: transparent;
+    color: #999;
+    text-transform: uppercase;
+    border: none !important; /* Tar bort eventuella gamla ramar */
+}
+
+.fm-status-item-mini:hover {
+    background: rgba(0,0,0,0.03);
+    color: #666;
+}
+
+/* Aktiva statuslägen */
+.fm-status-item-mini.active.ok { 
+    background: #2ecc71; 
+    color: #fff; 
+    box-shadow: 0 2px 6px rgba(46, 204, 113, 0.3);
+}
+.fm-status-item-mini.active.warn { 
+    background: #f1c40f; 
+    color: #fff; 
+    box-shadow: 0 2px 6px rgba(241, 196, 15, 0.3);
+}
+.fm-status-item-mini.active.danger { 
+    background: var(--fog-red); 
+    color: #fff; 
+    box-shadow: 0 2px 6px rgba(227, 6, 19, 0.3);
+}
+
+/* 3. DISKRET SPARA-KNAPP */
+.fm-save-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 5px;
+}
+
+.fm-btn-save-discrete {
+    background: none;
+    border: none;
+    color: #ccc;
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: 0.2s;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.fm-btn-save-discrete:hover {
+    color: var(--fog-brown);
+}
+
+/* --- SERVICE PASSERAD (GUL/VARNING) --- */
+.warning-active.fm-input-group-minimal {
+    border-bottom-color: #f1c40f !important;
+    border-left: 3px solid #f1c40f; /* Tydlig vertikal linje till vänster */
+    padding-left: 8px;
+    background: rgba(241, 196, 15, 0.05); /* Extremt svag toning */
+}
+
+/* --- BESIKTNING PASSERAD (RÖD/VARNING) --- */
+.danger-active.fm-input-group-minimal {
+    border-bottom-color: var(--fog-red) !important;
+    border-left: 3px solid var(--fog-red); /* Tydlig vertikal linje till vänster */
+    padding-left: 8px;
+    background: rgba(227, 6, 19, 0.05); /* Extremt svag toning */
+}
+
+/* ==========================================================================
+   7. GENERELL MODAL STYLING (BAS & STÄNGKNAPP)
+   ========================================================================== */
+
+/* Modal-bas */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    display: none; /* Dölj som standard */
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+}
+
+.modal-content {
+    background: white;
+    width: 90%;
+    max-width: 900px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+}
+
+/* Stäng-knapp */
+.close-modal-btn {
+    background: #f0f0f0;
+    border: none;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.close-modal-btn:hover { background: #e0e0e0; color: var(--fog-red); }

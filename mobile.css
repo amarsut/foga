@@ -1,0 +1,329 @@
+/* mobile.css - Professionell App-layout */
+
+/* 1. Basinställningar för mobil */
+body {
+    background-color: #f0f2f5; /* Lite mjukare grå bakgrund */
+    overflow-x: hidden;
+}
+
+.main-content {
+    padding: 0 !important;
+    padding-bottom: 90px !important; /* Utrymme för navigeringsmenyn */
+}
+
+/* 2. Header-optimering */
+.top-header {
+    background: #fff;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#view-title {
+    font-size: 1.1rem !important;
+    margin: 0;
+    color: var(--fog-brown);
+}
+
+.weather-widget {
+    background: #f8f6f3;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    box-shadow: none;
+    border: 1px solid #eee;
+}
+
+/* 3. Formulär-container (Gör den till ett "kort") */
+.create-view-container.single-column {
+    padding: 10px !important;
+}
+
+.form-container.compact-form {
+    background: #fff;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: none;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.inner-scroll-area {
+    padding: 20px 15px !important;
+}
+
+/* 4. Sektionsindelning */
+.section-title {
+    font-size: 0.9rem !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #888 !important;
+    margin-bottom: 15px !important;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+/* 5. Inmatningsfält (App-stil) */
+.form-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 15px !important;
+}
+
+.form-group {
+    margin-bottom: 5px !important;
+}
+
+.form-group label {
+    font-size: 0.75rem !important;
+    color: var(--fog-brown);
+    margin-bottom: 6px !important;
+    font-weight: 600 !important;
+    display: block;
+}
+
+.modern-input, .modern-select {
+    height: 52px !important; /* Stor tryckyta för tummen */
+    border: 2px solid #f0f0f0 !important;
+    background: #fdfdfd !important;
+    border-radius: 12px !important;
+    padding: 0 15px !important;
+    font-size: 1rem !important; /* Förhindrar auto-zoom på iOS */
+    transition: border-color 0.2s;
+}
+
+.modern-input:focus, .modern-select:focus {
+    border-color: var(--fog-red) !important;
+    background: #fff !important;
+    outline: none;
+}
+
+/* 6. Fogarollibilar (Chips) */
+.cart-chip-container {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important; /* 3 bilar per rad */
+    gap: 8px !important;
+}
+
+.chip-content {
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px !important;
+    font-size: 0.75rem !important;
+}
+
+/* 7. Footer & Knappar */
+.form-footer {
+    padding: 15px !important;
+    background: transparent !important;
+    border-top: none !important;
+}
+
+.btn-primary-modern {
+    width: 100% !important;
+    height: 55px !important;
+    border-radius: 14px !important;
+    font-size: 1rem !important;
+    justify-content: center !important;
+    box-shadow: 0 4px 10px rgba(227, 6, 19, 0.2) !important;
+}
+
+/* 8. Bottenmeny (Stabiliserad) */
+.sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100% !important;
+    height: 75px !important;
+    padding: 0 !important;
+    background: #2c1e18 !important; /* Mörkare brun för lyxigare känsla */
+    border-top: 1px solid rgba(255,255,255,0.1);
+    z-index: 10000;
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+}
+
+.sidebar-header, .sidebar-footer {
+    display: none !important; /* Tar bort störande text */
+}
+
+#main-nav {
+    display: flex !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    height: 100%;
+}
+
+.nav-item {
+    flex-direction: column !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    font-size: 0.65rem !important;
+    color: rgba(255,255,255,0.5) !important;
+}
+
+.nav-item i {
+    font-size: 1.3rem !important;
+    margin-bottom: 4px !important;
+    width: auto !important;
+}
+
+/*UPPDATERING*/
+
+/* 2. Header-optimering (Minskad luft) */
+.top-header {
+    background: #fff;
+    padding: 10px 20px; /* Minskad padding vertikalt */
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px !important; /* Minimalt avstånd till formuläret */
+}
+
+.chip-content {
+    height: 48px;
+    background: #fff !important;
+    border: 1px solid #ddd !important;
+    border-radius: 12px !important;
+    gap: 10px !important; /* Avstånd mellan ikon och text */
+    padding: 0 12px !important;
+    justify-content: flex-start !important; /* Vänsterställt för bättre läsbarhet */
+    font-size: 0.85rem !important;
+    color: #444;
+}
+
+.cart-chip input:checked + .chip-content {
+    background: var(--fog-red) !important;
+    border-color: var(--fog-red) !important;
+    color: #fff !important;
+}
+
+/* ==========================================================================
+   MOBILOPTIMERING: FLEET DASHBOARD & CHATT
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    /* 1. Statustavlan överst (2x2 grid) */
+    .fleet-stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+        padding: 10px !important;
+    }
+
+    .f-stat-card {
+        padding: 12px !important;
+        border-radius: 12px !important;
+    }
+
+    .f-stat-label { font-size: 0.6rem !important; }
+    .f-stat-value { font-size: 1.3rem !important; }
+    .f-stat-icon { font-size: 1.1rem !important; opacity: 0.2; }
+
+    /* 2. Sektionsrubriker */
+    .fleet-group-title {
+        font-size: 0.85rem !important;
+        margin: 15px 10px 8px 10px !important;
+    }
+
+    /* 3. Bil-korten (Kompakt 2-kolumns layout) */
+    .fleet-cards-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+        padding: 0 10px !important;
+    }
+
+    .fleet-card {
+        padding: 10px !important;
+        border-radius: 10px !important;
+        min-height: auto !important;
+    }
+
+    .fleet-unit-id { font-size: 0.9rem !important; }
+    
+    .fleet-meta {
+        margin-top: 5px;
+        font-size: 0.6rem !important;
+    }
+
+    .status-text { font-size: 0.55rem !important; }
+
+    /* 4. MODAL-REKONSTRUKTION FÖR MOBIL (Fullskärm & Chatt) */
+    .modal-content {
+        width: 100% !important;
+        height: 100% !important;
+        max-width: none !important;
+        border-radius: 0 !important;
+    }
+
+    .fm-premium-container {
+        height: 100dvh !important; /* Dynamic Viewport Height för att hantera tangentbordet */
+        display: flex;
+        flex-direction: column;
+    }
+
+    .fm-header-slim { padding: 10px 15px !important; }
+
+    .fm-nav-tabs {
+        justify-content: space-around !important;
+        padding: 0 !important;
+    }
+
+    .fm-tab-link {
+        flex: 1;
+        text-align: center;
+        font-size: 0.8rem !important;
+    }
+
+    /* 5. Chatt-fixen: Låser input längst ner */
+    .fm-viewport {
+        flex: 1;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .fm-pane.active {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        padding: 15px 10px !important;
+    }
+
+    .fm-chat-wrapper {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        border-radius: 8px !important;
+    }
+
+    .fm-chat-feed {
+        flex: 1;
+        padding: 10px !important;
+    }
+
+    .fm-chat-input-area {
+        position: sticky;
+        bottom: 0;
+        background: #fff;
+        padding: 12px 10px calc(12px + env(safe-area-inset-bottom)) 10px !important;
+        box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+    }
+
+    /* Bubblor på mobil */
+    .fm-msg-row { max-width: 92% !important; }
+    .fm-msg-bubble { padding: 8px 10px !important; font-size: 0.8rem !important; }
+    
+    /* Åtgärda-knappen på mobil */
+    .btn-resolve-note {
+        padding: 6px 12px !important;
+        font-size: 0.75rem !important;
+    }
+}
+
