@@ -47,10 +47,62 @@ body {
 
 .top-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
 
+.sidebar-bottom {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
 .nav-item i {
     margin-right: 5px; /* Mellanrum mellan ikon och text */
     width: 20px;        /* Säkerställer att texten börjar på samma ställe för alla rader */
     text-align: center;
+}
+
+/* --- ADMIN-PROFIL LÄNGST NER --- */
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    color: white;
+}
+
+.user-avatar i {
+    font-size: 2rem;
+    opacity: 0.8;
+}
+
+.user-info strong {
+    display: block;
+    font-size: 0.9rem;
+}
+
+.user-info span {
+    font-size: 0.75rem;
+    opacity: 0.6;
+}
+
+/* --- BUGGRAPPORTERING --- */
+.bug-report-link {
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,0.5);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.2s;
+}
+
+.bug-report-link:hover {
+    color: #fff;
 }
 
 /* ==========================================================================
