@@ -1,8 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, getDocs, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { renderCalendarView } from './calendar.js';
-import { renderAvailabilityView } from './availability.js';
-
+import { renderAvailabilityView, initAvailabilityModule } from './availability.js';
 let currentCarItems = [];
 let currentCartItems = [];
 
@@ -113,7 +112,7 @@ function scaleItemQuantity(itemName, multiplier) {
 // 1. DIN FIREBASE CONFIG
 const firebaseConfig = {
     apiKey: "AIzaSyBO-a2qBiyXvqyyChzUtMhaEChyiW75u68",
-    authDomain: "fogarolli-logistics.firebaseapp.com.firebaseapp.com",
+    authDomain: "fogarolli-logistics.firebaseapp.com",
     projectId: "fogarolli-logistics",
     storageBucket: "fogarolli-logistics.firebasestorage.app.appspot.com",
     messagingSenderId: "274221920124",
@@ -122,6 +121,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+initAvailabilityModule(db); // Detta gör att buggrapporten fungerar direkt!
 
 let assignments = [];
 let cars = [];
