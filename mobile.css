@@ -1,329 +1,864 @@
-/* mobile.css - Professionell App-layout */
+/* ==========================================================================
+   MOBILE VIEW - ULTIMATE TOP-APP NAV v5
+   Fokus: Borttagen prick, perfekt vertikal centrering & Glassmorphism
+   ========================================================================== */
 
-/* 1. Basinställningar för mobil */
-body {
-    background-color: #f0f2f5; /* Lite mjukare grå bakgrund */
-    overflow-x: hidden;
+.app-container {
+    flex-direction: column !important;
+    height: 100vh !important;
+    background-color: #fdfcfb;
 }
 
 .main-content {
+    flex: 1;
+    padding: 15px !important;
+    padding-bottom: 110px !important;
+    overflow-y: auto !important;
+}
+
+/* DÖLJ ONÖDIGA ELEMENT */
+.logo-area,
+.user-profile,
+.sidebar-header,
+.user-info,
+.sidebar-top h2 {
+    display: none !important;
+}
+
+/* ==========================================================================
+   DEN FLYTANDE BAREN (Symmetri & Fixerad höjd)
+   ========================================================================== */
+.sidebar {
+    position: fixed;
+    bottom: 20px;
+    left: 12px;
+    right: 12px;
+    width: auto !important;
+
+    /* Strikt höjd för kontroll */
+    height: 65px !important;
+
+    background: rgba(92, 64, 51, 0.96) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px);
+
+    border-radius: 20px !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+
+    /* Kraftfull centrering av alla 5 knappar */
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-around !important;
+    align-items: stretch !important;
+    /* Låter barnen fylla hela höjden för centrering */
+
+    padding: 0 5px !important;
+    margin: 0 !important;
+    z-index: 10000;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* Tvingar containers att inte störa layouten */
+.sidebar-top,
+.sidebar-bottom,
+.sidebar-nav {
+    display: contents !important;
+}
+
+/* ==========================================================================
+   DE 5 KNAPPARNA (Identisk behandling & vertikal centrering)
+   ========================================================================== */
+.nav-item,
+.bug-report-link {
+    /* Ger varje knapp exakt 20% av bredden */
+    flex: 1 !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    /* Centrerar ikoner och text vertikalt */
+
+    height: 100% !important;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+
+    color: rgba(255, 255, 255, 0.45) !important;
+    transition: all 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
     padding: 0 !important;
-    padding-bottom: 90px !important; /* Utrymme för navigeringsmenyn */
+    margin: 0 !important;
 }
 
-/* 2. Header-optimering */
+/* Ikonernas storlek */
+.nav-item i,
+.bug-report-link i {
+    font-size: 1.25rem !important;
+    margin: 0 0 3px 0 !important;
+    display: block !important;
+}
+
+/* Texten - Anpassad för att allt ska få plats på en rad */
+.nav-item,
+.bug-report-link {
+    font-size: 0.52rem !important;
+    /* Något mindre för att "Rapportera Bugg" ska få plats */
+    font-weight: 800 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    line-height: 1.1 !important;
+    text-align: center;
+}
+
+/* ==========================================================================
+   AKTIV STATUS (Glöd men ingen prick)
+   ========================================================================== */
+.nav-item.active {
+    color: #ffffff !important;
+}
+
+.nav-item.active i {
+    color: var(--fog-red) !important;
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 10px rgba(227, 6, 19, 0.7));
+}
+
+/* HEADER & WEATHER */
 .top-header {
-    background: #fff;
-    padding: 15px 20px;
-    border-bottom: 1px solid #e0e0e0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    padding: 10px 5px !important;
+    margin-bottom: 0 !important;
 }
 
-#view-title {
+.header-info h1 {
     font-size: 1.1rem !important;
-    margin: 0;
-    color: var(--fog-brown);
+    font-weight: 900 !important;
 }
 
 .weather-widget {
-    background: #f8f6f3;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    box-shadow: none;
-    border: 1px solid #eee;
+    background: #fff !important;
+    border: 1px solid #eee !important;
+    border-radius: 10px;
+    padding: 4px 10px !important;
+    font-size: 0.7rem !important;
+    color: var(--fog-brown) !important;
 }
 
-/* 3. Formulär-container (Gör den till ett "kort") */
+/**/
+
+/* ==========================================================================
+   JUSTERING AV MODALER FÖR MOBIL
+   ========================================================================== */
+
+/* Gör så att bakgrunden inte centrerar modalen utan låter den fylla allt */
+.modal-overlay {
+    padding: 0 !important;
+    align-items: stretch !important;
+    overflow: hidden !important; /* Förhindrar dubbla scroll-lister */
+}
+
+/* Tvingar modalens innehåll till 100% bredd och höjd */
+.modal-content {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    border-radius: 0 !important;
+    
+    /* NYA REGLER FÖR SCROLL: */
+    display: flex !important;
+    flex-direction: column !important;
+    overflow-y: auto !important; /* Aktiverar vertikal scroll */
+    -webkit-overflow-scrolling: touch; /* Ger mjuk "iOS-känsla" vid scroll */
+    background-color: #fdfcfb !important;
+}
+
+/* ==========================================================================
+   JUSTERING AV SKAPA-VYN/SKAPA EVENT FÖR MOBIL
+   ========================================================================== */
+
+/* --- FULLSKÄRMS-MODALER --- */
+.modal-overlay {
+    padding: 0 !important;
+    align-items: stretch !important;
+}
+
+.modal-content {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    border-radius: 0 !important;
+    /* Native fullskärmskänsla */
+}
+
+.fm-premium-container {
+    height: 100% !important;
+    border-radius: 0 !important;
+}
+
+/* --- SKAPA UPPDRAG (STEG 1 & 2) --- */
 .create-view-container.single-column {
-    padding: 10px !important;
+    padding: 0 !important;
+    /* Utnyttja hela bredden på mobilen */
 }
 
 .form-container.compact-form {
-    background: #fff;
-    border-radius: 16px !important;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    border: none;
-    width: 100%;
-    margin-bottom: 20px;
+    max-width: 100% !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
 }
 
-.inner-scroll-area {
-    padding: 20px 15px !important;
-}
-
-/* 4. Sektionsindelning */
-.section-title {
-    font-size: 0.9rem !important;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #888 !important;
-    margin-bottom: 15px !important;
-    padding-bottom: 5px;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-/* 5. Inmatningsfält (App-stil) */
 .form-grid {
-    display: flex !important;
-    flex-direction: column !important;
+    grid-template-columns: 1fr !important;
+    /* Tvinga en kolumn för bättre läsbarhet */
     gap: 15px !important;
 }
 
-.form-group {
-    margin-bottom: 5px !important;
+.inner-scroll-area {
+    padding: 20px !important;
 }
 
 .form-group label {
-    font-size: 0.75rem !important;
-    color: var(--fog-brown);
-    margin-bottom: 6px !important;
-    font-weight: 600 !important;
-    display: block;
+    font-size: 0.85rem !important;
+    margin-bottom: 5px !important;
+    color: var(--fog-brown) !important;
 }
 
-.modern-input, .modern-select {
-    height: 52px !important; /* Stor tryckyta för tummen */
-    border: 2px solid #f0f0f0 !important;
-    background: #fdfdfd !important;
-    border-radius: 12px !important;
-    padding: 0 15px !important;
-    font-size: 1rem !important; /* Förhindrar auto-zoom på iOS */
-    transition: border-color 0.2s;
+.modern-input,
+.modern-select {
+    height: 50px !important;
+    /* Större klickyta för fingrar */
+    font-size: 1rem !important;
+    /* Förhindrar automatisk zoom på iPhone */
+    background: #fdfcfb !important;
 }
 
-.modern-input:focus, .modern-select:focus {
-    border-color: var(--fog-red) !important;
-    background: #fff !important;
-    outline: none;
-}
-
-/* 6. Fogarollibilar (Chips) */
+/* Snyggare val av vagnar (Chips) på mobilen */
 .cart-chip-container {
     display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important; /* 3 bilar per rad */
+    grid-template-columns: 1fr 1fr !important;
+    /* Två vagnar per rad istället för trång rad */
     gap: 8px !important;
 }
 
 .chip-content {
-    height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 10px !important;
-    font-size: 0.75rem !important;
-}
-
-/* 7. Footer & Knappar */
-.form-footer {
-    padding: 15px !important;
-    background: transparent !important;
-    border-top: none !important;
-}
-
-.btn-primary-modern {
     width: 100% !important;
-    height: 55px !important;
-    border-radius: 14px !important;
-    font-size: 1rem !important;
     justify-content: center !important;
-    box-shadow: 0 4px 10px rgba(227, 6, 19, 0.2) !important;
-}
-
-/* 8. Bottenmeny (Stabiliserad) */
-.sidebar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100% !important;
-    height: 75px !important;
-    padding: 0 !important;
-    background: #2c1e18 !important; /* Mörkare brun för lyxigare känsla */
-    border-top: 1px solid rgba(255,255,255,0.1);
-    z-index: 10000;
-    box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
-}
-
-.sidebar-header, .sidebar-footer {
-    display: none !important; /* Tar bort störande text */
-}
-
-#main-nav {
-    display: flex !important;
-    justify-content: space-around !important;
-    align-items: center !important;
-    height: 100%;
-}
-
-.nav-item {
-    flex-direction: column !important;
-    background: transparent !important;
-    border: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    font-size: 0.65rem !important;
-    color: rgba(255,255,255,0.5) !important;
-}
-
-.nav-item i {
-    font-size: 1.3rem !important;
-    margin-bottom: 4px !important;
-    width: auto !important;
-}
-
-/*UPPDATERING*/
-
-/* 2. Header-optimering (Minskad luft) */
-.top-header {
-    background: #fff;
-    padding: 10px 20px; /* Minskad padding vertikalt */
-    border-bottom: 1px solid #e0e0e0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 5px !important; /* Minimalt avstånd till formuläret */
-}
-
-.chip-content {
-    height: 48px;
-    background: #fff !important;
-    border: 1px solid #ddd !important;
+    padding: 12px !important;
     border-radius: 12px !important;
-    gap: 10px !important; /* Avstånd mellan ikon och text */
-    padding: 0 12px !important;
-    justify-content: flex-start !important; /* Vänsterställt för bättre läsbarhet */
-    font-size: 0.85rem !important;
-    color: #444;
 }
 
-.cart-chip input:checked + .chip-content {
-    background: var(--fog-red) !important;
-    border-color: var(--fog-red) !important;
-    color: #fff !important;
+/* Fixera knappen längst ner så den alltid är åtkomlig */
+
+.form-footer .btn-primary-modern {
+    width: 100% !important;
+    /* Knappen tar hela bredden på mobilen */
+    height: 55px;
+    justify-content: center !important;
+    font-size: 1rem !important;
+    border-radius: 12px !important;
+}
+
+/* --- PACKLISTA (STEG 2) --- */
+.unit-tabs {
+    overflow-x: auto;
+    /* Gör flikarna scrollbara i sidled */
+    padding-bottom: 5px;
+    -webkit-overflow-scrolling: touch;
+}
+
+.form-check-item {
+    padding: 18px 15px !important;
+    /* Större rader för att enkelt bocka av */
 }
 
 /* ==========================================================================
-   MOBILOPTIMERING: FLEET DASHBOARD & CHATT
+   PACKLISTA - MOBILANPASSNING
    ========================================================================== */
 
-@media (max-width: 768px) {
-    /* 1. Statustavlan överst (2x2 grid) */
-    .fleet-stats-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 10px !important;
-        padding: 10px !important;
-    }
-
-    .f-stat-card {
-        padding: 12px !important;
-        border-radius: 12px !important;
-    }
-
-    .f-stat-label { font-size: 0.6rem !important; }
-    .f-stat-value { font-size: 1.3rem !important; }
-    .f-stat-icon { font-size: 1.1rem !important; opacity: 0.2; }
-
-    /* 2. Sektionsrubriker */
-    .fleet-group-title {
-        font-size: 0.85rem !important;
-        margin: 15px 10px 8px 10px !important;
-    }
-
-    /* 3. Bil-korten (Kompakt 2-kolumns layout) */
-    .fleet-cards-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 8px !important;
-        padding: 0 10px !important;
-    }
-
-    .fleet-card {
-        padding: 10px !important;
-        border-radius: 10px !important;
-        min-height: auto !important;
-    }
-
-    .fleet-unit-id { font-size: 0.9rem !important; }
-    
-    .fleet-meta {
-        margin-top: 5px;
-        font-size: 0.6rem !important;
-    }
-
-    .status-text { font-size: 0.55rem !important; }
-
-    /* 4. MODAL-REKONSTRUKTION FÖR MOBIL (Fullskärm & Chatt) */
-    .modal-content {
-        width: 100% !important;
-        height: 100% !important;
-        max-width: none !important;
-        border-radius: 0 !important;
-    }
-
-    .fm-premium-container {
-        height: 100dvh !important; /* Dynamic Viewport Height för att hantera tangentbordet */
-        display: flex;
-        flex-direction: column;
-    }
-
-    .fm-header-slim { padding: 10px 15px !important; }
-
-    .fm-nav-tabs {
-        justify-content: space-around !important;
-        padding: 0 !important;
-    }
-
-    .fm-tab-link {
-        flex: 1;
-        text-align: center;
-        font-size: 0.8rem !important;
-    }
-
-    /* 5. Chatt-fixen: Låser input längst ner */
-    .fm-viewport {
-        flex: 1;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .fm-pane.active {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-        padding: 15px 10px !important;
-    }
-
-    .fm-chat-wrapper {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        border-radius: 8px !important;
-    }
-
-    .fm-chat-feed {
-        flex: 1;
-        padding: 10px !important;
-    }
-
-    .fm-chat-input-area {
-        position: sticky;
-        bottom: 0;
-        background: #fff;
-        padding: 12px 10px calc(12px + env(safe-area-inset-bottom)) 10px !important;
-        box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
-    }
-
-    /* Bubblor på mobil */
-    .fm-msg-row { max-width: 92% !important; }
-    .fm-msg-bubble { padding: 8px 10px !important; font-size: 0.8rem !important; }
-    
-    /* Åtgärda-knappen på mobil */
-    .btn-resolve-note {
-        padding: 6px 12px !important;
-        font-size: 0.75rem !important;
-    }
+/* 1. FLIKARNA (Husbil, Andrea etc.) */
+.unit-tabs {
+    display: flex !important;
+    gap: 8px !important;
+    padding: 10px 15px !important;
+    background: #fdfcfb;
+    border-bottom: 1px solid #eee;
+    overflow-x: auto !important;
+    /* Scrolla i sidled om det är många vagnar */
+    -webkit-overflow-scrolling: touch;
 }
 
+.unit-tab {
+    padding: 10px 18px !important;
+    font-size: 0.85rem !important;
+    border-radius: 12px !important;
+    white-space: nowrap;
+    /* Hindrar texten från att brytas */
+    border: 1px solid #eee !important;
+    background: #fff !important;
+    color: #666 !important;
+}
+
+.unit-tab.active {
+    background: var(--fog-brown) !important;
+    color: #fff !important;
+    border-color: var(--fog-brown) !important;
+    box-shadow: 0 4px 10px rgba(92, 64, 51, 0.2);
+}
+
+/* 2. TITEL & VÄLJ ALLA */
+.checklist-header-flex {
+    padding: 15px 20px !important;
+    margin-bottom: 0 !important;
+}
+
+.checklist-header-flex h4 {
+    font-size: 1.3rem !important;
+    font-weight: 850 !important;
+}
+
+.btn-select-all {
+    padding: 8px 14px !important;
+    font-size: 0.7rem !important;
+    border-radius: 10px !important;
+}
+
+/* 3. LIST-LAYOUT (Grupper & Items) */
+.inner-list-container {
+    padding: 0 15px 20px 15px !important;
+}
+
+.list-group-header {
+    margin-top: 15px !important;
+    padding: 14px 18px !important;
+    border-radius: 12px !important;
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+}
+
+.form-check-item {
+    padding: 18px 15px !important;
+    /* Rejäla klickytor för fingrar */
+    margin-top: 5px;
+    border-radius: 12px;
+    border-bottom: 1px solid #f5f5f5 !important;
+    font-size: 0.95rem !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.form-check-item i {
+    font-size: 1.4rem !important;
+    /* Större checkbox-ikon */
+    color: #ddd;
+}
+
+.form-check-item.checked i {
+    color: #2ecc71 !important;
+}
+
+/* 4. FOOTER-KNAPPARNA (Slutför, Avbryt, Radera) */
+.form-footer {
+    flex-direction: column !important;
+    /* Stapla knapparna vertikalt på mobilen */
+    gap: 12px !important;
+    padding: 20px !important;
+    padding-bottom: 110px !important;
+    /* Extra marginal för att inte krocka med Bottom Bar */
+    background: #fff;
+}
+
+/* Behållaren för Avbryt och Slutför */
+.form-footer>div:last-child {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 10px !important;
+}
+
+.btn-primary-modern,
+.btn-secondary-modern {
+    width: 100% !important;
+    height: 55px !important;
+    justify-content: center !important;
+    border-radius: 14px !important;
+    font-size: 1rem !important;
+}
+
+.btn-secondary-modern {
+    background: #f5f5f5 !important;
+    color: #666 !important;
+}
+
+/* Radera-knappen längst ner, diskret men tydlig */
+.btn-delete-main {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 10px !important;
+    font-size: 0.8rem !important;
+    color: var(--fog-red) !important;
+    opacity: 0.8;
+}
+
+/* 1. FIXA RUBRIK-KROCKEN */
+.panel-header {
+    flex-direction: column !important;
+    /* Stapla titel och ändra-länk vertikalt */
+    align-items: flex-start !important;
+    padding: 20px 20px 10px 20px !important;
+    gap: 8px !important;
+}
+
+.btn-edit-details {
+    font-size: 0.8rem !important;
+    padding: 4px 0 !important;
+    margin-left: 35px;
+    /* Linjerar texten med titeln efter ikonen */
+}
+
+/* ==========================================================================
+   PACKLISTA - GÖRA PLOCKLISTAN MER KOMPAKT ÄN OVAN KOD
+   ========================================================================== */
+
+/* 1. ELIMINERA ALL LUFT PÅ SIDORNA */
+.inner-list-container {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+}
+
+/* 2. STEG-INDIKATOR & HEADER (Matcha Steg 1) */
+.checklist-header-flex {
+    padding: 15px 15px 5px 15px !important;
+    background: #fff;
+}
+
+.checklist-header-flex h4 {
+    font-size: 1.2rem !important;
+    color: var(--fog-brown) !important;
+    font-weight: 800 !important;
+}
+
+/* 3. GRUPPRUBRIKER (T.ex. Dag 1 - Lager) - Gör dem superkompakta */
+.list-group-header {
+    margin: 0 !important;
+    padding: 5px 5px !important;
+    background: #f8f9fa !important;
+    /* Ljusgrå system-bakgrund */
+    color: #666 !important;
+    font-size: 0.75rem !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+    border-radius: 0 !important;
+}
+
+/* 4. PLOCKRADER - MAXIMAL EFFEKTIVITET */
+.form-check-item {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 5px 5px !important;
+    /* Minskad höjd för att se fler rader */
+    border-radius: 0 !important;
+    border-bottom: 1px solid #f0f0f0 !important;
+    background: #fff !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    box-sizing: border-box !important;
+}
+
+/* Texten i raden */
+.form-check-item span {
+    font-size: 0.95rem !important;
+    font-weight: 500 !important;
+    color: #333;
+    flex: 1;
+    line-height: 1.2;
+}
+
+/* Checkboxen - Matcha Steg 1:s rena stil */
+.form-check-item i {
+    font-size: 1.5rem !important;
+    margin-left: 12px;
+    color: #ddd;
+    flex-shrink: 0;
+}
+
+/* Markerat tillstånd - Snyggt och diskret */
+.form-check-item.checked {
+    background-color: #f8fff9 !important;
+}
+
+.form-check-item.checked span {
+    color: #2ecc71 !important;
+    font-weight: 600 !important;
+}
+
+.form-check-item.checked i {
+    color: #2ecc71 !important;
+}
+
+/* 5. ENHETSTABBARNA (Husbil, Andrea etc) */
+.unit-tabs {
+    padding: 8px 10px !important;
+    gap: 6px !important;
+    border-bottom: 2px solid #eee;
+}
+
+.unit-tab {
+    padding: 6px 14px !important;
+    font-size: 0.8rem !important;
+    border-radius: 8px !important;
+}
+
+/* 6. ÄNDRA EVENTDETALJER-LÄNKEN */
+.btn-edit-details {
+    margin-left: 0 !important;
+    color: var(--fog-red) !important;
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+/* ==========================================================================
+   KALENDER - HORISNOTELL FILTERBAR
+   ========================================================================== */
+
+/* 1. ÅTERSTÄLL HORISONTELL FILTERBAR */
+.calendar-filter-bar {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    /* Förhindrar radbrytning */
+    overflow-x: auto !important;
+    padding: 12px !important;
+    gap: 8px !important;
+    -webkit-overflow-scrolling: touch;
+}
+
+.filter-btn {
+    flex: 0 0 auto !important;
+}
+
+.filter-separator {
+    display: none !important;
+}
+
+
+/* ==========================================================================
+   KALENDER - PREMIUM KORTVY FÖR MOBIL
+   ========================================================================== */
+
+#calendar-container.mobile-card-view {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+/* Vecko-navigering i toppen */
+.mobile-nav-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: #fff;
+    margin-bottom: 10px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+.mobile-nav-header span {
+    font-weight: 850;
+    color: var(--fog-brown);
+}
+
+.mobile-nav-header button {
+    background: var(--fog-brown);
+    color: #fff;
+    border: none;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+}
+
+/* Dag-kortet */
+.day-card {
+    margin-bottom: 15px;
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.day-card-header {
+    padding: 10px 15px;
+    background: #fcfaf8;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #999;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.day-card.has-events .day-card-header {
+    color: var(--fog-brown);
+    background: rgba(92, 64, 51, 0.05);
+}
+
+/* Inuti varje uppdragskort */
+.mobile-event-card {
+    padding: 15px;
+    border-bottom: 1px solid #f5f5f5;
+    background: #fff;
+}
+
+.mobile-event-card:last-child {
+    border-bottom: none;
+}
+
+.m-event-top {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.m-event-area {
+    font-size: 0.6rem;
+    font-weight: 900;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #fff;
+}
+
+.m-event-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.m-event-meta {
+    display: flex;
+    gap: 15px;
+    font-size: 0.75rem;
+    color: #777;
+}
+
+.status-ok {
+    color: #2ecc71;
+}
+
+.status-wait {
+    color: #f1c40f;
+}
+
+.m-empty-day {
+    padding: 20px;
+    text-align: center;
+    font-size: 0.8rem;
+    color: #ccc;
+    font-style: italic;
+}
+
+/* 1. STRIPS FÖR EJ KLARA UPPDRAG (Liknar datorvyn) */
+.m-event-incomplete {
+    background-image: repeating-linear-gradient(45deg,
+            #ffffff,
+            #ffffff 10px,
+            #f9f9f9 10px,
+            #f9f9f9 20px) !important;
+    border-left: 4px solid #f1c40f !important;
+    /* Gul varningskant */
+}
+
+/* 2. BADGES & INDIKATORER */
+.m-badge-group {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.m-event-badge {
+    font-size: 0.55rem;
+    font-weight: 900;
+    padding: 2px 5px;
+    border-radius: 4px;
+    color: #fff;
+    text-transform: uppercase;
+}
+
+.m-day-indicator {
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: #777;
+    background: #eee;
+    padding: 2px 5px;
+    border-radius: 4px;
+}
+
+/* 3. TYDLIGHET FÖR FLERDAGARSEVENT */
+.m-event-multi {
+    border-left: 4px solid var(--fog-brown);
+}
+
+.m-event-multi.m-event-incomplete {
+    /* Kombinerad stil om det är både flerdagars och ej klart */
+    border-left: 4px solid #f1c40f;
+}
+
+/* Justering av titel för bättre läsbarhet */
+.m-event-title {
+    margin-top: 5px;
+    font-size: 1.05rem;
+    line-height: 1.2;
+}
+
+/* Grön linje för färdiga kort */
+.m-event-ready {
+    border-left: 5px solid #2ecc71 !important;
+    background: #fff !important;
+    box-shadow: 0 2px 8px rgba(46, 204, 113, 0.1) !important;
+}
+
+/* Gul linje för ej klara (behåll strips från förra steget) */
+.m-event-incomplete {
+    border-left: 5px solid #f1c40f !important;
+}
+
+/* Indikator för flerdagars-koppling */
+.m-multi-label {
+    font-size: 0.55rem;
+    font-weight: 900;
+    background: #5c4033;
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    letter-spacing: 0.5px;
+}
+
+.m-multi-label i {
+    font-size: 0.5rem;
+}
+
+/* Gör korten lite mer kompakta vid behov */
+.mobile-event-card {
+    transition: transform 0.1s ease;
+}
+
+.mobile-event-card:active {
+    transform: scale(0.98);
+}
+
+/* ==========================================================================
+   FLEET-MODAL FÖR FORDON FLYTTAR TEKNISKDATA TILL TOPPEN OCH GÖR DET SNYGGARE
+   ========================================================================== */
+
+/* 1. POSITIONERING & BREDD */
+.fm-col-right-compact {
+    order: -1 !important;
+    padding: 0 15px !important;
+    width: 100% !important;
+}
+
+/* 2. DASHBOARD GRID (UTAN BOXAR) */
+.fm-data-grid-minimal {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 15px 10px !important;
+    /* Mer luft mellan rader, mindre mellan kolumner */
+    background: transparent !important;
+    border: none !important;
+    padding: 10px 0 !important;
+}
+
+/* 3. RENARE FÄLT UTAN STRECK UNDER VARJE ORD */
+.fm-input-group-minimal {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Snyggare etiketter (Labels) */
+.fm-input-group-minimal label {
+    font-size: 0.6rem !important;
+    color: #888 !important;
+    /* Mörkare grå för läsbarhet än i bilden */
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    margin-bottom: 2px !important;
+}
+
+/* Själva textvärdet (Inputs) */
+.fm-input-group-minimal input {
+    font-size: 0.95rem !important;
+    font-weight: 800 !important;
+    color: var(--fog-brown) !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    height: auto !important;
+}
+
+/* 4. STATUS-INDIKERING (Endast för fält med varning) */
+/* Istället för att alla har streck, visar vi det bara vid problem */
+.warning-active.fm-input-group-minimal,
+.danger-active.fm-input-group-minimal {
+    border-bottom: 2px solid transparent !important;
+    padding-bottom: 2px !important;
+}
+
+/* 5. MINSKA LUFT TILL SYSTEMSTATUS */
+.fm-col-right-compact .fm-sub-section {
+    margin-bottom: 0px !important;
+    /* Trycker upp nästa sektion */
+}
+
+/* ==========================================================================
+   FLEET-MODAL CHAT-VY FÖR MOBIL
+   ========================================================================== */
+   
+/* 1. Tvinga modalen att inte växa utanför skärmen */
+.fm-premium-container {
+    height: 100dvh !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/* 2. Låt meddelandena ta upp allt utrymme */
+#tab-journal.active {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    padding: 0 !important;
+}
+
+.fm-chat-wrapper {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+}
+
+.fm-chat-feed {
+    flex: 1 !important;
+    overflow-y: auto !important;
+}
+
+/* 3. Lås fältet i botten med minimal luft */
+.fm-chat-input-area {
+    flex-shrink: 0 !important;
+    padding: 10px 15px !important;
+    /* Minskad padding för att få bort "luften" */
+    background: #fff !important;
+    border-top: 1px solid #eee !important;
+}
