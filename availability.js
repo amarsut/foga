@@ -233,7 +233,7 @@ const getInitials = (name) => name ? name.split(' ').map(n => n[0]).join('').toU
 export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overview', allEvents = []) {
     const modal = document.getElementById('unit-modal');
     const body = document.getElementById('modal-body');
-    if (!modal || !body) return; // Säkerhetskontroll för att modalen ska finnas
+    if (!modal || !body) return;
 
     const hStatus = unit.healthStatus || 'ok';
     const notes = unit.notes || [];
@@ -250,7 +250,7 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
     const nextInsp = unit.nextInspection ? new Date(unit.nextInspection) : null;
     const isInspExpired = nextInsp && now > nextInsp;
 
-    // 3. Status-konfiguration för headern
+    // 3. Status-konfiguration för headern (Alltid synlig)
     const statusCfg = {
         ok: { cl: 'ok', icon: 'fa-check-circle', txt: 'Driftklar', color: '#2ecc71', bg: '#e6f9ed' },
         warn: { cl: 'warn', icon: 'fa-exclamation-triangle', txt: 'Brist', color: '#f1c40f', bg: '#fff9e6' },
@@ -261,8 +261,21 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
     // Hjälpfunktion för Teams-avatarer
     const getInitials = (name) => name ? name.split(' ').map(n => n[0]).join('').toUpperCase() : '?';
 
+    // 4. GENERERA 5 SENASTE LOGGAR MED TEAMS-STIL (Avatar + Bubbla)
+    const recentNotesHtml = notes.length > 0 ? [...notes].reverse().slice(0, 5).map(n => `
+        <div class="mini-teams-row" style="display:flex; gap:10px; margin-bottom:10px;">
+            <div class="teams-avatar" style="width:28px; height:28px; border-radius:50%; background:#d1d1d1; color:#444; display:flex; align-items:center; justify-content:center; font-size:0.65rem; font-weight:700; flex-shrink:0;">${getInitials(n.author)}</div>
+            <div style="display:flex; flex-direction:column;">
+                <div style="font-size:0.6rem; color:#616161; margin-bottom:2px;"><strong>${n.author}</strong> <span>${n.date}</span></div>
+                <div class="teams-bubble" style="background:${n.category === 'brist' ? '#fff8f8' : 'white'}; padding:8px 12px; border-radius:0 8px 8px 8px; border:1px solid #e1dfdd; border-left: ${n.category === 'brist' ? '3px solid var(--fog-red)' : '1px solid #e1dfdd'};">
+                    <p style="margin:0; font-size:0.8rem; line-height:1.4;">${n.text}</p>
+                </div>
+            </div>
+        </div>
+    `).join('') : '<p style="color:#ccc; font-size:0.8rem; font-style:italic; padding:10px;">Inga anteckningar i loggen.</p>';
+
     body.innerHTML = `
-        <div class="bento-modal">
+        <div class="bento-modal" style="width: 820px;">
             <header class="modal-header-vision" style="padding:15px 20px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
                 <div style="display:flex; align-items:center; gap:10px;">
                     <i class="fas ${type === 'car' ? 'fa-truck-pickup' : 'fa-coffee'}" style="font-size: 1.2rem; color: var(--fog-brown)"></i>
@@ -282,27 +295,21 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
             </nav>
             
             <div class="fm-viewport" style="flex:1; overflow:hidden;">
-                <div id="tab-overview" class="fm-pane ${activeTab === 'tab-overview' ? 'active' : ''}">
-                    <div class="bento-grid-modal">
+                <div id="tab-overview" class="fm-pane ${activeTab === 'tab-overview' ? 'active' : ''}" style="display:${activeTab === 'tab-overview' ? 'block' : 'none'};">
+                    <div class="bento-grid-modal" style="display:grid; grid-template-columns: 1fr 300px; gap:15px; padding:15px;">
+                        
                         <div style="display:flex; flex-direction:column; gap:15px;">
-                            <div class="bento-box">
-                                <span class="bento-title">Senaste Loggar</span>
-                                <div style="margin-top:5px;">
-                                    ${notes.length > 0 ? [...notes].reverse().slice(0, 5).map(n => `
-                                        <div class="bubble-vision ${n.category}" style="border-left:3px solid ${n.category === 'brist' ? '#e30613' : '#0078d4'}; padding:8px; background:#f9f9f9; border-radius:8px; margin-bottom:5px;">
-                                            <div style="font-size:0.6rem; opacity:0.5; font-weight:700;">${n.author} • ${n.date}</div>
-                                            <div style="font-size:0.75rem;">${n.text}</div>
-                                        </div>
-                                    `).join('') : '<p style="color:#ccc; font-size:0.75rem; font-style:italic;">Inga anteckningar i loggen.</p>'}
-                                </div>
+                            <div class="bento-box" style="background:white; padding:15px; border-radius:18px; border:1px solid #eee;">
+                                <span class="bento-title" style="font-size:0.65rem; font-weight:800; color:#bbb; text-transform:uppercase; margin-bottom:10px; display:block;">Senaste Loggar</span>
+                                <div style="margin-top:5px;">${recentNotesHtml}</div>
                             </div>
                             
-                            <div class="bento-box">
-                                <span class="bento-title">Bilder & Dokumentation</span>
-                                ${images.length > 0 ? `<div class="image-grid-overview">${images.map(url => `<div class="overview-img-wrapper"><img src="${url}"></div>`).join('')}</div>` : `
-                                    <div class="empty-images-placeholder">
-                                        <i class="fas fa-camera-retro"></i>
-                                        <p>Inga bilder bifogade</p>
+                            <div class="bento-box" style="background:white; padding:15px; border-radius:18px; border:1px solid #eee;">
+                                <span class="bento-title" style="font-size:0.65rem; font-weight:800; color:#bbb; text-transform:uppercase; margin-bottom:10px; display:block;">Bilder & Dokumentation</span>
+                                ${images.length > 0 ? `<div class="image-grid-overview" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(60px,1fr)); gap:8px;">${images.map(url => `<div class="overview-img-wrapper" style="aspect-ratio:1; border-radius:8px; overflow:hidden;"><img src="${url}" style="width:100%; height:100%; object-fit:cover;"></div>`).join('')}</div>` : `
+                                    <div class="empty-images-placeholder" style="padding:20px; border:2px dashed #eee; border-radius:15px; text-align:center; color:#ccc;">
+                                        <i class="fas fa-camera-retro" style="font-size:1.5rem; display:block; margin-bottom:5px;"></i>
+                                        <p style="font-size:0.7rem; font-weight:700; margin:0;">Inga bilder bifogade</p>
                                     </div>
                                 `}
                                 <label style="display:block; text-align:center; margin-top:15px; font-size:0.65rem; color:var(--fog-brown); cursor:pointer; font-weight:850;">
@@ -313,8 +320,8 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
                         </div>
 
                         <div style="display:flex; flex-direction:column; gap:15px;">
-                            <div class="bento-box">
-                                <span class="bento-title">Besiktning & Service</span>
+                            <div class="bento-box" style="background:white; padding:15px; border-radius:18px; border:1px solid #eee;">
+                                <span class="bento-title" style="font-size:0.65rem; font-weight:800; color:#bbb; text-transform:uppercase; margin-bottom:10px; display:block;">Besiktning & Service</span>
                                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                                     <div>
                                         <label style="font-size:0.5rem; font-weight:800; color:#bbb;">SERVICE</label>
@@ -330,24 +337,24 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
                                 <button onclick="window.saveVehicleData('${unit.id}', '${type}')" style="width:100%; margin-top:12px; background:var(--fog-brown); color:white; border:none; padding:8px; border-radius:6px; cursor:pointer; font-weight:700; font-size:0.75rem;">Spara Ändringar</button>
                             </div>
 
-                            <div class="usage-tile-vision">
-                                <div class="percent" style="font-size:1.6rem; font-weight:900;">${usagePercent}%</div>
-                                <div class="label" style="font-size:0.65rem; opacity:0.8; font-weight:700; text-transform:uppercase;">Bokad ${activeDays} av 30 dagar</div>
+                            <div class="usage-tile-vision" style="background:var(--fog-brown); color:white; padding:12px; border-radius:18px; display:flex; flex-direction:column; align-items:center; text-align:center;">
+                                <div class="percent" style="font-size:1.4rem; font-weight:900;">${usagePercent}%</div>
+                                <div class="label" style="font-size:0.6rem; opacity:0.8; font-weight:700; text-transform:uppercase;">Bokad ${activeDays} av 30 dagar</div>
                             </div>
 
-                            <div class="bento-box" style="padding:10px;">
-                                <span class="bento-title">Systemstatus</span>
+                            <div class="bento-box" style="background:white; padding:10px; border-radius:18px; border:1px solid #eee;">
+                                <span class="bento-title" style="font-size:0.65rem; font-weight:800; color:#bbb; text-transform:uppercase; margin-bottom:10px; display:block;">Systemstatus</span>
                                 <div style="display:flex; gap:4px;">
-                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'ok')" style="flex:1; padding:8px 0; border-radius:10px; border:1px solid #eee; font-weight:850; font-size:0.6rem; background:${hStatus === 'ok' ? '#2ecc71' : 'white'}; color:${hStatus === 'ok' ? 'white' : '#666'};">OK</button>
-                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'warn')" style="flex:1; padding:8px 0; border-radius:10px; border:1px solid #eee; font-weight:850; font-size:0.6rem; background:${hStatus === 'warn' ? '#f1c40f' : 'white'}; color:${hStatus === 'warn' ? 'white' : '#666'};">BRIST</button>
-                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'danger')" style="flex:1; padding:8px 0; border-radius:10px; border:1px solid #eee; font-weight:850; font-size:0.6rem; background:${hStatus === 'danger' ? '#e30613' : 'white'}; color:${hStatus === 'danger' ? 'white' : '#666'};">FÖRBUD</button>
+                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'ok')" style="flex:1; padding:7px 0; border-radius:8px; border:1px solid #eee; font-weight:850; font-size:0.6rem; background:${hStatus === 'ok' ? '#2ecc71' : 'white'}; color:${hStatus === 'ok' ? 'white' : '#666'};">OK</button>
+                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'warn')" style="flex:1; padding:7px 0; border-radius:8px; border:1px solid #eee; font-weight:850; font-size:0.6rem; background:${hStatus === 'warn' ? '#f1c40f' : 'white'}; color:${hStatus === 'warn' ? 'white' : '#666'};">BRIST</button>
+                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'danger')" style="flex:1; padding:7px 0; border-radius:8px; border:1px solid #eee; font-weight:850; font-size:0.6rem; background:${hStatus === 'danger' ? '#e30613' : 'white'}; color:${hStatus === 'danger' ? 'white' : '#666'};">FÖRBUD</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div id="tab-journal" class="fm-pane ${activeTab === 'tab-journal' ? 'active' : ''}">
+                <div id="tab-journal" class="fm-pane ${activeTab === 'tab-journal' ? 'active' : ''}" style="display:${activeTab === 'tab-journal' ? 'flex' : 'none'}; flex-direction:column; height:100%;">
                     <div id="chat-feed-v3" style="flex:1; overflow-y:auto; padding:20px; background:#f5f5f5; display:flex; flex-direction:column; gap:15px;">
                         ${notes.map(n => {
                             const isBrist = n.category === 'brist';
@@ -361,7 +368,7 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
                                             <div>
                                                 <p style="margin:0; font-size:0.9rem; line-height:1.4;">${n.text}</p>
                                                 ${isBrist && !isResolved ? `
-                                                    <button class="teams-res-btn" onclick="window.resolveFleetNote('${unit.id}', '${type}', '${n.id}')" style="margin-top:10px; background:#2ecc71; color:white; border:none; padding:4px 10px; border-radius:4px; font-size:0.7rem; cursor:pointer; font-weight:700;">Åtgärda</button>
+                                                    <button onclick="window.resolveFleetNote('${unit.id}', '${type}', '${n.id}')" style="margin-top:10px; background:#2ecc71; color:white; border:none; padding:4px 10px; border-radius:4px; font-size:0.7rem; cursor:pointer; font-weight:700;">Åtgärda</button>
                                                 ` : ''}
                                             </div>
                                             <div style="display:flex; align-items:center; gap:8px; margin-left:15px;">
@@ -375,11 +382,11 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
                         }).join('')}
                     </div>
                     <div class="teams-input-container" style="padding:15px; background:white; border-top:1px solid #eee; display:flex; flex-direction:column; gap:10px;">
-                        <input type="text" id="chat-text-input" placeholder="Skriv ett meddelande" style="border:none; outline:none; font-size:0.95rem;" onkeydown="if(event.key==='Enter') window.saveFleetNote('${unit.id}', '${type}')">
+                        <input type="text" id="chat-text-input" placeholder="Skriv ett meddelande" style="border:none; outline:none; font-size:0.95rem; width:100%;" onkeydown="if(event.key==='Enter') window.saveFleetNote('${unit.id}', '${type}')">
                         <div style="display:flex; justify-content:space-between; align-items:center;">
                             <div style="display:flex; gap:15px; color:#616161; font-size:1.1rem;">
                                 <i class="fas fa-paperclip"></i>
-                                <select id="chat-cat-select" style="border:none; background:none; font-size:0.75rem; font-weight:700; cursor:pointer;">
+                                <select id="chat-cat-select" style="border:none; background:none; font-size:0.75rem; font-weight:700; cursor:pointer; outline:none;">
                                     <option value="info">INFO</option>
                                     <option value="brist">BRIST</option>
                                 </select>
@@ -393,12 +400,13 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
     `;
 
     modal.style.display = 'flex';
-    // Automatisk scroll till botten i journalen
+    
+    // Säkerställ scroll till botten i journalen
     if (activeTab === 'tab-journal') {
         setTimeout(() => {
             const feed = document.getElementById('chat-feed-v3');
             if (feed) feed.scrollTop = feed.scrollHeight;
-        }, 100);
+        }, 150);
     }
 }
 
