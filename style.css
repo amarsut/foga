@@ -2108,3 +2108,81 @@ TEST FLEET MODAL
 }
 .usage-card-vision .usage-val { font-size: 1.8rem; font-weight: 900; }
 .usage-card-vision .usage-label { font-size: 0.65rem; opacity: 0.7; font-weight: 700; }
+
+/* --- FIXAD BENTO MODAL (VERSION PRO) --- */
+.bento-modal {
+    background: #ffffff;
+    border-radius: 24px;
+    width: 900px; /* Perfekt bredd */
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 25px 70px rgba(0,0,0,0.3);
+}
+
+.modal-header-vision {
+    padding: 15px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.header-right-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Avstånd mellan pulserande knapp och X */
+}
+
+/* Fixar tomrummet: Vänster sida fyller ut (1fr), höger är fast (320px) */
+.bento-grid-modal {
+    display: grid;
+    grid-template-columns: 1fr 320px; 
+    gap: 20px;
+    padding: 20px;
+    background: #fbfcfd;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.bento-box {
+    background: white;
+    border-radius: 18px;
+    padding: 20px;
+    border: 1px solid #eee;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+}
+
+/* Den pulserande Körförbuds-badgen */
+.pulse-danger-badge {
+    background: #fff5f5;
+    color: var(--fog-red);
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-weight: 900;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid rgba(227, 6, 19, 0.2);
+    animation: badgePulse 2s infinite;
+}
+
+@keyframes badgePulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(227, 6, 19, 0.4); }
+    70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(227, 6, 19, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(227, 6, 19, 0); }
+}
+
+/* Det bruna användningskortet - nu mer kompakt */
+.usage-tile-vision {
+    background: var(--fog-brown);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
