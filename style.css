@@ -2243,3 +2243,42 @@ TEST FLEET MODAL
     color: #ccc;
     font-size: 0.75rem;
 }
+
+/* --- FIXA TAB-VÄXLING (Viktigt för journalen) --- */
+.fm-pane {
+    display: none !important; /* Dölj alla som standard */
+    flex-direction: column;
+    height: 100%;
+}
+.fm-pane.active {
+    display: flex !important; /* Visa endast den aktiva */
+}
+
+/* --- KOMPAKT ANVÄNDNINGSBOX (Mindre och diskret) --- */
+.usage-tile-vision {
+    background: var(--fog-brown);
+    color: white;
+    padding: 12px 15px; /* Mycket mindre padding */
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+.usage-tile-vision .percent { font-size: 1.4rem; font-weight: 900; }
+.usage-tile-vision .label { font-size: 0.6rem; opacity: 0.8; font-weight: 700; text-transform: uppercase; }
+
+/* --- BILDGALLERI --- */
+.image-grid-overview {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 8px;
+    margin-top: 10px;
+}
+.overview-img-wrapper {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #eee;
+}
+.overview-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
