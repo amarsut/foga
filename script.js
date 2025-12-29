@@ -201,7 +201,10 @@ window.showView = (view, preDate = null) => {
     currentView = view;
     selectedStartDate = preDate;
 
-    // --- NYTT: STÄNG SIDEBAR PÅ MOBIL ---
+    // 1. ÅTERSTÄLL ALLTID HEADERN (Fixar försvunnen titel)
+    toggleMainHeader(true);
+
+    // 2. STÄNG SIDEBAR PÅ MOBIL
     if (window.innerWidth <= 768) {
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebar-overlay');
@@ -211,22 +214,24 @@ window.showView = (view, preDate = null) => {
             overlay.style.display = 'none';
         }
     }
-    // ------------------------------------
 
-    if (view === 'create' && !editingAssignmentId) {
-        window.pendingAssignmentData = null;
-        window.unitChecklists = {};
-    }
-
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    const activeNav = document.querySelector(`[data-view="${view === 'dashboard' ? 'overview' : view}"]`);
-    if (activeNav) activeNav.classList.add('active');
-
+    // 3. KORREKTA TITLAR (Fixar "Fleet" -> "Statistik")
     const title = document.getElementById('view-title');
-    title.innerText = view === 'dashboard' ? "Dashboard" :
-        view === 'map' ? "Karta & Position" :
-            view === 'create' ? "Skapa Nytt Uppdrag" :
-                view === 'calendar' ? "Kalender" : "Fleet";
+    const titles = {
+        'dashboard': 'Dashboard',
+        'calendar': 'Kalender',
+        'create': 'Skapa Nytt Uppdrag',
+        'availability': 'Fleet & Fordon',
+        'stats': 'Statistik & Analys', // Korrekt titel
+        'tv': 'Lager-TV',
+        'settings': 'Inställningar'
+    };
+    title.innerText = titles[view] || "Fogarolli";
+
+    // 4. HANTERA AKTIV NAVIGERING
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const activeNav = document.querySelector(`[data-view="${view}"]`);
+    if (activeNav) activeNav.classList.add('active');
 
     render();
 };
@@ -258,49 +263,45 @@ function renderDashboard(area) {
 }
 
 function renderMissionCard(a) {
+    // Fixa "undefined" genom att titta på rätt fält och hantera arrayer
+    const carVal = a.car || 'Ingen bil';
+    const trailerVal = a.trailer || 'Inget släp';
+    const cartsVal = (a.carts && a.carts.length > 0) ? a.carts.join(', ') : 'Inga vagnar';
+    const isPackar = a.step === 'Packar';
+
     return `
         <div class="mission-card">
-            <div class="card-header" onclick="toggleExpand('${a.id}', ${!a.expanded})">
-                <div class="unit-info"><span>Företagsbil</span><strong>${a.car}</strong></div>
-                <div class="unit-info"><span>Släp</span><strong>${a.trailer}</strong></div>
-                <div class="unit-info"><span>Kaffevagn</span><strong>${a.cart}</strong></div>
-                <div class="event-info">
-                    <strong>${a.event}</strong><br>
-                    <small>${a.location} | <i class="far fa-calendar-alt"></i> ${a.startDate} — ${a.endDate}</small>
+            <div class="dashboard-mission-grid" onclick="toggleExpand('${a.id}', ${!a.expanded})">
+                <div class="grid-col">
+                    <label>Företagsbil</label>
+                    <span>${carVal}</span>
                 </div>
-                <div><span class="status-tag bg-upptagen">${a.step || 'Packar'}</span></div>
-                <i class="fas fa-chevron-${a.expanded ? 'up' : 'down'}"></i>
+                <div class="grid-col">
+                    <label>Släp</label>
+                    <span>${trailerVal}</span>
+                </div>
+                <div class="grid-col">
+                    <label>Kaffevagn</label>
+                    <span>${cartsVal}</span>
+                </div>
+                <div class="grid-col event-info-col">
+                    <strong>${a.event}</strong>
+                    <small>${a.businessArea || 'Event'} | ${a.startDate}</small>
+                </div>
+                <div class="grid-col" style="align-items: center;">
+                    <span class="status-tag ${isPackar ? 'bg-upptagen' : 'bg-ledig'}">
+                        ${a.step || 'Packar'}
+                    </span>
+                </div>
+                <div class="grid-col" style="align-items: flex-end;">
+                    <i class="fas fa-chevron-${a.expanded ? 'up' : 'down'}" style="color:#ccc; font-size:0.8rem;"></i>
+                </div>
             </div>
             ${a.expanded ? `
                 <div class="expanded-content">
-                    <div class="list-section">
-                        <h4 style="color:var(--fog-red); margin-bottom:15px; font-size:0.8rem; text-transform:uppercase;"><i class="fas fa-truck"></i> Packlista Bil</h4>
-                        ${a.carItems.map((item, i) => `
-                            <div class="check-item ${item.done ? 'done' : ''}" onclick="updateCheck('${a.id}', 'carItems', ${i})">
-                                <span><i class="${item.done ? 'fas fa-check-circle' : 'far fa-circle'}"></i> ${item.name}</span>
-                            </div>
-                        `).join('')}
-                    </div>
-
-                    <div class="list-section">
-                        <h4 style="color:var(--fog-red); margin-bottom:15px; font-size:0.8rem; text-transform:uppercase;"><i class="fas fa-coffee"></i> Plocklista Vagn</h4>
-                        ${a.cartItems ? a.cartItems.map((item, i) => `
-                            <div class="check-item ${item.done ? 'done' : ''}" onclick="updateCheck('${a.id}', 'cartItems', ${i})">
-                                <span><i class="${item.done ? 'fas fa-check-circle' : 'far fa-circle'}"></i> ${item.name}</span>
-                            </div>
-                        `).join('') : '<p>Ingen lista vald</p>'}
-                    </div>
-
-                    <div class="list-section">
-                        <h4 style="color:var(--fog-red); margin-bottom:15px; font-size:0.8rem; text-transform:uppercase;"><i class="fas fa-tasks"></i> Fas & Åtgärd</h4>
-                        <div style="display:flex; gap:10px; margin-top:10px;">
-                            <button onclick="deleteAssignment('${a.id}')" class="btn-delete-small">
-                                <i class="fas fa-trash-alt"></i> Radera
-                            </button>
-                            <button onclick="finishAssignment('${a.id}', '${a.car}', '${a.trailer}', '${a.carts}')" class="btn-finish">
-                                <i class="fas fa-check-double"></i> Avsluta
-                            </button>
-                        </div>
+                    <div style="padding: 10px 20px; border-top: 1px solid #f9f9f9; display: flex; gap: 20px;">
+                        <button onclick="deleteAssignment('${a.id}')" class="btn-delete-small">Radera</button>
+                        <button onclick="finishAssignment('${a.id}', '${a.car}', '${a.trailer}', '${a.carts}')" class="btn-finish">Avsluta Uppdrag</button>
                     </div>
                 </div>
             ` : ''}
@@ -842,3 +843,255 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('sidebar').classList.add('collapsed');
     }
 });
+
+
+// Globala variabler för att hålla koll på grafer
+let statsCharts = {};
+
+// Hjälpfunktion för att dölja/visa den vita huvudmenyn i TV-läge
+function toggleMainHeader(show) {
+    const header = document.querySelector('.top-header');
+    if (header) header.style.display = show ? 'flex' : 'none';
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent) mainContent.style.padding = show ? '25px' : '0';
+}
+
+window.renderStatsView = (area) => {
+    toggleMainHeader(true);
+    const totalMissions = assignments.length;
+    const completedMissions = assignments.filter(a => a.step === 'Klar').length;
+    const fleetFix = [...cars, ...trailers, ...carts].filter(u => u.healthStatus === 'danger' || u.healthStatus === 'warn').length;
+
+    area.innerHTML = `
+        <div class="stats-dashboard-compact">
+            <div class="stats-kpi-row">
+                <div class="kpi-box">
+                    <div class="kpi-icon"><i class="fas fa-star"></i></div>
+                    <div class="kpi-data">
+                        <span class="kpi-val">${window.mostUsedCart || 'Andrea'}</span>
+                        <span class="kpi-lab">Mest använd vagn</span>
+                    </div>
+                </div>
+                <div class="kpi-box">
+                    <div class="kpi-icon"><i class="fas fa-calendar-check"></i></div>
+                    <div class="kpi-data">
+                        <span class="kpi-val">${totalMissions}</span>
+                        <span class="kpi-lab">Totalt Uppdrag</span>
+                    </div>
+                </div>
+                <div class="kpi-box">
+                    <div class="kpi-icon"><i class="fas fa-check-double"></i></div>
+                    <div class="kpi-data">
+                        <span class="kpi-val">${completedMissions}</span>
+                        <span class="kpi-lab">Slutförda</span>
+                    </div>
+                </div>
+                <div class="kpi-box warning">
+                    <div class="kpi-icon"><i class="fas fa-tools"></i></div>
+                    <div class="kpi-data">
+                        <span class="kpi-val">${fleetFix}</span>
+                        <span class="kpi-lab">Fordon att åtgärda</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-main-grid">
+                <div class="chart-container-card">
+                    <h5>AFFÄRSOMRÅDEN</h5>
+                    <canvas id="chartArea"></canvas>
+                </div>
+                <div class="chart-container-card">
+                    <h5>FORDONSUTNYTTJANDE</h5>
+                    <canvas id="chartResources"></canvas>
+                </div>
+                <div class="chart-container-card">
+                    <h5>PACK-STATUS (TOTALT)</h5>
+                    <canvas id="chartPacking"></canvas>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Rita graferna efter att DOM har laddats
+    setTimeout(() => {
+        initStatsCharts();
+    }, 50);
+};
+
+function initStatsCharts() {
+    // Förstör gamla grafer om de finns
+    Object.values(statsCharts).forEach(chart => chart.destroy());
+
+    // 1. Affärsområden
+    const areaData = { 'Event': 0, 'Catering': 0, 'Street': 0, 'FPJ': 0 };
+    assignments.forEach(a => { if(areaData[a.businessArea] !== undefined) areaData[a.businessArea]++; });
+
+    statsCharts.area = new Chart(document.getElementById('chartArea'), {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(areaData),
+            datasets: [{
+                data: Object.values(areaData),
+                backgroundColor: ['#e30613', '#5c4033', '#2ecc71', '#f1c40f'],
+                borderWidth: 0
+            }]
+        },
+        options: { plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } }, cutout: '70%' }
+    });
+
+    // 2. Fordonsutnyttjande
+    const carUsage = {};
+    assignments.forEach(a => { carUsage[a.car] = (carUsage[a.car] || 0) + 1; });
+    const sortedCars = Object.entries(carUsage).sort((a,b) => b[1]-a[1]).slice(0, 5);
+
+    statsCharts.res = new Chart(document.getElementById('chartResources'), {
+        type: 'bar',
+        data: {
+            labels: sortedCars.map(c => c[0]),
+            datasets: [{ label: 'Uppdrag', data: sortedCars.map(c => c[1]), backgroundColor: '#5c4033', borderRadius: 5 }]
+        },
+        options: { scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }, plugins: { legend: { display: false } } }
+    });
+
+    // 3. Packstatus
+    const packStatus = { 'Klara': 0, 'Packas': 0 };
+    assignments.forEach(a => { a.step === 'Klar' ? packStatus['Klara']++ : packStatus['Packas']++; });
+
+    statsCharts.pack = new Chart(document.getElementById('chartPacking'), {
+        type: 'pie',
+        data: {
+            labels: Object.keys(packStatus),
+            datasets: [{ data: Object.values(packStatus), backgroundColor: ['#2ecc71', '#e30613'] }]
+        },
+        options: { plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } } }
+    });
+}
+
+// ==========================================
+// LAGER-TV MED TOGGLE OCH KOMPAKT DESIGN
+// ==========================================
+window.renderTVDashboard = (area) => {
+    toggleMainHeader(false); 
+    const now = new Date();
+    const isDarkMode = localStorage.getItem('tv-theme') === 'dark';
+
+    // Beräkna total dags-progress
+    const allItems = assignments.flatMap(a => (a.carItems || []).concat(a.cartItems || [])).filter(i => i.type === 'item');
+    const totalDone = allItems.filter(i => i.done).length;
+    const totalProgress = allItems.length > 0 ? Math.round((totalDone / allItems.length) * 100) : 0;
+
+    const upcoming = assignments
+        .sort((a, b) => a.startDate.localeCompare(b.startDate))
+        .slice(0, 6);
+
+    const fleetAlerts = [...cars, ...trailers, ...carts]
+        .filter(u => u.healthStatus === 'danger' || u.healthStatus === 'warn');
+
+    area.innerHTML = `
+        <div class="tv-screen ${isDarkMode ? 'dark-theme' : 'light-theme'}">
+            <div class="tv-header-glass">
+                <div class="tv-title-group">
+                    <div class="tv-weather-widget">
+                        <i class="fas fa-cloud-sun weather-icon"></i>
+                        <div class="weather-text">
+                            <span class="temp">2°C</span>
+                            <span class="desc">Eslöv | Molnigt</span>
+                        </div>
+                    </div>
+                    <h1>LOGISTIK-PLANERING</h1>
+                </div>
+                
+                <div class="tv-total-progress-box">
+                    <span class="label">TOTAL PACKSTATUS I DAG</span>
+                    <div class="total-bar-container">
+                        <div class="total-bar-fill" style="width: ${totalProgress}%"></div>
+                        <span class="total-percent">${totalProgress}%</span>
+                    </div>
+                </div>
+
+                <div class="tv-controls">
+                    <div class="tv-clock-modern">
+                        <span class="time">${now.toLocaleTimeString('sv-SE', {hour: '2-digit', minute:'2-digit'})}</span>
+                        <span class="date">${now.toLocaleDateString('sv-SE')}</span>
+                    </div>
+                    <button onclick="window.toggleTVTheme()" class="theme-toggle-modern">
+                        <i class="fas ${isDarkMode ? 'fa-sun' : 'fa-moon'}"></i>
+                    </button>
+                    <button onclick="window.showView('calendar')" class="tv-exit-modern"><i class="fas fa-times"></i></button>
+                </div>
+            </div>
+
+            <div class="tv-layout-grid">
+                <div class="tv-main-col">
+                    <h3 class="tv-section-label">KOMMANDE PACKLISTOR</h3>
+                    <div class="tv-mission-list">
+                        ${upcoming.map(a => {
+                            const total = (a.carItems || []).concat(a.cartItems || []).filter(i => i.type === 'item');
+                            const done = total.filter(i => i.done).length;
+                            const prog = total.length > 0 ? Math.round((done/total.length)*100) : 0;
+                            return `
+                                <div class="tv-card-glass ${prog === 100 ? 'complete' : ''}">
+                                    <div class="tv-card-info">
+                                        <span class="tv-event-title">${a.event}</span>
+                                        <span class="tv-event-meta"><i class="fas fa-truck"></i> ${a.car} | <i class="far fa-calendar"></i> ${a.startDate}</span>
+                                    </div>
+                                    <div class="tv-card-progress">
+                                        <div class="prog-label">${prog}%</div>
+                                        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:${prog}%"></div></div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+
+                <div class="tv-side-col">
+                    <div class="side-section">
+                        <h3 class="tv-section-label">FLEET STATUS</h3>
+                        <div class="tv-fleet-list">
+                            ${fleetAlerts.map(u => `
+                                <div class="tv-fleet-tag-row ${u.healthStatus}">
+                                    <span class="unit-name">${u.id}</span>
+                                    <span class="status-badge">${u.healthStatus === 'danger' ? 'KÖRFORBUD' : 'BRIST'}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div class="side-section info-section">
+                        <h3 class="tv-section-label">DAGENS NOTERING</h3>
+                        <div class="tv-info-card">
+                            <i class="fas fa-info-circle"></i>
+                            <p>Kom ihåg att ladda batterierna på vagn Andrea efter dagens pass. Inventering av bönor på fredag!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+};
+
+window.toggleTVTheme = () => {
+    const current = localStorage.getItem('tv-theme');
+    localStorage.setItem('tv-theme', current === 'dark' ? 'light' : 'dark');
+    renderTVDashboard(document.getElementById('content-area'));
+};
+
+function fleetAlertsCount() {
+    return [...cars, ...trailers, ...carts].filter(u => u.healthStatus === 'danger' || u.healthStatus === 'warn').length;
+}
+
+// Uppdatera din befintliga window.render-funktion i script.js
+const originalRender = window.render;
+window.render = () => {
+    const area = document.getElementById('content-area');
+    if (currentView === 'tv') {
+        renderTVDashboard(area);
+        return;
+    }
+    if (currentView === 'stats') {
+        renderStatsView(area);
+        return;
+    }
+    originalRender(); 
+};
