@@ -231,73 +231,175 @@ function renderFleetGroup(title, icon, items, type) {
 const getInitials = (name) => name ? name.split(' ').map(n => n[0]).join('').toUpperCase() : '?';
 
 export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overview', allEvents = []) {
-    // ... tidigare logik för hStatus, usage etc behålls ...
-    const notes = unit.notes || [];
+    const modal = document.getElementById('unit-modal');
+    const body = document.getElementById('modal-body');
+    if (!modal || !body) return; // Säkerhetskontroll för att modalen ska finnas
 
-    // Ersätt tab-journal HTML med denna:
-    const journalHtml = `
-        <div id="tab-journal" class="fm-pane ${activeTab === 'tab-journal' ? 'active' : ''}">
-            <div id="chat-feed-v3">
-                ${notes.map(n => {
-                    const isBrist = n.category === 'brist';
-                    const isResolved = n.resolved === true;
-                    return `
-                        <div class="teams-msg-row ${isBrist ? 'brist' : ''} ${isResolved ? 'resolved' : ''}">
-                            <div class="teams-avatar">${getInitials(n.author)}</div>
-                            <div class="teams-msg-content">
-                                <div class="teams-msg-header">
-                                    <strong>${n.author}</strong> <span>${n.date}</span>
+    const hStatus = unit.healthStatus || 'ok';
+    const notes = unit.notes || [];
+    const images = unit.attachedImages || [];
+    
+    // 1. Beräkna användning (Senaste 30 dagarna)
+    const thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(new Date().getDate() - 30);
+    const unitEvents = (allEvents || []).filter(e => e.car === unit.id || (e.carts && e.carts.includes(unit.id)));
+    const activeDays = unitEvents.filter(e => new Date(e.startDate) >= thirtyDaysAgo).length;
+    const usagePercent = Math.round((activeDays / 30) * 100);
+
+    // 2. Kontrollera besiktning för röda klockan
+    const now = new Date();
+    const nextInsp = unit.nextInspection ? new Date(unit.nextInspection) : null;
+    const isInspExpired = nextInsp && now > nextInsp;
+
+    // 3. Status-konfiguration för headern
+    const statusCfg = {
+        ok: { cl: 'ok', icon: 'fa-check-circle', txt: 'Driftklar', color: '#2ecc71', bg: '#e6f9ed' },
+        warn: { cl: 'warn', icon: 'fa-exclamation-triangle', txt: 'Brist', color: '#f1c40f', bg: '#fff9e6' },
+        danger: { cl: 'danger', icon: 'fa-radiation', txt: 'Körförbud', color: '#e30613', bg: '#fff5f5' }
+    };
+    const s = statusCfg[hStatus];
+
+    // Hjälpfunktion för Teams-avatarer
+    const getInitials = (name) => name ? name.split(' ').map(n => n[0]).join('').toUpperCase() : '?';
+
+    body.innerHTML = `
+        <div class="bento-modal">
+            <header class="modal-header-vision" style="padding:15px 20px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <i class="fas ${type === 'car' ? 'fa-truck-pickup' : 'fa-coffee'}" style="font-size: 1.2rem; color: var(--fog-brown)"></i>
+                    <h3 style="margin:0; font-weight:900; font-size:1.1rem;">${unit.id} <span style="background:#005a9e; color:white; padding:2px 6px; border-radius:4px; font-size:0.7rem; margin-left:6px;">${unit.regNo || '---'}</span></h3>
+                </div>
+                <div class="header-right-actions" style="display:flex; align-items:center; gap:12px;">
+                    <div class="status-pill-header" style="padding:5px 12px; border-radius:20px; font-weight:900; font-size:0.65rem; display:flex; align-items:center; gap:6px; background:${s.bg}; color:${s.color}; ${hStatus === 'danger' ? 'animation: badgePulse 2s infinite;' : ''}">
+                        <i class="fas ${s.icon}"></i> ${s.txt}
+                    </div>
+                    <button class="fm-close-icon" onclick="window.closeUnitModal()" style="border:none; background:#f5f5f5; width:30px; height:30px; border-radius:50%; cursor:pointer;"><i class="fas fa-times"></i></button>
+                </div>
+            </header>
+
+            <nav class="fm-nav-tabs" style="padding: 0 20px; border-bottom: 1px solid #eee; display:flex; gap:20px;">
+                <button class="fm-tab-link ${activeTab === 'tab-overview' ? 'active' : ''}" onclick="window.switchModalTab(this, 'tab-overview')">Översikt</button>
+                <button class="fm-tab-link ${activeTab === 'tab-journal' ? 'active' : ''}" onclick="window.switchModalTab(this, 'tab-journal')">Journal (${notes.length})</button>
+            </nav>
+            
+            <div class="fm-viewport" style="flex:1; overflow:hidden;">
+                <div id="tab-overview" class="fm-pane ${activeTab === 'tab-overview' ? 'active' : ''}">
+                    <div class="bento-grid-modal">
+                        <div style="display:flex; flex-direction:column; gap:15px;">
+                            <div class="bento-box">
+                                <span class="bento-title">Senaste Loggar</span>
+                                <div style="margin-top:5px;">
+                                    ${notes.length > 0 ? [...notes].reverse().slice(0, 5).map(n => `
+                                        <div class="bubble-vision ${n.category}" style="border-left:3px solid ${n.category === 'brist' ? '#e30613' : '#0078d4'}; padding:8px; background:#f9f9f9; border-radius:8px; margin-bottom:5px;">
+                                            <div style="font-size:0.6rem; opacity:0.5; font-weight:700;">${n.author} • ${n.date}</div>
+                                            <div style="font-size:0.75rem;">${n.text}</div>
+                                        </div>
+                                    `).join('') : '<p style="color:#ccc; font-size:0.75rem; font-style:italic;">Inga anteckningar i loggen.</p>'}
                                 </div>
-                                <div class="teams-bubble">
-                                    <div style="flex:1;">
-                                        ${n.imageUrl ? `<img src="${n.imageUrl}" class="teams-chat-img" onclick="window.open(this.src)">` : ''}
-                                        <p>${n.text}</p>
-                                        ${isBrist && !isResolved ? `
-                                            <button class="teams-res-btn" onclick="window.resolveFleetNote('${unit.id}', '${type}', '${n.id}')" style="margin-top:10px; background:#2ecc71; color:white; border:none; padding:4px 10px; border-radius:4px; font-size:0.7rem; cursor:pointer; font-weight:700;">
-                                                <i class="fas fa-check"></i> Markera som åtgärdad
-                                            </button>
-                                        ` : ''}
+                            </div>
+                            
+                            <div class="bento-box">
+                                <span class="bento-title">Bilder & Dokumentation</span>
+                                ${images.length > 0 ? `<div class="image-grid-overview">${images.map(url => `<div class="overview-img-wrapper"><img src="${url}"></div>`).join('')}</div>` : `
+                                    <div class="empty-images-placeholder">
+                                        <i class="fas fa-camera-retro"></i>
+                                        <p>Inga bilder bifogade</p>
                                     </div>
-                                    <div style="display:flex; align-items:center; gap:8px; margin-left:15px;">
-                                        ${isResolved ? '<i class="fas fa-check-circle" style="color:#2ecc71; font-size:1rem;"></i>' : ''}
-                                        <i class="fas fa-trash" style="color:#eee; cursor:pointer; font-size:0.8rem;" onclick="window.deleteFleetNote('${unit.id}', '${type}', '${n.id}')"></i>
+                                `}
+                                <label style="display:block; text-align:center; margin-top:15px; font-size:0.65rem; color:var(--fog-brown); cursor:pointer; font-weight:850;">
+                                    <i class="fas fa-plus-circle"></i> LADDA UPP NY BILD
+                                    <input type="file" id="image-upload-input" hidden accept="image/*" onchange="window.handleImageUpload('${unit.id}', '${type}')">
+                                </label>
+                            </div>
+                        </div>
+
+                        <div style="display:flex; flex-direction:column; gap:15px;">
+                            <div class="bento-box">
+                                <span class="bento-title">Besiktning & Service</span>
+                                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                                    <div>
+                                        <label style="font-size:0.5rem; font-weight:800; color:#bbb;">SERVICE</label>
+                                        <div style="font-weight:700; font-size:0.8rem;">${unit.lastService || '---'}</div>
                                     </div>
+                                    <div>
+                                        <label style="font-size:0.5rem; font-weight:800; color:#bbb;">BESIKTNING</label>
+                                        <div style="font-weight:700; font-size:0.8rem; color:${isInspExpired ? '#e30613' : 'inherit'};">
+                                            ${unit.nextInspection || '---'} ${isInspExpired ? '<i class="fas fa-clock" style="color:#e30613; margin-left:3px;"></i>' : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onclick="window.saveVehicleData('${unit.id}', '${type}')" style="width:100%; margin-top:12px; background:var(--fog-brown); color:white; border:none; padding:8px; border-radius:6px; cursor:pointer; font-weight:700; font-size:0.75rem;">Spara Ändringar</button>
+                            </div>
+
+                            <div class="usage-tile-vision">
+                                <div class="percent" style="font-size:1.6rem; font-weight:900;">${usagePercent}%</div>
+                                <div class="label" style="font-size:0.65rem; opacity:0.8; font-weight:700; text-transform:uppercase;">Bokad ${activeDays} av 30 dagar</div>
+                            </div>
+
+                            <div class="bento-box" style="padding:10px;">
+                                <span class="bento-title">Systemstatus</span>
+                                <div style="display:flex; gap:4px;">
+                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'ok')" style="flex:1; padding:8px 0; border-radius:10px; border:1px solid #eee; font-weight:850; font-size:0.6rem; background:${hStatus === 'ok' ? '#2ecc71' : 'white'}; color:${hStatus === 'ok' ? 'white' : '#666'};">OK</button>
+                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'warn')" style="flex:1; padding:8px 0; border-radius:10px; border:1px solid #eee; font-weight:850; font-size:0.6rem; background:${hStatus === 'warn' ? '#f1c40f' : 'white'}; color:${hStatus === 'warn' ? 'white' : '#666'};">BRIST</button>
+                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'danger')" style="flex:1; padding:8px 0; border-radius:10px; border:1px solid #eee; font-weight:850; font-size:0.6rem; background:${hStatus === 'danger' ? '#e30613' : 'white'}; color:${hStatus === 'danger' ? 'white' : '#666'};">FÖRBUD</button>
                                 </div>
                             </div>
                         </div>
-                    `;
-                }).join('')}
-            </div>
-
-            <div class="teams-input-container">
-                <div class="teams-input-row">
-                    <input type="text" id="chat-text-input" placeholder="Skriv ett meddelande" 
-                           onkeydown="if(event.key==='Enter') window.saveFleetNote('${unit.id}', '${type}')">
-                </div>
-                <div class="teams-input-actions">
-                    <div class="action-icons">
-                        <i class="fas fa-font"></i>
-                        <label style="cursor:pointer;"><i class="fas fa-paperclip"></i><input type="file" hidden accept="image/*" onchange="window.handleChatImageUpload('${unit.id}', '${type}')"></label>
-                        <i class="far fa-smile"></i>
-                        <select id="chat-cat-select" style="border:none; background:none; font-size:0.75rem; font-weight:700; color:#616161; outline:none; cursor:pointer;">
-                            <option value="info">INFO</option>
-                            <option value="brist">BRIST</option>
-                        </select>
                     </div>
-                    <button class="teams-send-btn" onclick="window.saveFleetNote('${unit.id}', '${type}')">
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
+                </div>
+
+                <div id="tab-journal" class="fm-pane ${activeTab === 'tab-journal' ? 'active' : ''}">
+                    <div id="chat-feed-v3" style="flex:1; overflow-y:auto; padding:20px; background:#f5f5f5; display:flex; flex-direction:column; gap:15px;">
+                        ${notes.map(n => {
+                            const isBrist = n.category === 'brist';
+                            const isResolved = n.resolved === true;
+                            return `
+                                <div class="teams-msg-row ${isBrist ? 'brist' : ''} ${isResolved ? 'resolved' : ''}" style="display:flex; gap:12px; align-self: flex-start; max-width: 85%;">
+                                    <div class="teams-avatar" style="width:32px; height:32px; border-radius:50%; background:#d1d1d1; color:#444; display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:700; flex-shrink:0;">${getInitials(n.author)}</div>
+                                    <div style="display:flex; flex-direction:column;">
+                                        <div style="font-size:0.75rem; margin-bottom:4px; color:#616161;"><strong>${n.author}</strong> <span>${n.date}</span></div>
+                                        <div class="teams-bubble" style="background:white; padding:10px 14px; border-radius:0 8px 8px 8px; border:1px solid #e1dfdd; box-shadow:0 1px 3px rgba(0,0,0,0.1); display:flex; justify-content:space-between; align-items:flex-start;">
+                                            <div>
+                                                <p style="margin:0; font-size:0.9rem; line-height:1.4;">${n.text}</p>
+                                                ${isBrist && !isResolved ? `
+                                                    <button class="teams-res-btn" onclick="window.resolveFleetNote('${unit.id}', '${type}', '${n.id}')" style="margin-top:10px; background:#2ecc71; color:white; border:none; padding:4px 10px; border-radius:4px; font-size:0.7rem; cursor:pointer; font-weight:700;">Åtgärda</button>
+                                                ` : ''}
+                                            </div>
+                                            <div style="display:flex; align-items:center; gap:8px; margin-left:15px;">
+                                                ${isResolved ? '<i class="fas fa-check-circle" style="color:#2ecc71;"></i>' : ''}
+                                                <i class="fas fa-trash" style="color:#eee; cursor:pointer; font-size:0.8rem;" onclick="window.deleteFleetNote('${unit.id}', '${type}', '${n.id}')"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                    <div class="teams-input-container" style="padding:15px; background:white; border-top:1px solid #eee; display:flex; flex-direction:column; gap:10px;">
+                        <input type="text" id="chat-text-input" placeholder="Skriv ett meddelande" style="border:none; outline:none; font-size:0.95rem;" onkeydown="if(event.key==='Enter') window.saveFleetNote('${unit.id}', '${type}')">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div style="display:flex; gap:15px; color:#616161; font-size:1.1rem;">
+                                <i class="fas fa-paperclip"></i>
+                                <select id="chat-cat-select" style="border:none; background:none; font-size:0.75rem; font-weight:700; cursor:pointer;">
+                                    <option value="info">INFO</option>
+                                    <option value="brist">BRIST</option>
+                                </select>
+                            </div>
+                            <button onclick="window.saveFleetNote('${unit.id}', '${type}')" style="background:none; border:none; color:var(--fog-brown); font-size:1.3rem; cursor:pointer;"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     `;
 
-    // Uppdatera body.innerHTML och kör scroll-fix
-    // ...
-    setTimeout(() => {
-        const feed = document.getElementById('chat-feed-v3');
-        if (feed) feed.scrollTop = feed.scrollHeight;
-    }, 100);
+    modal.style.display = 'flex';
+    // Automatisk scroll till botten i journalen
+    if (activeTab === 'tab-journal') {
+        setTimeout(() => {
+            const feed = document.getElementById('chat-feed-v3');
+            if (feed) feed.scrollTop = feed.scrollHeight;
+        }, 100);
+    }
 }
 
 // FIXA SCROLL I DIN saveFleetNote FUNKTION:
