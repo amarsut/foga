@@ -2028,26 +2028,22 @@ TEST DASHBOARD KORT
 }
 
 /* ==========================================================================
-   KOMPLETT MODAL-SYSTEM (BENTO & TEAMS CHAT)
+   SLUTGILTIG MODAL-DESIGN (BENTO & TEAMS CHAT)
+   Rensad från dubbletter - Fixar luftrum och tab-visning
    ========================================================================== */
 
-/* 1. GRUNDSTRUKTUR & OVERLAY */
-.modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw; height: 100vh;
-    background: rgba(0,0,0,0.6);
-    backdrop-filter: blur(5px);
-    z-index: 10000;
-    justify-content: center;
-    align-items: center;
+/* 1. MODAL-GRUND & FIX FÖR LUFT */
+.modal-content {
+    background: transparent !important;
+    box-shadow: none !important;
+    width: 900px !important; /* Fast vision-bredd */
+    padding: 0 !important;
 }
 
 .bento-modal {
     background: #ffffff;
     border-radius: 24px;
-    width: 820px; /* Kompakt bredd enligt vision */
+    width: 100%;
     max-height: 85vh;
     display: flex;
     flex-direction: column;
@@ -2061,86 +2057,33 @@ TEST DASHBOARD KORT
     background: #fbfcfd;
 }
 
+/* FIX: Säkerställer att flikarna faktiskt visas vid klick */
 .fm-pane {
-    display: none;
+    display: none !important; 
     height: 100%;
     flex-direction: column;
 }
 
 .fm-pane.active {
-    display: flex;
+    display: flex !important; 
 }
 
-/* 2. HEADER & NAVIGATION */
-.modal-header-vision {
-    padding: 15px 20px;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: white;
-}
-
-.status-pill-header {
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-weight: 900;
-    font-size: 0.65rem;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    text-transform: uppercase;
-}
-
-@keyframes badgePulse {
-    0% { box-shadow: 0 0 0 0 rgba(227, 6, 19, 0.4); }
-    70% { box-shadow: 0 0 0 10px rgba(227, 6, 19, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(227, 6, 19, 0); }
-}
-
-.fm-nav-tabs {
-    display: flex;
-    padding: 0 20px;
-    border-bottom: 1px solid #eee;
-    gap: 20px;
-    background: white;
-}
-
-.fm-tab-link {
-    background: none;
-    border: none;
-    padding: 12px 0;
-    font-weight: 700;
-    font-size: 0.85rem;
-    color: #999;
-    cursor: pointer;
-    position: relative;
-}
-
-.fm-tab-link.active {
-    color: var(--fog-red);
-}
-
-.fm-tab-link.active::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0;
-    width: 100%; height: 3px;
-    background: var(--fog-red);
-}
-
-/* 3. BENTO GRID (ÖVERSIKT) */
+/* 2. BENTO-GRID (ÖVERSIKT) */
 .bento-grid-modal {
     display: grid;
-    grid-template-columns: 1fr 300px; /* Ingen luft på sidorna */
-    gap: 15px;
-    padding: 15px;
+    /* Vänster sida (1fr) tvingas nu att expandera och ta upp allt tomrum */
+    grid-template-columns: 1fr 320px; 
+    gap: 20px;
+    padding: 20px;
+    background: #fbfcfd;
+    flex: 1;
+    overflow-y: auto;
 }
 
 .bento-box {
     background: white;
     border-radius: 18px;
-    padding: 15px;
+    padding: 18px;
     border: 1px solid #eee;
     box-shadow: 0 4px 15px rgba(0,0,0,0.02);
 }
@@ -2150,31 +2093,17 @@ TEST DASHBOARD KORT
     font-weight: 800;
     color: #bbb;
     text-transform: uppercase;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     display: block;
+    letter-spacing: 0.5px;
 }
 
-/* Användnings-tile */
-.usage-tile-vision {
-    background: var(--fog-brown);
-    color: white;
-    padding: 12px;
-    border-radius: 18px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-}
-
-.usage-tile-vision .percent { font-size: 1.4rem; font-weight: 900; }
-.usage-tile-vision .label { font-size: 0.6rem; opacity: 0.8; font-weight: 700; text-transform: uppercase; }
-
-/* 4. TEAMS CHAT SYSTEM */
+/* 3. TEAMS CHAT SYSTEM (Journal & Senaste Loggar) */
 #chat-feed-v3 {
     flex: 1;
     overflow-y: auto;
     padding: 20px;
-    background: #f5f5f5; /* Teams ljusgrå */
+    background: #f5f5f5; /* Teams ljusgrå bakgrund */
     display: flex;
     flex-direction: column;
     gap: 15px;
@@ -2188,7 +2117,8 @@ TEST DASHBOARD KORT
 }
 
 .teams-avatar {
-    width: 32px; height: 32px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     background: #d1d1d1;
     color: #444;
@@ -2198,65 +2128,75 @@ TEST DASHBOARD KORT
     font-size: 0.75rem;
     font-weight: 700;
     flex-shrink: 0;
+    border: 1px solid #e1e1e1;
 }
+
+.teams-msg-header {
+    font-size: 0.75rem;
+    margin-bottom: 4px;
+    color: #616161;
+}
+.teams-msg-header strong { color: #242424; margin-right: 8px; }
 
 .teams-bubble {
-    background: white;
+    background: #ffffff;
     padding: 10px 14px;
     border-radius: 0 8px 8px 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     border: 1px solid #e1dfdd;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
 }
 
-.teams-bubble p { margin: 0; font-size: 0.9rem; line-height: 1.4; }
+.teams-bubble p {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: #242424;
+}
 
+/* Brist-markering i Teams-stil */
 .teams-msg-row.brist .teams-bubble {
-    border-left: 3px solid var(--fog-red);
+    border-left: 4px solid var(--fog-red);
     background: #fff8f8;
 }
 
-.teams-input-container {
-    padding: 15px;
-    background: white;
-    border-top: 1px solid #eee;
-}
-
-/* 5. BILDGALLERI */
-.image-grid-overview {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+/* 4. HEADERS & NAVIGATION */
+.status-pill-header {
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-weight: 900;
+    font-size: 0.65rem;
+    display: flex;
+    align-items: center;
     gap: 8px;
+    text-transform: uppercase;
 }
 
-.overview-img-wrapper {
-    aspect-ratio: 1;
-    border-radius: 8px;
-    overflow: hidden;
-    background: #eee;
-}
-
-.overview-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-
-.empty-images-placeholder {
-    padding: 20px;
-    border: 2px dashed #eee;
-    border-radius: 15px;
+.usage-tile-vision {
+    background: var(--fog-brown);
+    color: white;
+    padding: 15px;
+    border-radius: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
-    color: #ccc;
 }
 
-/* 6. MOBILANPASSNING */
+/* 5. MOBILANPASSNING */
 @media (max-width: 768px) {
     .bento-modal {
-        width: 100%;
-        height: 100%;
-        max-height: 100vh;
-        border-radius: 0;
+        width: 100% !important;
+        height: 100% !important;
+        max-height: 100vh !important;
+        border-radius: 0 !important;
     }
-
     .bento-grid-modal {
-        grid-template-columns: 1fr; /* Stapla vertikalt på mobil */
+        grid-template-columns: 1fr !important;
+        padding: 15px !important;
     }
-
-    .teams-msg-row { max-width: 95%; }
+    .teams-msg-row { max-width: 95% !important; }
 }
