@@ -2722,3 +2722,55 @@ TEST NYTT CHATTUTSEENDE
     font-size: 1.3rem; cursor: pointer; transition: 0.2s;
 }
 .teams-send-btn:hover { color: var(--fog-red); transform: scale(1.1); }
+
+/* --- KOMPAKT BENTO MODAL (FIXAD LUFT) --- */
+.bento-modal {
+    background: #ffffff;
+    border-radius: 24px;
+    width: 820px; /* Minskad från 900px för att bli mer kompakt */
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+}
+
+.bento-grid-modal {
+    display: grid;
+    /* Vänster sida tar 1.4 delar, höger tar 1 del - skapar bättre balans */
+    grid-template-columns: 1.4fr 1fr; 
+    gap: 15px; /* Tätare mellan boxarna */
+    padding: 15px; /* Mindre padding runt hela gridden */
+    background: #fbfcfd;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.bento-box {
+    background: white;
+    border-radius: 18px;
+    padding: 15px; /* Minskad intern padding */
+    border: 1px solid #eee;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+}
+
+/* Mini-version av Teams-bubblan för översikten */
+.mini-teams-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.mini-teams-row .teams-avatar {
+    width: 28px;
+    height: 28px;
+    font-size: 0.65rem;
+}
+
+.mini-teams-row .teams-bubble {
+    padding: 8px 12px;
+}
+
+.mini-teams-row .teams-bubble p {
+    font-size: 0.8rem; /* Något mindre text i preview-läge */
+}
