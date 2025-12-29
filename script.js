@@ -252,13 +252,19 @@ window.render = () => {
 
 function renderDashboard(area) {
     const freeCars = cars.filter(c => c.status === 'Ledig').length;
+
+    // Sortera uppdragen kronologiskt baserat på startdatum (närmast i tiden först)
+    const sortedAssignments = [...assignments].sort((a, b) => 
+        (a.startDate || "").localeCompare(b.startDate || "")
+    );
+
     area.innerHTML = `
         <div class="stats-grid">
-            <div class="stat-card"><h3>${assignments.length}</h3><p>Aktiva Uppdrag</p></div>
+            <div class="stat-card"><h3>${sortedAssignments.length}</h3><p>Aktiva Uppdrag</p></div>
             <div class="stat-card"><h3>${freeCars}</h3><p>Lediga Bilar</p></div>
             <div class="stat-card"><h3>${assignments.filter(a => a.step === 'På plats').length}</h3><p>Vagnar på fältet</p></div>
         </div>
-        <div class="mission-list">${assignments.map(a => renderMissionCard(a)).join('')}</div>
+        <div class="mission-list">${sortedAssignments.map(a => renderMissionCard(a)).join('')}</div>
     `;
 }
 
