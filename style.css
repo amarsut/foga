@@ -2200,3 +2200,50 @@ TEST DASHBOARD KORT
     }
     .teams-msg-row { max-width: 95% !important; }
 }
+
+/* --- REFORMERAD ANVÄNDNINGS-STATUS --- */
+.usage-box-refined {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.usage-info-text {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.usage-label-mini {
+    font-size: 0.6rem;
+    font-weight: 800;
+    color: #bbb;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.usage-value-mini {
+    font-size: 0.9rem;
+    font-weight: 900;
+    color: var(--fog-brown);
+}
+
+.usage-bar-bg {
+    height: 6px;
+    background: #f0f0f0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.usage-bar-fill {
+    height: 100%;
+    background: var(--fog-brown); /* Behåller din bruna profilfärg som accent */
+    border-radius: 10px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.usage-footer-text {
+    font-size: 0.65rem;
+    color: #999;
+    font-weight: 600;
+}
