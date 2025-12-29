@@ -2002,3 +2002,64 @@ TEST
 .bento-grid-modal { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; padding: 20px; }
 .bento-box { background: white; border-radius: 16px; padding: 20px; border: 1px solid #eee; }
 .bento-title { font-size: 0.65rem; font-weight: 800; color: #bbb; text-transform: uppercase; margin-bottom: 15px; display: block; }
+
+/* --- DASHBOARD GRID (2-3 KORT I BREDD) --- */
+.mission-list {
+    display: grid;
+    /* Skapar kolumner som är minst 350px breda. Fyller ut 2-3 stycken beroende på skärmbredd */
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
+    padding: 10px 0;
+}
+
+/* --- DASHBOARD KORT (BILD 3 STIL) --- */
+.mission-card-vision {
+    background: white;
+    border-radius: 16px;
+    display: flex;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    cursor: pointer;
+    border: 1px solid #eee;
+    transition: transform 0.2s, box-shadow 0.2s;
+    height: 140px; /* Fast höjd för symmetri i gridden */
+}
+
+.mission-card-vision:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.date-badge {
+    background: var(--fog-brown);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    min-width: 85px;
+    flex-shrink: 0;
+}
+.date-badge .day { font-size: 1.8rem; font-weight: 900; line-height: 1; }
+.date-badge .month { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-top: 5px; }
+
+.mission-content { 
+    padding: 15px 20px; 
+    flex: 1; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: space-between;
+    min-width: 0; 
+}
+.mission-title { font-weight: 800; font-size: 1.1rem; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* --- BENTO MODAL & JOURNAL BUBBLES --- */
+.bento-modal { background: white; border-radius: 24px; width: 900px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
+.bento-grid-modal { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; padding: 20px; flex: 1; overflow-y: auto; }
+
+.bubble { padding: 12px; border-radius: 12px; font-size: 0.85rem; line-height: 1.4; margin-bottom: 10px; position: relative; border-left: 4px solid transparent; }
+.bubble.brist { background: #fff5f5; border-left-color: var(--fog-red); }
+.bubble.info { background: #f0f7ff; border-left-color: #0078d4; }
+.bubble.resolved { opacity: 0.6; background: #f9f9f9; border-left-color: #2ecc71; }
+.bubble .meta { font-size: 0.65rem; font-weight: 700; opacity: 0.5; margin-bottom: 4px; }
