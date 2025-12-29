@@ -250,7 +250,7 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
     const nextInsp = unit.nextInspection ? new Date(unit.nextInspection) : null;
     const isInspExpired = nextInsp && now > nextInsp;
 
-    // 3. Status-konfiguration för headern (Alltid synlig)
+    // 3. Status-konfiguration för headern
     const statusCfg = {
         ok: { cl: 'ok', icon: 'fa-check-circle', txt: 'Driftklar', color: '#2ecc71', bg: '#e6f9ed' },
         warn: { cl: 'warn', icon: 'fa-exclamation-triangle', txt: 'Brist', color: '#f1c40f', bg: '#fff9e6' },
@@ -261,7 +261,7 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
     // Hjälpfunktion för Teams-avatarer
     const getInitials = (name) => name ? name.split(' ').map(n => n[0]).join('').toUpperCase() : '?';
 
-    // 4. GENERERA 5 SENASTE LOGGAR MED TEAMS-STIL (Avatar + Bubbla)
+    // 4. GENERERA 5 SENASTE LOGGAR MED TEAMS-STIL
     const recentNotesHtml = notes.length > 0 ? [...notes].reverse().slice(0, 5).map(n => `
         <div class="mini-teams-row" style="display:flex; gap:10px; margin-bottom:10px;">
             <div class="teams-avatar" style="width:28px; height:28px; border-radius:50%; background:#d1d1d1; color:#444; display:flex; align-items:center; justify-content:center; font-size:0.65rem; font-weight:700; flex-shrink:0;">${getInitials(n.author)}</div>
@@ -322,32 +322,39 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
                         <div style="display:flex; flex-direction:column; gap:15px;">
                             <div class="bento-box" style="background:white; padding:15px; border-radius:18px; border:1px solid #eee;">
                                 <span class="bento-title" style="font-size:0.65rem; font-weight:800; color:#bbb; text-transform:uppercase; margin-bottom:10px; display:block;">Besiktning & Service</span>
-                                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:15px;">
                                     <div>
-                                        <label style="font-size:0.5rem; font-weight:800; color:#bbb;">SERVICE</label>
+                                        <label style="font-size:0.5rem; font-weight:800; color:#999; text-transform:uppercase;">Service</label>
                                         <div style="font-weight:700; font-size:0.8rem;">${unit.lastService || '---'}</div>
                                     </div>
                                     <div>
-                                        <label style="font-size:0.5rem; font-weight:800; color:#bbb;">BESIKTNING</label>
+                                        <label style="font-size:0.5rem; font-weight:800; color:#999; text-transform:uppercase;">Besiktning</label>
                                         <div style="font-weight:700; font-size:0.8rem; color:${isInspExpired ? '#e30613' : 'inherit'};">
                                             ${unit.nextInspection || '---'} ${isInspExpired ? '<i class="fas fa-clock" style="color:#e30613; margin-left:3px;"></i>' : ''}
                                         </div>
                                     </div>
                                 </div>
-                                <button onclick="window.saveVehicleData('${unit.id}', '${type}')" style="width:100%; margin-top:12px; background:var(--fog-brown); color:white; border:none; padding:8px; border-radius:6px; cursor:pointer; font-weight:700; font-size:0.75rem;">Spara Ändringar</button>
-                            </div>
 
-                            <div class="usage-tile-vision" style="background:var(--fog-brown); color:white; padding:12px; border-radius:18px; display:flex; flex-direction:column; align-items:center; text-align:center;">
-                                <div class="percent" style="font-size:1.4rem; font-weight:900;">${usagePercent}%</div>
-                                <div class="label" style="font-size:0.6rem; opacity:0.8; font-weight:700; text-transform:uppercase;">Bokad ${activeDays} av 30 dagar</div>
+                                <div style="margin-top:15px; border-top:1px solid #f5f5f5; padding-top:12px;">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                                        <span style="font-size:0.6rem; font-weight:800; color:#bbb; text-transform:uppercase;">Användningsgrad</span>
+                                        <span style="font-size:0.85rem; font-weight:900; color:var(--fog-brown);">${usagePercent}%</span>
+                                    </div>
+                                    <div style="height:6px; background:#f0f0f0; border-radius:10px; overflow:hidden;">
+                                        <div style="height:100%; width:${usagePercent}%; background:var(--fog-brown); border-radius:10px;"></div>
+                                    </div>
+                                    <div style="font-size:0.65rem; color:#999; margin-top:6px; font-weight:600;">Bokad ${activeDays} av 30 dagar</div>
+                                </div>
+
+                                <button onclick="window.saveVehicleData('${unit.id}', '${type}')" style="width:100%; margin-top:15px; background:var(--fog-brown); color:white; border:none; padding:8px; border-radius:6px; cursor:pointer; font-weight:700; font-size:0.75rem;">Spara Ändringar</button>
                             </div>
 
                             <div class="bento-box" style="background:white; padding:10px; border-radius:18px; border:1px solid #eee;">
                                 <span class="bento-title" style="font-size:0.65rem; font-weight:800; color:#bbb; text-transform:uppercase; margin-bottom:10px; display:block;">Systemstatus</span>
                                 <div style="display:flex; gap:4px;">
-                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'ok')" style="flex:1; padding:7px 0; border-radius:8px; border:1px solid #eee; font-weight:850; font-size:0.6rem; background:${hStatus === 'ok' ? '#2ecc71' : 'white'}; color:${hStatus === 'ok' ? 'white' : '#666'};">OK</button>
-                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'warn')" style="flex:1; padding:7px 0; border-radius:8px; border:1px solid #eee; font-weight:850; font-size:0.6rem; background:${hStatus === 'warn' ? '#f1c40f' : 'white'}; color:${hStatus === 'warn' ? 'white' : '#666'};">BRIST</button>
-                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'danger')" style="flex:1; padding:7px 0; border-radius:8px; border:1px solid #eee; font-weight:850; font-size:0.6rem; background:${hStatus === 'danger' ? '#e30613' : 'white'}; color:${hStatus === 'danger' ? 'white' : '#666'};">FÖRBUD</button>
+                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'ok')" style="flex:1; padding:8px 0; border-radius:8px; border:1px solid #eee; font-weight:850; font-size:0.6rem; background:${hStatus === 'ok' ? '#2ecc71' : 'white'}; color:${hStatus === 'ok' ? 'white' : '#666'};">OK</button>
+                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'warn')" style="flex:1; padding:8px 0; border-radius:8px; border:1px solid #eee; font-weight:850; font-size:0.6rem; background:${hStatus === 'warn' ? '#f1c40f' : 'white'}; color:${hStatus === 'warn' ? 'white' : '#666'};">BRIST</button>
+                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'danger')" style="flex:1; padding:8px 0; border-radius:10px; border:1px solid #eee; font-weight:850; font-size:0.6rem; background:${hStatus === 'danger' ? '#e30613' : 'white'}; color:${hStatus === 'danger' ? 'white' : '#666'};">FÖRBUD</button>
                                 </div>
                             </div>
                         </div>
