@@ -267,7 +267,6 @@ function renderMissionCard(a) {
     const day = startDate.getDate();
     const month = startDate.toLocaleDateString('sv-SE', { month: 'short' }).toUpperCase().replace('.', '');
 
-    // Beräkna pack-progress
     const totalItems = (a.carItems || []).concat(a.cartItems || []).filter(i => i.type === 'item');
     const doneItems = totalItems.filter(i => i.done).length;
     const progressPercent = totalItems.length > 0 ? Math.round((doneItems / totalItems.length) * 100) : 0;
@@ -279,28 +278,21 @@ function renderMissionCard(a) {
                 <span class="day">${day}</span>
             </div>
             <div class="mission-content">
-                <div class="mission-header">
+                <div class="mission-header" style="display:flex; justify-content:space-between;">
                     <span class="mission-title">${a.event}</span>
-                    <i class="fas fa-chevron-right" style="color:#ccc"></i>
+                    <i class="fas fa-chevron-right" style="color:#ccc; font-size: 0.8rem;"></i>
                 </div>
-                <div class="resource-row">
-                    ${a.car && a.car !== 'Ej kopplad' ? `<div class="res-pill"><i class="fas fa-truck"></i> ${a.car}</div>` : ''}
-                    ${(a.carts || []).map(c => {
-                        // Kontrollera om vagnen har en brist för att visa röd varnings-pill
-                        const unitData = [...window.lastCars, ...window.lastCarts].find(u => u.id === c);
-                        const isDanger = unitData && unitData.healthStatus === 'danger';
-                        return `<div class="res-pill ${isDanger ? 'danger-alert' : ''}">
-                            <i class="fas ${isDanger ? 'fa-exclamation-triangle' : 'fa-coffee'}"></i> ${c} ${isDanger ? '(BRIST)' : ''}
-                        </div>`;
-                    }).join('')}
+                <div class="resource-row" style="display:flex; gap:6px; flex-wrap:wrap;">
+                    ${a.car && a.car !== 'Ej kopplad' ? `<div class="res-pill" style="font-size:0.65rem; background:#f0f0f0; padding:2px 8px; border-radius:10px;"><i class="fas fa-truck"></i> ${a.car}</div>` : ''}
+                    ${(a.carts || []).map(c => `<div class="res-pill" style="font-size:0.65rem; background:#f0f0f0; padding:2px 8px; border-radius:10px;"><i class="fas fa-coffee"></i> ${c}</div>`).join('')}
                 </div>
                 <div class="pack-progress-container">
-                    <div class="pack-label">
-                        <span>Packningstatus</span>
-                        <span>${doneItems} / ${totalItems.length} varor</span>
+                    <div style="display:flex; justify-content:space-between; font-size:0.6rem; font-weight:800; color:#999; text-transform:uppercase;">
+                        <span>Packning</span>
+                        <span>${doneItems}/${totalItems.length}</span>
                     </div>
-                    <div class="progress-bar-bg">
-                        <div class="progress-fill" style="width: ${progressPercent}%; background: ${progressPercent === 100 ? '#2ecc71' : '#e30613'};"></div>
+                    <div style="height:5px; background:#eee; border-radius:10px; margin-top:3px; overflow:hidden;">
+                        <div style="height:100%; width:${progressPercent}%; background:${progressPercent === 100 ? '#2ecc71' : '#e30613'}; transition:width 0.4s;"></div>
                     </div>
                 </div>
             </div>
