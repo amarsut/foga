@@ -1967,3 +1967,38 @@ TEST
 @media (max-width: 768px) {
     .bento-grid-modal { grid-template-columns: 1fr; }
 }
+
+/* Sidostaplade Dashboard-kort */
+.mission-card-vision {
+    background: white;
+    border-radius: 16px;
+    display: flex;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    margin-bottom: 15px;
+    cursor: pointer;
+    border: 1px solid #eee;
+    transition: transform 0.2s;
+}
+.mission-card-vision:hover { transform: translateX(5px); }
+
+.date-badge {
+    background: var(--fog-brown);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    min-width: 80px;
+}
+.date-badge .day { font-size: 1.8rem; font-weight: 900; }
+.date-badge .month { font-size: 0.7rem; font-weight: 700; }
+
+.mission-content { padding: 15px 20px; flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.mission-title { font-weight: 800; font-size: 1.2rem; color: #333; }
+
+/* Bento Boxar */
+.bento-grid-modal { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; padding: 20px; }
+.bento-box { background: white; border-radius: 16px; padding: 20px; border: 1px solid #eee; }
+.bento-title { font-size: 0.65rem; font-weight: 800; color: #bbb; text-transform: uppercase; margin-bottom: 15px; display: block; }
