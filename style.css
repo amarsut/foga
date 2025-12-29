@@ -2186,3 +2186,60 @@ TEST FLEET MODAL
     justify-content: space-between;
     align-items: center;
 }
+
+/* --- HEADER STATUS PILLS (Alltid synliga) --- */
+.status-pill-header {
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-weight: 900;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+}
+.status-pill-header.ok { background: #e6f9ed; color: #2ecc71; }
+.status-pill-header.warn { background: #fff9e6; color: #f1c40f; }
+.status-pill-header.danger { 
+    background: #fff5f5; 
+    color: var(--fog-red); 
+    animation: badgePulse 2s infinite; 
+}
+
+/* --- ANVÄNDNINGSBOX (Text under procent) --- */
+.usage-tile-vision {
+    background: var(--fog-brown);
+    color: white;
+    padding: 20px;
+    border-radius: 18px;
+    display: flex;
+    flex-direction: column; /* Text under procent */
+    align-items: center;
+    text-align: center;
+    gap: 5px;
+}
+
+/* --- BILDGALLERI I ÖVERSIKT --- */
+.image-grid-overview {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+.overview-img-wrapper {
+    aspect-ratio: 1;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #eee;
+    cursor: pointer;
+}
+.overview-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+
+.empty-images-placeholder {
+    padding: 20px;
+    border: 2px dashed #eee;
+    border-radius: 15px;
+    text-align: center;
+    color: #ccc;
+    font-size: 0.75rem;
+}
