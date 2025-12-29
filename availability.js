@@ -527,29 +527,3 @@ window.saveFleetNote = async (id, uType) => {
         if (feed) feed.scrollTop = feed.scrollHeight;
     }, 100);
 };
-
-// Uppdatera loopen i tab-journal inuti showUnitManagementModal:
-// (Ersätt den befintliga .map-loopen för notes med denna Teams-inspirerade struktur)
-${notes.map(n => {
-    const isSystem = n.author === 'System';
-    const isBrist = n.category === 'brist';
-    return `
-        <div class="teams-chat-msg ${isSystem ? 'system-msg' : ''} ${isBrist ? 'brist-msg' : ''}">
-            ${!isSystem ? `<div class="teams-msg-meta"><strong>${n.author}</strong> <span>${n.date}</span></div>` : ''}
-            <div class="teams-bubble">
-                <div class="teams-bubble-content">
-                    <p>${n.text}</p>
-                    ${isBrist && !n.resolved ? `
-                        <button class="teams-resolve-btn" onclick="window.resolveFleetNote('${unit.id}', '${type}', '${n.id}')">
-                            <i class="fas fa-check"></i> Markera som åtgärdad
-                        </button>
-                    ` : ''}
-                </div>
-                ${n.resolved ? '<div class="teams-resolved-badge"><i class="fas fa-check-circle"></i></div>' : ''}
-                <button class="teams-delete-btn" onclick="window.deleteFleetNote('${unit.id}', '${type}', '${n.id}')">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-        </div>
-    `;
-}).join('')}
