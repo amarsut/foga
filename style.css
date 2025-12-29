@@ -2342,3 +2342,59 @@ TEST FLEET MODAL
 }
 .empty-images-placeholder i { font-size: 1.8rem; margin-bottom: 8px; display: block; opacity: 0.5; }
 .empty-images-placeholder p { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; margin: 0; }
+
+/* --- SLUTGILTIG BENTO MODAL (Ingen extra luft) --- */
+.modal-content {
+    background: transparent !important; /* Låt bento-modal styra bakgrunden */
+    box-shadow: none !important;
+    width: 900px !important; /* Matcha visionens bredd */
+}
+
+.bento-modal {
+    background: #ffffff;
+    border-radius: 24px;
+    width: 100%; /* Fyller ut modal-content helt */
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+}
+
+.bento-grid-modal {
+    display: grid;
+    /* Vänster kolumn (1fr) tar allt utrymme som blir över från höger (320px) */
+    grid-template-columns: 1fr 320px; 
+    gap: 20px;
+    padding: 20px;
+    background: #fbfcfd;
+    flex: 1;
+    width: 100%; /* Säkerställer att den inte krymper */
+    overflow-y: auto;
+}
+
+/* --- LOGGAR & BUBBLOR --- */
+.bubble-vision {
+    padding: 10px 14px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    background: #f9f9f9;
+    border-left: 4px solid #eee;
+}
+.bubble-vision.brist { border-left-color: var(--fog-red); background: #fff5f5; }
+.bubble-vision.info { border-left-color: #0078d4; background: #f0f7ff; }
+
+/* --- EMPTY STATE BILDER (ÅTERSTÄLLD) --- */
+.empty-images-placeholder {
+    padding: 25px;
+    border: 2px dashed #eee;
+    border-radius: 18px;
+    text-align: center;
+    background: #fafafa;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+.empty-images-placeholder i { font-size: 2rem; color: #ddd; }
+.empty-images-placeholder p { font-size: 0.7rem; font-weight: 800; color: #ccc; text-transform: uppercase; margin: 0; }
