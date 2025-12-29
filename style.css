@@ -2103,3 +2103,80 @@ TEST FLEET MODAL
     70% { box-shadow: 0 0 0 10px rgba(227, 6, 19, 0); }
     100% { box-shadow: 0 0 0 0 rgba(227, 6, 19, 0); }
 }
+
+/* --- BENTO MODAL GRUND --- */
+.bento-modal {
+    background: #fdfcfb;
+    border-radius: 24px;
+    width: 950px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.15);
+}
+
+.bento-grid-modal {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr; /* Vänster box (journal) är bredare */
+    gap: 20px;
+    padding: 25px;
+    background: #fbfbfb;
+}
+
+.bento-box {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    border: 1px solid #eee;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+}
+
+/* --- ANVÄNDNINGSKORT (BRUNT) --- */
+.usage-card-vision {
+    background: var(--fog-brown);
+    color: white;
+    padding: 25px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.usage-card-vision .usage-val { font-size: 2.4rem; font-weight: 900; line-height: 1; margin: 5px 0; }
+.usage-card-vision .usage-label { font-size: 0.75rem; opacity: 0.7; font-weight: 600; }
+
+/* --- JOURNAL-BUBBLOR I ÖVERSIKTEN --- */
+.bubble-vision {
+    padding: 15px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    margin-bottom: 12px;
+    border-left: 4px solid #eee;
+    background: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+}
+.bubble-vision.brist { border-left-color: var(--fog-red); background: #fff5f5; }
+.bubble-vision.info { border-left-color: #0078d4; background: #f0f7ff; }
+.bubble-vision .meta { font-size: 0.65rem; font-weight: 700; opacity: 0.5; margin-bottom: 5px; }
+
+/* --- STATUS PULSE --- */
+.pulse-pill {
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-weight: 900;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.pulse-pill.danger {
+    background: #fff5f5;
+    color: var(--fog-red);
+    animation: pulseDanger 2s infinite;
+}
+
+@keyframes pulseDanger {
+    0% { box-shadow: 0 0 0 0 rgba(227, 6, 19, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(227, 6, 19, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(227, 6, 19, 0); }
+}
