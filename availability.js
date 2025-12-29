@@ -494,3 +494,62 @@ window.handleImageUpload = async (unitId, uType) => {
         alert("Kunde inte ladda upp bild. Kontrollera Storage-inställningarna.");
     }
 };
+
+
+// Sök upp saveFleetNote i availability.js och uppdatera slutet av funktionen:
+window.saveFleetNote = async (id, uType) => {
+    const input = document.getElementById('chat-text-input');
+    const catSelect = document.getElementById('chat-cat-select');
+    if (!input || !catSelect) return;
+
+    const text = input.value.trim();
+    const category = catSelect.value;
+    if (!text) return;
+
+    const colMap = { car: 'cars', trailer: 'trailers', cart: 'carts' };
+    const noteId = "id-" + Math.random().toString(36).substr(2, 9) + "-" + Date.now();
+    
+    await updateDoc(doc(dbInstance, colMap[uType], id), {
+        notes: arrayUnion({
+            text, category, author: 'Admin', date: new Date().toLocaleString('sv-SE'), id: noteId 
+        })
+    });
+
+    input.value = '';
+    const unitRef = await getDoc(doc(dbInstance, colMap[uType], id));
+    
+    // Rendera om modalen
+    showUnitManagementModal({id: unitRef.id, ...unitRef.data()}, uType, dbInstance, 'tab-journal');
+    
+    // FIX: Tvinga scroll till botten direkt efter rendering
+    setTimeout(() => {
+        const feed = document.getElementById('chat-feed-v3');
+        if (feed) feed.scrollTop = feed.scrollHeight;
+    }, 100);
+};
+
+// Uppdatera loopen i tab-journal inuti showUnitManagementModal:
+// (Ersätt den befintliga .map-loopen för notes med denna Teams-inspirerade struktur)
+${notes.map(n => {
+    const isSystem = n.author === 'System';
+    const isBrist = n.category === 'brist';
+    return `
+        <div class="teams-chat-msg ${isSystem ? 'system-msg' : ''} ${isBrist ? 'brist-msg' : ''}">
+            ${!isSystem ? `<div class="teams-msg-meta"><strong>${n.author}</strong> <span>${n.date}</span></div>` : ''}
+            <div class="teams-bubble">
+                <div class="teams-bubble-content">
+                    <p>${n.text}</p>
+                    ${isBrist && !n.resolved ? `
+                        <button class="teams-resolve-btn" onclick="window.resolveFleetNote('${unit.id}', '${type}', '${n.id}')">
+                            <i class="fas fa-check"></i> Markera som åtgärdad
+                        </button>
+                    ` : ''}
+                </div>
+                ${n.resolved ? '<div class="teams-resolved-badge"><i class="fas fa-check-circle"></i></div>' : ''}
+                <button class="teams-delete-btn" onclick="window.deleteFleetNote('${unit.id}', '${type}', '${n.id}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    `;
+}).join('')}
