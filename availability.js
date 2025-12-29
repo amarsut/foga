@@ -234,98 +234,100 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
     const notes = unit.notes || [];
     const now = new Date();
 
-    // Event-historik
     const unitEvents = allEvents.filter(e => e.car === unit.id || (e.carts && e.carts.includes(unit.id)));
     const futureEvents = unitEvents.filter(e => new Date(e.startDate) >= now).sort((a,b) => new Date(a.startDate) - new Date(b.startDate));
 
     body.innerHTML = `
         <div class="bento-modal">
-            <header class="modal-header-vision">
-                <div style="display:flex; align-items:center; gap:15px;">
-                    <i class="fas ${type === 'car' ? 'fa-truck-pickup' : 'fa-coffee'}" style="font-size: 1.5rem; color: var(--fog-brown)"></i>
-                    <h3 style="margin:0; font-weight:900;">${unit.id} ${unit.regNo ? `<span style="color:#999; font-weight:400; font-size:0.9rem;">${unit.regNo}</span>` : ''}</h3>
+            <header class="modal-header-vision" style="padding:20px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <i class="fas ${type === 'car' ? 'fa-truck-pickup' : 'fa-coffee'}" style="font-size:1.4rem; color:var(--fog-brown);"></i>
+                    <h3 style="margin:0;">${unit.id} <span style="color:#999; font-weight:400;">${unit.regNo || ''}</span></h3>
                 </div>
-                ${hStatus === 'danger' ? `<div class="status-pulse-badge"><i class="fas fa-radiation"></i> KÖRFÖRBUD (DANGER)</div>` : ''}
-                <button class="fm-close-icon" onclick="window.closeUnitModal()"><i class="fas fa-times"></i></button>
+                ${hStatus === 'danger' ? `<div class="status-pulse-badge" style="background:#fff5f5; color:var(--fog-red); padding:5px 12px; border-radius:20px; font-weight:800; font-size:0.7rem;"><i class="fas fa-radiation"></i> KÖRFÖRBUD</div>` : ''}
+                <button class="fm-close-icon" onclick="window.closeUnitModal()" style="border:none; background:#f5f5f5; width:30px; height:30px; border-radius:50%; cursor:pointer;"><i class="fas fa-times"></i></button>
             </header>
 
-            <nav class="fm-nav-tabs">
-                <button class="fm-tab-link ${activeTab === 'tab-overview' ? 'active' : ''}" onclick="window.switchModalTab(this, 'tab-overview')">Översikt & Planering</button>
+            <nav class="fm-nav-tabs" style="display:flex; gap:20px; padding:0 20px; border-bottom:1px solid #eee;">
+                <button class="fm-tab-link ${activeTab === 'tab-overview' ? 'active' : ''}" onclick="window.switchModalTab(this, 'tab-overview')">Översikt</button>
                 <button class="fm-tab-link ${activeTab === 'tab-journal' ? 'active' : ''}" onclick="window.switchModalTab(this, 'tab-journal')">Journal (${notes.length})</button>
             </nav>
             
-            <div class="fm-viewport">
-                <div id="tab-overview" class="fm-pane ${activeTab === 'tab-overview' ? 'active' : ''}">
+            <div class="fm-viewport" style="flex:1; overflow:hidden;">
+                <div id="tab-overview" class="fm-pane ${activeTab === 'tab-overview' ? 'active' : ''}" style="display:${activeTab === 'tab-overview' ? 'block' : 'none'}; padding:20px;">
                     <div class="bento-grid-modal">
                         <div class="bento-box">
                             <span class="bento-title">Kommande Uppdrag</span>
                             <div class="fm-timeline-mini">
                                 ${futureEvents.length > 0 ? futureEvents.map(e => `
-                                    <div class="fm-tl-item future">
-                                        <div class="fm-tl-content">
-                                            <div class="fm-tl-date">${e.startDate}</div>
-                                            <strong>${e.event}</strong>
-                                        </div>
+                                    <div style="padding:8px; border-bottom:1px solid #f9f9f9;">
+                                        <small style="color:#999; font-weight:800;">${e.startDate}</small><br>
+                                        <strong style="font-size:0.85rem;">${e.event}</strong>
                                     </div>
-                                `).join('') : '<div class="fm-empty-text">Inga bokade uppdrag</div>'}
+                                `).join('') : '<p style="color:#ccc; font-style:italic; font-size:0.8rem;">Inga uppdrag bokade.</p>'}
                             </div>
                         </div>
 
-                        <div style="display:flex; flex-direction:column; gap:20px;">
+                        <div style="display:flex; flex-direction:column; gap:15px;">
                             <div class="bento-box">
-                                <span class="bento-title">Besiktning & Service</span>
-                                <div class="specs-mini-grid">
+                                <span class="bento-title">Teknisk Data</span>
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                                     <div class="spec-item">
-                                        <label>Senaste Service</label>
-                                        <input type="date" id="inp-last-serv" value="${unit.lastService || ''}" class="comment-input-transparent">
+                                        <label style="font-size:0.6rem; font-weight:800; color:#bbb; text-transform:uppercase;">Nästa Besiktning</label>
+                                        <input type="date" id="inp-next-insp" value="${unit.nextInspection || ''}" style="width:100%; border:1px solid #eee; padding:5px; border-radius:5px;">
                                     </div>
                                     <div class="spec-item">
-                                        <label>Nästa Besiktning</label>
-                                        <input type="date" id="inp-next-insp" value="${unit.nextInspection || ''}" class="comment-input-transparent">
+                                        <label style="font-size:0.6rem; font-weight:800; color:#bbb; text-transform:uppercase;">Senaste Service</label>
+                                        <input type="date" id="inp-last-serv" value="${unit.lastService || ''}" style="width:100%; border:1px solid #eee; padding:5px; border-radius:5px;">
                                     </div>
                                 </div>
-                                <button class="fm-btn-save-mini" onclick="window.saveVehicleData('${unit.id}', '${type}')">Spara ändringar</button>
+                                <button onclick="window.saveVehicleData('${unit.id}', '${type}')" style="width:100%; margin-top:10px; background:var(--fog-brown); color:white; border:none; padding:8px; border-radius:5px; cursor:pointer; font-weight:700;">Spara Ändringar</button>
                             </div>
 
                             <div class="bento-box">
-                                <span class="bento-title">Ändra Systemstatus</span>
-                                <div class="fm-status-list-compact">
-                                    <div class="fm-status-item-mini ok ${hStatus === 'ok' ? 'active' : ''}" onclick="window.setFleetStatus('${unit.id}', '${type}', 'ok')">OK</div>
-                                    <div class="fm-status-item-mini warn ${hStatus === 'warn' ? 'active' : ''}" onclick="window.setFleetStatus('${unit.id}', '${type}', 'warn')">BRIST</div>
-                                    <div class="fm-status-item-mini danger ${hStatus === 'danger' ? 'active' : ''}" onclick="window.setFleetStatus('${unit.id}', '${type}', 'danger')">FÖRBUD</div>
+                                <span class="bento-title">Systemstatus</span>
+                                <div style="display:flex; gap:5px;">
+                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'ok')" style="flex:1; padding:8px; border:1px solid #eee; border-radius:5px; background:${hStatus === 'ok' ? '#2ecc71' : 'white'}; color:${hStatus === 'ok' ? 'white' : '#666'}; font-weight:800;">OK</button>
+                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'warn')" style="flex:1; padding:8px; border:1px solid #eee; border-radius:5px; background:${hStatus === 'warn' ? '#f1c40f' : 'white'}; color:${hStatus === 'warn' ? 'white' : '#666'}; font-weight:800;">BRIST</button>
+                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'danger')" style="flex:1; padding:8px; border:1px solid #eee; border-radius:5px; background:${hStatus === 'danger' ? '#e30613' : 'white'}; color:${hStatus === 'danger' ? 'white' : '#666'}; font-weight:800;">FÖRBUD</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div id="tab-journal" class="fm-pane ${activeTab === 'tab-journal' ? 'active' : ''}">
-                    <div class="fm-chat-wrapper">
-                        <div class="fm-chat-feed" id="chat-feed-v3">
-                            ${notes.map(n => `
-                                <div class="bubble ${n.category === 'brist' ? 'brist' : 'info'} ${n.resolved ? 'resolved' : ''}">
-                                    <div class="meta">${n.author} • ${n.date}</div>
-                                    ${n.text}
-                                    ${n.category === 'brist' && !n.resolved ? `<button class="btn-resolve-note" onclick="window.resolveFleetNote('${unit.id}', '${type}', '${n.id}')">Åtgärda</button>` : ''}
-                                    <button class="fm-delete-note-inline" onclick="window.deleteFleetNote('${unit.id}', '${type}', '${n.id}')"><i class="fas fa-trash"></i></button>
+                <div id="tab-journal" class="fm-pane ${activeTab === 'tab-journal' ? 'active' : ''}" style="display:${activeTab === 'tab-journal' ? 'flex' : 'none'}; flex-direction:column; height:100%;">
+                    <div id="chat-feed-v3" style="flex:1; overflow-y:auto; padding:20px; background:#fbfbfb;">
+                        ${notes.length > 0 ? notes.map(n => `
+                            <div class="bubble ${n.category === 'brist' ? 'brist' : 'info'} ${n.resolved ? 'resolved' : ''}">
+                                <div class="meta">${n.author} • ${n.date}</div>
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <span>${n.text} ${n.resolved ? '✅' : ''}</span>
+                                    <div style="display:flex; gap:10px;">
+                                        ${n.category === 'brist' && !n.resolved ? `<button onclick="window.resolveFleetNote('${unit.id}', '${type}', '${n.id}')" style="background:#2ecc71; color:white; border:none; padding:2px 8px; border-radius:4px; font-size:0.7rem; cursor:pointer;">Åtgärda</button>` : ''}
+                                        <button onclick="window.deleteFleetNote('${unit.id}', '${type}', '${n.id}')" style="background:none; border:none; color:#ccc; cursor:pointer;"><i class="fas fa-trash"></i></button>
+                                    </div>
                                 </div>
-                            `).join('')}
-                        </div>
-                        <div class="fm-chat-input-area">
-                            <select id="chat-cat-select" class="fm-mini-select">
-                                <option value="info">Info</option>
-                                <option value="brist">Brist</option>
-                            </select>
-                            <input type="text" id="chat-text-input" placeholder="Skriv i loggen...">
-                            <button class="fm-btn-send" onclick="window.saveFleetNote('${unit.id}', '${type}')"><i class="fas fa-paper-plane"></i></button>
-                        </div>
+                            </div>
+                        `).join('') : '<p style="text-align:center; color:#ccc; padding:40px;">Inga journalnoteringar.</p>'}
+                    </div>
+                    <div class="fm-chat-input-area" style="padding:15px; border-top:1px solid #eee; background:white; display:flex; gap:10px;">
+                        <select id="chat-cat-select" style="padding:8px; border-radius:8px; border:1px solid #eee; font-weight:700;">
+                            <option value="info">Info</option>
+                            <option value="brist">Brist</option>
+                        </select>
+                        <input type="text" id="chat-text-input" placeholder="Skriv en notering..." style="flex:1; padding:8px 15px; border-radius:20px; border:1px solid #eee;">
+                        <button onclick="window.saveFleetNote('${unit.id}', '${type}')" style="background:var(--fog-brown); color:white; border:none; width:40px; height:40px; border-radius:50%; cursor:pointer;"><i class="fas fa-paper-plane"></i></button>
                     </div>
                 </div>
             </div>
         </div>
     `;
     modal.style.display = 'flex';
-    setTimeout(window.scrollToBottom, 50);
+    setTimeout(() => {
+        const feed = document.getElementById('chat-feed-v3');
+        if (feed) feed.scrollTop = feed.scrollHeight;
+    }, 100);
 }
 
 function renderModernBubble(note, unitId, uType) {
