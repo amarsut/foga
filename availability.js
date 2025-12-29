@@ -233,104 +233,88 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
     const hStatus = unit.healthStatus || 'ok';
     const notes = unit.notes || [];
     
-    // Beräkna användning (Bokade dagar / 30 senaste dagarna)
-    const now = new Date();
-    const thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(now.getDate() - 30);
+    // Beräkna användning (Senaste 30 dagarna)
+    const thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(new Date().getDate() - 30);
     const unitEvents = allEvents.filter(e => e.car === unit.id || (e.carts && e.carts.includes(unit.id)));
-    const activeDaysCount = unitEvents.filter(e => new Date(e.startDate) >= thirtyDaysAgo).length;
-    const usagePercent = Math.round((activeDaysCount / 30) * 100);
+    const activeDays = unitEvents.filter(e => new Date(e.startDate) >= thirtyDaysAgo).length;
+    const usagePercent = Math.round((activeDays / 30) * 100);
 
-    // Filtrera journalnoteringar för översikten (visa senaste 3)
+    // Senaste 3 loggar för översikten
     const recentNotes = [...notes].reverse().slice(0, 3);
 
     body.innerHTML = `
         <div class="bento-modal">
-            <header class="modal-header-vision" style="padding: 20px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: white;">
-                <div style="display:flex; align-items:center; gap:15px;">
-                    <i class="fas ${type === 'car' ? 'fa-truck-pickup' : 'fa-coffee'}" style="font-size: 1.6rem; color: var(--fog-brown)"></i>
-                    <h3 style="margin:0; font-weight:900; font-size: 1.4rem;">${unit.id} <span style="background:#005a9e; color:white; padding:2px 8px; border-radius:6px; font-size:0.8rem; margin-left:10px;">${unit.regNo || 'INGET REG'}</span></h3>
+            <header style="padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; background: white; border-bottom: 1px solid #eee;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <i class="fas ${type === 'car' ? 'fa-truck-pickup' : 'fa-coffee'}" style="font-size: 1.5rem; color: var(--fog-brown)"></i>
+                    <h3 style="margin:0; font-weight:900;">${unit.id} <span style="background:#005a9e; color:white; padding:2px 8px; border-radius:6px; font-size:0.75rem; margin-left:8px;">${unit.regNo || '---'}</span></h3>
                 </div>
                 ${hStatus === 'danger' ? `
-                    <div class="pulse-danger">
+                    <div class="pulse-pill danger">
                         <i class="fas fa-radiation"></i> KÖRFÖRBUD (DANGER)
                     </div>
-                ` : `<div style="color:var(--success); font-weight:850; font-size:0.8rem;"><i class="fas fa-check-circle"></i> SYSTEM STATUS: OK</div>`}
-                <button class="fm-close-icon" onclick="window.closeUnitModal()" style="border:none; background:#f5f5f5; width:35px; height:35px; border-radius:50%; cursor:pointer;"><i class="fas fa-times"></i></button>
+                ` : `<div style="color:var(--success); font-weight:800; font-size:0.75rem;"><i class="fas fa-check-circle"></i> SYSTEM STATUS: OK</div>`}
+                <button class="fm-close-icon" onclick="window.closeUnitModal()"><i class="fas fa-times"></i></button>
             </header>
 
-            <nav class="fm-nav-tabs" style="display:flex; gap:30px; padding:0 30px; border-bottom:1px solid #eee; background: white;">
+            <nav class="fm-nav-tabs">
                 <button class="fm-tab-link ${activeTab === 'tab-overview' ? 'active' : ''}" onclick="window.switchModalTab(this, 'tab-overview')">Översikt & Planering</button>
                 <button class="fm-tab-link ${activeTab === 'tab-journal' ? 'active' : ''}" onclick="window.switchModalTab(this, 'tab-journal')">Journal (${notes.length})</button>
             </nav>
             
-            <div class="fm-viewport" style="flex:1; overflow:hidden; background:#fbfbfb;">
-                <div id="tab-overview" class="fm-pane ${activeTab === 'tab-overview' ? 'active' : ''}" style="display:${activeTab === 'tab-overview' ? 'block' : 'none'};">
+            <div class="fm-viewport">
+                <div id="tab-overview" class="fm-pane ${activeTab === 'tab-overview' ? 'active' : ''}">
                     <div class="bento-grid-modal">
                         
                         <div class="bento-box">
                             <span class="bento-title">Senaste Journalanteckningar</span>
-                            <div style="display:flex; flex-direction:column; gap:12px;">
+                            <div style="display:flex; flex-direction:column;">
                                 ${recentNotes.length > 0 ? recentNotes.map(n => `
-                                    <div class="bubble ${n.category === 'brist' ? 'brist' : 'info'}" style="margin:0;">
-                                        <div class="meta" style="font-size:0.65rem; font-weight:700; opacity:0.5; margin-bottom:4px;">${n.author} • ${n.date}</div>
-                                        <div style="font-size:0.85rem; line-height:1.4;">${n.text}</div>
+                                    <div class="bubble-vision ${n.category === 'brist' ? 'brist' : 'info'}">
+                                        <div class="meta">${n.author} • ${n.date}</div>
+                                        <div>${n.text}</div>
                                     </div>
-                                `).join('') : '<p style="color:#ccc; font-style:italic;">Inga anteckningar ännu.</p>'}
+                                `).join('') : '<p style="color:#ccc; font-style:italic;">Inga anteckningar.</p>'}
                             </div>
                         </div>
 
                         <div style="display:flex; flex-direction:column; gap:20px;">
                             <div class="bento-box">
                                 <span class="bento-title">Besiktning & Service</span>
-                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
-                                    <div class="spec-item">
+                                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                                    <div>
                                         <label style="font-size:0.6rem; font-weight:800; color:#bbb; text-transform:uppercase;">Senaste Service</label>
-                                        <div style="font-weight:700; font-size:0.95rem; color:var(--fog-brown);">${unit.lastService || 'Saknas'}</div>
+                                        <div style="font-weight:700; color:var(--fog-brown);">${unit.lastService || '---'}</div>
                                     </div>
-                                    <div class="spec-item">
+                                    <div>
                                         <label style="font-size:0.6rem; font-weight:800; color:#bbb; text-transform:uppercase;">Nästa Besiktning</label>
-                                        <div style="font-weight:700; font-size:0.95rem; color:${hStatus === 'danger' ? 'var(--fog-red)' : 'inherit'}">
-                                            ${unit.nextInspection || 'Ej satt'} <i class="fas fa-clock" style="margin-left:5px; opacity:0.5;"></i>
+                                        <div style="font-weight:700; color:${hStatus === 'danger' ? 'var(--fog-red)' : 'inherit'};">
+                                            ${unit.nextInspection || '---'} <i class="fas fa-clock" style="margin-left:4px; opacity:0.3;"></i>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="usage-card">
-                                <span class="bento-title" style="color: rgba(255,255,255,0.6); margin-bottom: 5px;">Användning</span>
+                            <div class="usage-card-vision">
+                                <span class="bento-title" style="color:rgba(255,255,255,0.5);">Användning</span>
                                 <div class="usage-val">${usagePercent}%</div>
-                                <span class="usage-label">Bokad ${activeDaysCount} av 30 dagar</span>
+                                <span class="usage-label">Bokad ${activeDays} av 30 dagar</span>
                             </div>
 
-                            <div class="bento-box" style="padding:15px;">
+                            <div class="bento-box">
                                 <span class="bento-title">Ändra Systemstatus</span>
                                 <div style="display:flex; gap:8px;">
-                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'ok')" style="flex:1; padding:10px; border-radius:10px; border:1px solid #eee; cursor:pointer; font-weight:800; background:${hStatus === 'ok' ? '#2ecc71' : 'white'}; color:${hStatus === 'ok' ? 'white' : '#666'};">OK</button>
-                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'warn')" style="flex:1; padding:10px; border-radius:10px; border:1px solid #eee; cursor:pointer; font-weight:800; background:${hStatus === 'warn' ? '#f1c40f' : 'white'}; color:${hStatus === 'warn' ? 'white' : '#666'};">BRIST</button>
-                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'danger')" style="flex:1; padding:10px; border-radius:10px; border:1px solid #eee; cursor:pointer; font-weight:800; background:${hStatus === 'danger' ? '#e30613' : 'white'}; color:${hStatus === 'danger' ? 'white' : '#666'};">FÖRBUD</button>
+                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'ok')" style="flex:1; padding:10px; border-radius:10px; border:1px solid #eee; font-weight:800; background:${hStatus === 'ok' ? '#2ecc71' : 'white'}; color:${hStatus === 'ok' ? 'white' : '#666'};">OK</button>
+                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'warn')" style="flex:1; padding:10px; border-radius:10px; border:1px solid #eee; font-weight:800; background:${hStatus === 'warn' ? '#f1c40f' : 'white'}; color:${hStatus === 'warn' ? 'white' : '#666'};">BRIST</button>
+                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'danger')" style="flex:1; padding:10px; border-radius:10px; border:1px solid #eee; font-weight:800; background:${hStatus === 'danger' ? '#e30613' : 'white'}; color:${hStatus === 'danger' ? 'white' : '#666'};">FÖRBUD</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div id="tab-journal" class="fm-pane ${activeTab === 'tab-journal' ? 'active' : ''}" style="display:${activeTab === 'tab-journal' ? 'flex' : 'none'}; flex-direction:column; height:100%;">
-                    <div id="chat-feed-v3" style="flex:1; overflow-y:auto; padding:20px;">
-                        ${notes.map(n => `
-                            <div class="bubble ${n.category === 'brist' ? 'brist' : 'info'} ${n.resolved ? 'resolved' : ''}">
-                                <div class="meta">${n.author} • ${n.date}</div>
-                                <div style="display:flex; justify-content:space-between; align-items:center;">
-                                    <span>${n.text}</span>
-                                    ${n.category === 'brist' && !n.resolved ? `<button onclick="window.resolveFleetNote('${unit.id}', '${type}', '${n.id}')" style="background:#2ecc71; color:white; border:none; padding:4px 10px; border-radius:6px; font-size:0.7rem; cursor:pointer; font-weight:700;">Åtgärda</button>` : ''}
-                                </div>
-                            </div>
-                        `).join('')}
+                <div id="tab-journal" class="fm-pane ${activeTab === 'tab-journal' ? 'active' : ''}">
                     </div>
-                    <div style="padding:15px; background:white; border-top:1px solid #eee; display:flex; gap:10px;">
-                        <input type="text" id="chat-text-input" placeholder="Skriv i journalen..." style="flex:1; padding:12px 20px; border-radius:30px; border:1px solid #ddd; outline:none;">
-                        <button onclick="window.saveFleetNote('${unit.id}', '${type}')" style="background:var(--fog-brown); color:white; border:none; width:45px; height:45px; border-radius:50%; cursor:pointer;"><i class="fas fa-paper-plane"></i></button>
-                    </div>
-                </div>
             </div>
         </div>
     `;
