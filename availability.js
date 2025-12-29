@@ -231,47 +231,27 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
     const modal = document.getElementById('unit-modal');
     const body = document.getElementById('modal-body');
     const hStatus = unit.healthStatus || 'ok';
-    const isCart = type === 'cart';
     const notes = unit.notes || [];
-    const notesCount = notes.length;
-
-    // --- LOGIK FÖR UNDERHÅLL ---
     const now = new Date();
-    const nextInsp = (!isCart && unit.nextInspection) ? new Date(unit.nextInspection) : null;
-    const lastServ = unit.lastService ? new Date(unit.lastService) : null;
-    const isInspExpired = nextInsp && now > nextInsp;
-    const oneYearAgo = new Date(); oneYearAgo.setFullYear(now.getFullYear() - 1);
-    const isServiceOld = lastServ && lastServ < oneYearAgo;
 
-    // --- LOGIK FÖR EVENT-HISTORIK (Kopplat till kalendern) ---
-    // Matchar unitId mot uppdragets bil, släp eller vagn-lista
-    const unitEvents = allEvents.filter(e => 
-        e.car === unit.id || 
-        e.trailer === unit.id || 
-        (e.carts && e.carts.includes(unit.id))
-    );
-
+    // Event-historik
+    const unitEvents = allEvents.filter(e => e.car === unit.id || (e.carts && e.carts.includes(unit.id)));
     const futureEvents = unitEvents.filter(e => new Date(e.startDate) >= now).sort((a,b) => new Date(a.startDate) - new Date(b.startDate));
-    const pastEvents = unitEvents.filter(e => new Date(e.startDate) < now).sort((a,b) => new Date(b.startDate) - new Date(a.startDate)).slice(0, 2);
 
     body.innerHTML = `
-        <div class="fm-premium-container" style="height: 650px;">
+        <div class="bento-modal">
             <header class="modal-header-vision">
                 <div style="display:flex; align-items:center; gap:15px;">
                     <i class="fas ${type === 'car' ? 'fa-truck-pickup' : 'fa-coffee'}" style="font-size: 1.5rem; color: var(--fog-brown)"></i>
                     <h3 style="margin:0; font-weight:900;">${unit.id} ${unit.regNo ? `<span style="color:#999; font-weight:400; font-size:0.9rem;">${unit.regNo}</span>` : ''}</h3>
                 </div>
-                ${hStatus === 'danger' ? `
-                    <div class="status-pulse-badge">
-                        <i class="fas fa-exclamation-triangle"></i> KÖRFÖRBUD (DANGER)
-                    </div>
-                ` : `<div style="color:var(--success); font-weight:800; font-size:0.8rem;"><i class="fas fa-check-circle"></i> STATUS: OK</div>`}
+                ${hStatus === 'danger' ? `<div class="status-pulse-badge"><i class="fas fa-radiation"></i> KÖRFÖRBUD (DANGER)</div>` : ''}
                 <button class="fm-close-icon" onclick="window.closeUnitModal()"><i class="fas fa-times"></i></button>
             </header>
-    
+
             <nav class="fm-nav-tabs">
                 <button class="fm-tab-link ${activeTab === 'tab-overview' ? 'active' : ''}" onclick="window.switchModalTab(this, 'tab-overview')">Översikt & Planering</button>
-                <button class="fm-tab-link ${activeTab === 'tab-journal' ? 'active' : ''}" onclick="window.switchModalTab(this, 'tab-journal')">Journal (${notesCount})</button>
+                <button class="fm-tab-link ${activeTab === 'tab-journal' ? 'active' : ''}" onclick="window.switchModalTab(this, 'tab-journal')">Journal (${notes.length})</button>
             </nav>
             
             <div class="fm-viewport">
@@ -290,23 +270,23 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
                                 `).join('') : '<div class="fm-empty-text">Inga bokade uppdrag</div>'}
                             </div>
                         </div>
-    
+
                         <div style="display:flex; flex-direction:column; gap:20px;">
                             <div class="bento-box">
-                                <span class="bento-title">Teknisk Specifikation</span>
+                                <span class="bento-title">Besiktning & Service</span>
                                 <div class="specs-mini-grid">
                                     <div class="spec-item">
-                                        <label>Reg-nr</label>
-                                        <input type="text" id="inp-reg" value="${unit.regNo || ''}" class="comment-input-transparent" style="font-weight:700;">
+                                        <label>Senaste Service</label>
+                                        <input type="date" id="inp-last-serv" value="${unit.lastService || ''}" class="comment-input-transparent">
                                     </div>
-                                    <div class="spec-item ${isInspExpired ? 'alert' : ''}">
+                                    <div class="spec-item">
                                         <label>Nästa Besiktning</label>
-                                        <input type="date" id="inp-next-insp" value="${unit.nextInspection || ''}" class="comment-input-transparent" style="color:${isInspExpired ? 'var(--fog-red)' : 'inherit'}">
+                                        <input type="date" id="inp-next-insp" value="${unit.nextInspection || ''}" class="comment-input-transparent">
                                     </div>
                                 </div>
-                                <button class="fm-btn-save-discrete" style="margin-top:15px; width:100%;" onclick="window.saveVehicleData('${unit.id}', '${type}')">Spara ändringar</button>
+                                <button class="fm-btn-save-mini" onclick="window.saveVehicleData('${unit.id}', '${type}')">Spara ändringar</button>
                             </div>
-    
+
                             <div class="bento-box">
                                 <span class="bento-title">Ändra Systemstatus</span>
                                 <div class="fm-status-list-compact">
@@ -318,16 +298,34 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
                         </div>
                     </div>
                 </div>
-    
+
                 <div id="tab-journal" class="fm-pane ${activeTab === 'tab-journal' ? 'active' : ''}">
-                    ...
+                    <div class="fm-chat-wrapper">
+                        <div class="fm-chat-feed" id="chat-feed-v3">
+                            ${notes.map(n => `
+                                <div class="bubble ${n.category === 'brist' ? 'brist' : 'info'} ${n.resolved ? 'resolved' : ''}">
+                                    <div class="meta">${n.author} • ${n.date}</div>
+                                    ${n.text}
+                                    ${n.category === 'brist' && !n.resolved ? `<button class="btn-resolve-note" onclick="window.resolveFleetNote('${unit.id}', '${type}', '${n.id}')">Åtgärda</button>` : ''}
+                                    <button class="fm-delete-note-inline" onclick="window.deleteFleetNote('${unit.id}', '${type}', '${n.id}')"><i class="fas fa-trash"></i></button>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="fm-chat-input-area">
+                            <select id="chat-cat-select" class="fm-mini-select">
+                                <option value="info">Info</option>
+                                <option value="brist">Brist</option>
+                            </select>
+                            <input type="text" id="chat-text-input" placeholder="Skriv i loggen...">
+                            <button class="fm-btn-send" onclick="window.saveFleetNote('${unit.id}', '${type}')"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     `;
-
-    if (activeTab === 'tab-journal') setTimeout(window.scrollToBottom, 50);
     modal.style.display = 'flex';
+    setTimeout(window.scrollToBottom, 50);
 }
 
 function renderModernBubble(note, unitId, uType) {
