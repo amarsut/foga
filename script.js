@@ -263,10 +263,9 @@ function renderDashboard(area) {
 }
 
 function renderMissionCard(a) {
-    const isPackar = a.step === 'Packar';
     const startDate = new Date(a.startDate);
     const day = startDate.getDate();
-    const month = startDate.toLocaleDateString('sv-SE', { month: 'short' });
+    const month = startDate.toLocaleDateString('sv-SE', { month: 'short' }).toUpperCase().replace('.', '');
 
     // Beräkna pack-progress
     const totalItems = (a.carItems || []).concat(a.cartItems || []).filter(i => i.type === 'item');
@@ -274,43 +273,36 @@ function renderMissionCard(a) {
     const progressPercent = totalItems.length > 0 ? Math.round((doneItems / totalItems.length) * 100) : 0;
 
     return `
-        <div class="mission-card" style="display:flex; padding:0; overflow:hidden; margin-bottom:15px;">
+        <div class="mission-card-vision" onclick="window.editAssignment('${a.id}')">
             <div class="date-badge">
-                <span class="day">${day}</span>
                 <span class="month">${month}</span>
+                <span class="day">${day}</span>
             </div>
-            <div style="padding: 15px; flex:1; display:flex; flex-direction:column; gap:8px;">
-                <div style="display:flex; justify-content:space-between; align-items:start;">
-                    <div>
-                        <strong style="font-size:1.1rem; display:block;">${a.event}</strong>
-                        <small style="color:#888;">${a.businessArea || 'Event'}</small>
-                    </div>
-                    <button onclick="toggleExpand('${a.id}', ${!a.expanded})" style="background:none; border:none; color:#ccc;">
-                        <i class="fas fa-chevron-${a.expanded ? 'up' : 'down'}"></i>
-                    </button>
+            <div class="mission-content">
+                <div class="mission-header">
+                    <span class="mission-title">${a.event}</span>
+                    <i class="fas fa-chevron-right" style="color:#ccc"></i>
                 </div>
-
                 <div class="resource-row">
-                    ${a.car ? `<div class="res-pill"><i class="fas fa-truck"></i> ${a.car}</div>` : ''}
-                    ${(a.carts || []).map(c => `<div class="res-pill"><i class="fas fa-coffee"></i> ${c}</div>`).join('')}
+                    ${a.car && a.car !== 'Ej kopplad' ? `<div class="res-pill"><i class="fas fa-truck"></i> ${a.car}</div>` : ''}
+                    ${(a.carts || []).map(c => {
+                        // Kontrollera om vagnen har en brist för att visa röd varnings-pill
+                        const unitData = [...window.lastCars, ...window.lastCarts].find(u => u.id === c);
+                        const isDanger = unitData && unitData.healthStatus === 'danger';
+                        return `<div class="res-pill ${isDanger ? 'danger-alert' : ''}">
+                            <i class="fas ${isDanger ? 'fa-exclamation-triangle' : 'fa-coffee'}"></i> ${c} ${isDanger ? '(BRIST)' : ''}
+                        </div>`;
+                    }).join('')}
                 </div>
-
-                <div class="pack-progress-container" style="margin-top:5px;">
-                    <div style="display:flex; justify-content:space-between; font-size:0.65rem; font-weight:800; color:#999; text-transform:uppercase; margin-bottom:4px;">
-                        <span>Packning</span>
-                        <span>${doneItems}/${totalItems.length} klart</span>
+                <div class="pack-progress-container">
+                    <div class="pack-label">
+                        <span>Packningstatus</span>
+                        <span>${doneItems} / ${totalItems.length} varor</span>
                     </div>
-                    <div class="progress-bar-bg" style="height:6px; background:#eee; border-radius:10px; overflow:hidden;">
-                        <div class="progress-fill" style="height:100%; background:${progressPercent === 100 ? 'var(--success)' : 'var(--fog-red)'}; width:${progressPercent}%; transition:width 0.5s;"></div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-fill" style="width: ${progressPercent}%; background: ${progressPercent === 100 ? '#2ecc71' : '#e30613'};"></div>
                     </div>
                 </div>
-
-                ${a.expanded ? `
-                    <div style="padding-top:10px; margin-top:5px; border-top:1px solid #f9f9f9; display:flex; gap:15px;">
-                        <button onclick="window.editAssignment('${a.id}')" class="btn-edit-details" style="font-size:0.75rem;"><i class="fas fa-edit"></i> Redigera</button>
-                        <button onclick="deleteAssignment('${a.id}')" style="background:none; border:none; color:var(--fog-red); font-size:0.75rem; cursor:pointer;">Radera</button>
-                    </div>
-                ` : ''}
             </div>
         </div>
     `;
