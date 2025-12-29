@@ -238,47 +238,29 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
     const hStatus = unit.healthStatus || 'ok';
     const notes = unit.notes || [];
     const images = unit.attachedImages || [];
-    const docs = unit.attachedDocs || []; // Dokument-arkiv
+    const docs = unit.attachedDocs || [];
     
-    // 1. Beräkna användning (Senaste 30 dagarna)
+    // 1. Beräkna användning
     const thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(new Date().getDate() - 30);
     const unitEvents = (allEvents || []).filter(e => e.car === unit.id || (e.carts && e.carts.includes(unit.id)));
     const activeDays = unitEvents.filter(e => new Date(e.startDate) >= thirtyDaysAgo).length;
     const usagePercent = Math.round((activeDays / 30) * 100);
 
-    // 2. Kontrollera besiktning och beräkna "Dagar kvar"
+    // 2. Kontrollera besiktning (endast för färgkodning, ingen text)
     const now = new Date();
     const nextInsp = unit.nextInspection ? new Date(unit.nextInspection) : null;
     const isInspExpired = nextInsp && now > nextInsp;
 
-    let countdownText = "";
-    let countdownClass = "";
-    if (nextInsp) {
-        const diffDays = Math.ceil((nextInsp - now) / (1000 * 60 * 60 * 24));
-        if (diffDays < 0) {
-            countdownText = "UTGÅNGEN!";
-            countdownClass = "is-expired"; // Blinkande röd via CSS
-        } else if (diffDays <= 30) {
-            countdownText = `${diffDays} dagar kvar`;
-            countdownClass = "is-urgent"; // Brun/varningsfärg
-        } else {
-            countdownText = `${diffDays} dagar kvar`;
-            countdownClass = "is-safe"; // Grå
-        }
-    }
-
-    // 3. Status-konfiguration för headern
+    // 3. Status-konfiguration
     const statusCfg = {
         ok: { cl: 'ok', icon: 'fa-check-circle', txt: 'Driftklar', color: '#2ecc71', bg: '#e6f9ed' },
         warn: { cl: 'warn', icon: 'fa-exclamation-triangle', txt: 'Brist', color: '#f1c40f', bg: '#fff9e6' },
         danger: { cl: 'danger', icon: 'fa-radiation', txt: 'Körförbud', color: '#e30613', bg: '#fff5f5' }
     };
     const s = statusCfg[hStatus];
-
-    // Hjälpfunktion för Teams-avatarer
     const getInitials = (name) => name ? name.split(' ').map(n => n[0]).join('').toUpperCase() : '?';
 
-    // 4. GENERERA 5 SENASTE LOGGAR MED TEAMS-STIL
+    // 4. Loggar i Teams-stil
     const recentNotesHtml = notes.length > 0 ? [...notes].reverse().slice(0, 5).map(n => `
         <div class="mini-teams-row" style="display:flex; gap:10px; margin-bottom:10px;">
             <div class="teams-avatar" style="width:28px; height:28px; border-radius:50%; background:#d1d1d1; color:#444; display:flex; align-items:center; justify-content:center; font-size:0.65rem; font-weight:700; flex-shrink:0;">${getInitials(n.author)}</div>
@@ -292,7 +274,7 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
     `).join('') : '<p style="color:#ccc; font-size:0.8rem; font-style:italic; padding:10px;">Inga anteckningar i loggen.</p>';
 
     body.innerHTML = `
-        <div class="bento-modal" style="width: 820px;">
+        <div class="bento-modal" style="width: 850px;">
             <header class="modal-header-vision" style="padding:15px 20px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
                 <div style="display:flex; align-items:center; gap:10px;">
                     <i class="fas ${type === 'car' ? 'fa-truck-pickup' : 'fa-coffee'}" style="font-size: 1.2rem; color: var(--fog-brown)"></i>
@@ -321,37 +303,33 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
                                 <div style="margin-top:5px;">${recentNotesHtml}</div>
                             </div>
                             
-                            <div class="bento-box">
-                                <span class="bento-title">Bilder & Dokumentation</span>
-                                ${images.length > 0 ? `<div class="image-grid-overview" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(60px,1fr)); gap:8px;">${images.map(url => `<div class="overview-img-wrapper" style="aspect-ratio:1; border-radius:8px; overflow:hidden;"><img src="${url}" style="width:100%; height:100%; object-fit:cover;"></div>`).join('')}</div>` : `
-                                    <div class="empty-images-placeholder" style="padding:20px; border:2px dashed #eee; border-radius:15px; text-align:center; color:#ccc;">
-                                        <i class="fas fa-camera-retro" style="font-size:1.5rem; display:block; margin-bottom:5px;"></i>
-                                        <p style="font-size:0.7rem; font-weight:700; margin:0;">Inga bilder bifogade</p>
-                                    </div>
-                                `}
-                                <label style="display:block; text-align:center; margin-top:15px; font-size:0.65rem; color:var(--fog-brown); cursor:pointer; font-weight:850;">
-                                    <i class="fas fa-plus-circle"></i> LADDA UPP NY BILD
-                                    <input type="file" id="image-upload-input" hidden accept="image/*" onchange="window.handleImageUpload('${unit.id}', '${type}')">
-                                </label>
-                            </div>
-
-                            <div class="bento-box">
-                                <span class="bento-title">Manualer & Dokument</span>
-                                <div class="doc-list" style="margin-top:10px; display:flex; flex-direction:column; gap:8px;">
-                                    ${docs.length > 0 ? docs.map(doc => `
-                                        <div class="doc-item" onclick="window.open('${doc.url}')" style="display:flex; align-items:center; gap:10px; padding:8px; background:#f9f9f9; border-radius:8px; cursor:pointer; transition: 0.2s;">
-                                            <i class="fas fa-file-pdf" style="color:var(--fog-red);"></i>
-                                            <span style="font-size:0.75rem; font-weight:600; flex:1;">${doc.name}</span>
-                                            <i class="fas fa-external-link-alt" style="font-size:0.6rem; color:#ccc;"></i>
-                                        </div>
-                                    `).join('') : `
-                                        <div style="font-size:0.7rem; color:#ccc; text-align:center; padding:10px;">Inga dokument uppladdade</div>
+                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                                <div class="bento-box">
+                                    <span class="bento-title">Bilder</span>
+                                    ${images.length > 0 ? `<div class="image-grid-overview" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(50px,1fr)); gap:5px;">${images.map(url => `<div class="overview-img-wrapper" style="aspect-ratio:1; border-radius:6px; overflow:hidden;"><img src="${url}" style="width:100%; height:100%; object-fit:cover;"></div>`).join('')}</div>` : `
+                                        <div style="text-align:center; padding:15px; border:1px dashed #eee; border-radius:10px; color:#ccc; font-size:0.65rem;">Inga bilder</div>
                                     `}
+                                    <label style="display:block; text-align:center; margin-top:10px; font-size:0.6rem; color:var(--fog-brown); cursor:pointer; font-weight:850;">
+                                        <i class="fas fa-plus-circle"></i> LADDA UPP BILD
+                                        <input type="file" id="image-upload-input" hidden accept="image/*" onchange="window.handleImageUpload('${unit.id}', '${type}')">
+                                    </label>
                                 </div>
-                                <label style="display:block; text-align:center; margin-top:12px; font-size:0.6rem; color:#999; cursor:pointer; font-weight:700;">
-                                    <i class="fas fa-file-upload"></i> LADDA UPP DOKUMENT (PDF)
-                                    <input type="file" hidden accept=".pdf" onchange="window.handleDocUpload('${unit.id}', '${type}')">
-                                </label>
+
+                                <div class="bento-box">
+                                    <span class="bento-title">Dokument</span>
+                                    <div class="doc-list" style="display:flex; flex-direction:column; gap:5px;">
+                                        ${docs.length > 0 ? docs.map(doc => `
+                                            <div class="doc-item" onclick="window.open('${doc.url}')" style="display:flex; align-items:center; gap:8px; padding:6px; background:#f9f9f9; border-radius:6px; cursor:pointer;">
+                                                <i class="fas fa-file-pdf" style="color:var(--fog-red); font-size:0.8rem;"></i>
+                                                <span style="font-size:0.65rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${doc.name}</span>
+                                            </div>
+                                        `).join('') : `<div style="text-align:center; padding:15px; border:1px dashed #eee; border-radius:10px; color:#ccc; font-size:0.65rem;">Inga PDF</div>`}
+                                    </div>
+                                    <label style="display:block; text-align:center; margin-top:10px; font-size:0.6rem; color:#999; cursor:pointer; font-weight:700;">
+                                        <i class="fas fa-file-upload"></i> LADDA UPP PDF
+                                        <input type="file" hidden accept=".pdf" onchange="window.handleDocUpload('${unit.id}', '${type}')">
+                                    </label>
+                                </div>
                             </div>
                         </div>
 
@@ -366,10 +344,7 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
                                     <div>
                                         <label style="font-size:0.5rem; font-weight:800; color:#999; text-transform:uppercase;">Besiktning</label>
                                         <div style="font-weight:700; font-size:0.8rem; color:${isInspExpired ? '#e30613' : 'inherit'};">
-                                            ${unit.nextInspection || '---'}
-                                        </div>
-                                        <div style="font-size:0.6rem; font-weight:800; margin-top:2px; color:${countdownClass === 'is-expired' ? 'var(--fog-red)' : (countdownClass === 'is-urgent' ? 'var(--fog-brown)' : '#999')};">
-                                            ${countdownText}
+                                            ${unit.nextInspection || '---'} ${isInspExpired ? '<i class="fas fa-clock"></i>' : ''}
                                         </div>
                                     </div>
                                 </div>
@@ -384,16 +359,15 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
                                     </div>
                                     <div style="font-size:0.65rem; color:#999; margin-top:6px; font-weight:600;">Bokad ${activeDays} av 30 dagar</div>
                                 </div>
-
                                 <button onclick="window.saveVehicleData('${unit.id}', '${type}')" style="width:100%; margin-top:12px; background:var(--fog-brown); color:white; border:none; padding:8px; border-radius:6px; cursor:pointer; font-weight:700; font-size:0.75rem;">Spara Ändringar</button>
                             </div>
 
                             <div class="bento-box" style="padding:10px;">
                                 <span class="bento-title">Systemstatus</span>
                                 <div style="display:flex; gap:4px;">
-                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'ok')" style="flex:1; padding:7px 0; border-radius:8px; border:1px solid #eee; font-weight:850; font-size:0.6rem; background:${hStatus === 'ok' ? '#2ecc71' : 'white'}; color:${hStatus === 'ok' ? 'white' : '#666'};">OK</button>
-                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'warn')" style="flex:1; padding:7px 0; border-radius:8px; border:1px solid #eee; font-weight:850; font-size:0.6rem; background:${hStatus === 'warn' ? '#f1c40f' : 'white'}; color:${hStatus === 'warn' ? 'white' : '#666'};">BRIST</button>
-                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'danger')" style="flex:1; padding:7px 0; border-radius:8px; border:1px solid #eee; font-weight:850; font-size:0.6rem; background:${hStatus === 'danger' ? '#e30613' : 'white'}; color:${hStatus === 'danger' ? 'white' : '#666'};">FÖRBUD</button>
+                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'ok')" style="flex:1; padding:7px 0; border-radius:8px; border:1px solid #eee; font-weight:850; font-size:0.65rem; background:${hStatus === 'ok' ? '#2ecc71' : 'white'}; color:${hStatus === 'ok' ? 'white' : '#666'};">OK</button>
+                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'warn')" style="flex:1; padding:7px 0; border-radius:8px; border:1px solid #eee; font-weight:850; font-size:0.65rem; background:${hStatus === 'warn' ? '#f1c40f' : 'white'}; color:${hStatus === 'warn' ? 'white' : '#666'};">BRIST</button>
+                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'danger')" style="flex:1; padding:7px 0; border-radius:8px; border:1px solid #eee; font-weight:850; font-size:0.65rem; background:${hStatus === 'danger' ? '#e30613' : 'white'}; color:${hStatus === 'danger' ? 'white' : '#666'};">FÖRBUD</button>
                                 </div>
                             </div>
                         </div>
@@ -401,7 +375,33 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
                 </div>
 
                 <div id="tab-journal" class="fm-pane ${activeTab === 'tab-journal' ? 'active' : ''}" style="display:${activeTab === 'tab-journal' ? 'flex' : 'none'}; flex-direction:column; height:100%;">
+                    <div id="chat-feed-v3" style="flex:1; overflow-y:auto; padding:20px; background:#f5f5f5; display:flex; flex-direction:column; gap:15px;">
+                        ${notes.map(n => `
+                            <div class="teams-msg-row ${n.category === 'brist' ? 'brist' : ''}" style="display:flex; gap:12px; align-self: flex-start; max-width: 85%;">
+                                <div class="teams-avatar" style="width:32px; height:32px; border-radius:50%; background:#d1d1d1; color:#444; display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:700; flex-shrink:0;">${getInitials(n.author)}</div>
+                                <div style="display:flex; flex-direction:column;">
+                                    <div style="font-size:0.75rem; margin-bottom:4px; color:#616161;"><strong>${n.author}</strong> <span>${n.date}</span></div>
+                                    <div class="teams-bubble" style="background:white; padding:10px 14px; border-radius:0 8px 8px 8px; border:1px solid #e1dfdd; box-shadow:0 1px 3px rgba(0,0,0,0.1);">
+                                        <p style="margin:0; font-size:0.9rem; line-height:1.4;">${n.text}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
                     </div>
+                    <div class="teams-input-container" style="padding:15px; background:white; border-top:1px solid #eee; display:flex; flex-direction:column; gap:10px;">
+                        <input type="text" id="chat-text-input" placeholder="Skriv ett meddelande" style="border:none; outline:none; font-size:0.95rem; width:100%;" onkeydown="if(event.key==='Enter') window.saveFleetNote('${unit.id}', '${type}')">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div style="display:flex; gap:15px; color:#616161; font-size:1.1rem;">
+                                <i class="fas fa-paperclip"></i>
+                                <select id="chat-cat-select" style="border:none; background:none; font-size:0.75rem; font-weight:700; cursor:pointer;">
+                                    <option value="info">INFO</option>
+                                    <option value="brist">BRIST</option>
+                                </select>
+                            </div>
+                            <button onclick="window.saveFleetNote('${unit.id}', '${type}')" style="background:none; border:none; color:var(--fog-brown); font-size:1.3rem; cursor:pointer;"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     `;
