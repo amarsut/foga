@@ -120,7 +120,7 @@ export function renderCalendarView(assignments, db, cars = [], trailers = [], ca
         }));
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialDate: target || new Date(),
-            initialView: 'dayGridTwoWeeks',
+            initialView: 'dayGridMonth',
             locale: 'sv',
             firstDay: 1,
             height: 'auto',
