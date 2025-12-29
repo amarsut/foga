@@ -233,7 +233,7 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
     const body = document.getElementById('modal-body');
     const hStatus = unit.healthStatus || 'ok';
     const notes = unit.notes || [];
-    const images = unit.attachedImages || []; // Nytt fält för bilder
+    const images = unit.attachedImages || [];
     
     // Beräkna användning
     const thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(new Date().getDate() - 30);
@@ -241,116 +241,110 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
     const activeDays = unitEvents.filter(e => new Date(e.startDate) >= thirtyDaysAgo).length;
     const usagePercent = Math.round((activeDays / 30) * 100);
 
-    // Status-badge för headern (Punkt 1)
-    const statusConfig = {
-        ok: { class: 'ok', icon: 'fa-check-circle', label: 'Driftklar' },
-        warn: { class: 'warn', icon: 'fa-exclamation-triangle', label: 'Brist' },
-        danger: { class: 'danger', icon: 'fa-radiation', label: 'Körförbud' }
-    };
-    const s = statusConfig[hStatus];
+    const now = new Date();
+    const nextInsp = unit.nextInspection ? new Date(unit.nextInspection) : null;
+    const isInspExpired = nextInsp && now > nextInsp;
 
-    // Senaste loggar (Punkt 2 - Fixad loop)
-    const recentNotesHtml = notes.length > 0 ? [...notes].reverse().slice(0, 3).map(n => `
-        <div class="bubble-vision ${n.category === 'brist' ? 'brist' : 'info'}" style="padding:10px; border-radius:12px; margin-bottom:8px; border-left:4px solid ${n.category === 'brist' ? 'var(--fog-red)' : '#0078d4'}; background:${n.category === 'brist' ? '#fff5f5' : '#f0f7ff'};">
-            <div style="font-size:0.6rem; font-weight:700; opacity:0.5; margin-bottom:3px;">${n.author} • ${n.date}</div>
-            <div style="font-size:0.8rem;">${n.text}</div>
-        </div>
-    `).join('') : '<p style="color:#ccc; font-size:0.8rem; font-style:italic; padding:10px;">Inga anteckningar i loggen.</p>';
+    // Status-piller inställningar
+    const statusCfg = {
+        ok: { cl: 'ok', icon: 'fa-check-circle', txt: 'Driftklar' },
+        warn: { cl: 'warn', icon: 'fa-exclamation-triangle', txt: 'Brist' },
+        danger: { cl: 'danger', icon: 'fa-radiation', txt: 'Körförbud' }
+    };
+    const s = statusCfg[hStatus];
 
     body.innerHTML = `
-        <div class="bento-modal">
+        <div class="bento-modal" style="width: 850px;">
             <header class="modal-header-vision">
                 <div style="display:flex; align-items:center; gap:12px;">
-                    <i class="fas ${type === 'car' ? 'fa-truck-pickup' : 'fa-coffee'}" style="font-size: 1.3rem; color: var(--fog-brown)"></i>
-                    <h3 style="margin:0; font-weight:900;">${unit.id} <span style="background:#005a9e; color:white; padding:2px 7px; border-radius:5px; font-size:0.75rem; margin-left:5px;">${unit.regNo || '---'}</span></h3>
+                    <i class="fas ${type === 'car' ? 'fa-truck-pickup' : 'fa-coffee'}" style="font-size: 1.2rem; color: var(--fog-brown)"></i>
+                    <h3 style="margin:0; font-weight:900; font-size:1.1rem;">${unit.id} <span style="background:#005a9e; color:white; padding:2px 6px; border-radius:4px; font-size:0.7rem; margin-left:6px;">${unit.regNo || '---'}</span></h3>
                 </div>
                 <div class="header-right-actions">
-                    <div class="status-pill-header ${s.class}"><i class="fas ${s.icon}"></i> ${s.label}</div>
+                    <div class="status-pill-header ${s.cl}"><i class="fas ${s.icon}"></i> ${s.txt}</div>
                     <button class="fm-close-icon" onclick="window.closeUnitModal()"><i class="fas fa-times"></i></button>
                 </div>
             </header>
 
-            <nav class="fm-nav-tabs" style="padding: 0 25px; border-bottom: 1px solid #f0f0f0;">
-                <button class="fm-tab-link ${activeTab === 'tab-overview' ? 'active' : ''}" onclick="window.switchModalTab(this, 'tab-overview')">Översikt & Planering</button>
+            <nav class="fm-nav-tabs">
+                <button class="fm-tab-link ${activeTab === 'tab-overview' ? 'active' : ''}" onclick="window.switchModalTab(this, 'tab-overview')">Översikt</button>
                 <button class="fm-tab-link ${activeTab === 'tab-journal' ? 'active' : ''}" onclick="window.switchModalTab(this, 'tab-journal')">Journal (${notes.length})</button>
             </nav>
             
-            <div class="fm-viewport" style="background:#fbfcfd; flex:1; overflow-y:auto;">
-                <div id="tab-overview" class="fm-pane ${activeTab === 'tab-overview' ? 'active' : ''}" style="display:${activeTab === 'tab-overview' ? 'block' : 'none'};">
+            <div class="fm-viewport">
+                <div id="tab-overview" class="fm-pane ${activeTab === 'tab-overview' ? 'active' : ''}">
                     <div class="bento-grid-modal">
-                        <div style="display:flex; flex-direction:column; gap:15px;">
+                        <div style="display:flex; flex-direction:column; gap:12px;">
                             <div class="bento-box">
-                                <span class="bento-title">Senaste Journalanteckningar</span>
-                                ${recentNotesHtml}
+                                <span class="bento-title">Senaste Loggar</span>
+                                ${notes.length > 0 ? [...notes].reverse().slice(0, 2).map(n => `
+                                    <div class="bubble-vision ${n.category}" style="border-left:3px solid ${n.category === 'brist' ? 'var(--fog-red)' : '#0078d4'}; padding:8px; background:#f9f9f9; border-radius:8px; margin-bottom:5px;">
+                                        <div style="font-size:0.6rem; opacity:0.5;">${n.author} • ${n.date}</div>
+                                        <div style="font-size:0.75rem;">${n.text}</div>
+                                    </div>
+                                `).join('') : '<p style="color:#ccc; font-size:0.75rem;">Inga noteringar.</p>'}
                             </div>
                             
                             <div class="bento-box">
-                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                                    <span class="bento-title" style="margin:0;">Dokumentation & Bilder</span>
-                                    <label class="fm-btn-save-discrete" style="cursor:pointer;">
-                                        <i class="fas fa-plus"></i> Ladda upp
-                                        <input type="file" id="image-upload-input" hidden accept="image/*" onchange="window.handleImageUpload('${unit.id}', '${type}')">
-                                    </label>
-                                </div>
+                                <span class="bento-title">Bilder</span>
                                 <div class="image-grid-overview">
-                                    ${images.length > 0 ? images.map(url => `<div class="overview-img-wrapper"><img src="${url}" onclick="window.open(this.src)"></div>`).join('') : `
-                                        <div class="empty-images-placeholder">
-                                            <i class="fas fa-images" style="font-size:1.5rem; margin-bottom:5px; display:block;"></i>
-                                            Inga bilder uppladdade
-                                        </div>
-                                    `}
+                                    ${images.length > 0 ? images.map(url => `<div class="overview-img-wrapper"><img src="${url}"></div>`).join('') : '<div style="font-size:0.7rem; color:#ccc; text-align:center; padding:10px;">Inga bilder</div>'}
                                 </div>
+                                <label style="display:block; text-align:center; margin-top:10px; font-size:0.65rem; color:var(--fog-brown); cursor:pointer; font-weight:800;">
+                                    <i class="fas fa-camera"></i> LADDA UPP BILD
+                                    <input type="file" hidden accept="image/*" onchange="window.handleImageUpload('${unit.id}', '${type}')">
+                                </label>
                             </div>
                         </div>
 
-                        <div style="display:flex; flex-direction:column; gap:15px;">
+                        <div style="display:flex; flex-direction:column; gap:12px;">
                             <div class="bento-box">
                                 <span class="bento-title">Besiktning & Service</span>
-                                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                                     <div>
-                                        <label style="font-size:0.55rem; font-weight:800; color:#bbb; text-transform:uppercase;">Service</label>
-                                        <div style="font-weight:700; font-size:0.85rem;">${unit.lastService || '---'}</div>
+                                        <label style="font-size:0.5rem; font-weight:800; color:#bbb;">SERVICE</label>
+                                        <div style="font-weight:700; font-size:0.8rem;">${unit.lastService || '---'}</div>
                                     </div>
                                     <div>
-                                        <label style="font-size:0.55rem; font-weight:800; color:#bbb; text-transform:uppercase;">Besiktning</label>
-                                        <div style="font-weight:700; font-size:0.85rem; color:${hStatus === 'danger' ? 'var(--fog-red)' : 'inherit'};">
-                                            ${unit.nextInspection || '---'} ${hStatus === 'danger' ? '<i class="fas fa-clock"></i>' : ''}
+                                        <label style="font-size:0.5rem; font-weight:800; color:#bbb;">BESIKTNING</label>
+                                        <div style="font-weight:700; font-size:0.8rem; color:${isInspExpired ? 'var(--fog-red)' : 'inherit'};">
+                                            ${unit.nextInspection || '---'} ${isInspExpired ? '<i class="fas fa-clock"></i>' : ''}
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="usage-tile-vision">
-                                <span style="font-size:0.6rem; font-weight:800; text-transform:uppercase; opacity:0.7;">Användning</span>
-                                <div style="font-size:1.8rem; font-weight:900;">${usagePercent}%</div>
-                                <div style="font-size:0.65rem; font-weight:700; opacity:0.8;">Bokad ${activeDays} av 30 dagar</div>
+                                <div class="percent">${usagePercent}%</div>
+                                <div class="label">Bokad ${activeDays} av 30 dagar</div>
                             </div>
 
-                            <div class="bento-box">
+                            <div class="bento-box" style="padding:10px;">
                                 <span class="bento-title">Systemstatus</span>
-                                <div style="display:flex; gap:5px;">
-                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'ok')" style="flex:1; padding:8px 0; border-radius:10px; border:1px solid #eee; font-weight:850; font-size:0.65rem; background:${hStatus === 'ok' ? '#2ecc71' : 'white'}; color:${hStatus === 'ok' ? 'white' : '#666'};">OK</button>
-                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'warn')" style="flex:1; padding:8px 0; border-radius:10px; border:1px solid #eee; font-weight:850; font-size:0.65rem; background:${hStatus === 'warn' ? '#f1c40f' : 'white'}; color:${hStatus === 'warn' ? 'white' : '#666'};">BRIST</button>
-                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'danger')" style="flex:1; padding:8px 0; border-radius:10px; border:1px solid #eee; font-weight:850; font-size:0.65rem; background:${hStatus === 'danger' ? '#e30613' : 'white'}; color:${hStatus === 'danger' ? 'white' : '#666'};">FÖRBUD</button>
+                                <div style="display:flex; gap:4px;">
+                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'ok')" style="flex:1; padding:8px; border-radius:8px; border:1px solid #eee; font-weight:850; font-size:0.6rem; background:${hStatus === 'ok' ? '#2ecc71' : 'white'}; color:${hStatus === 'ok' ? 'white' : '#666'};">OK</button>
+                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'warn')" style="flex:1; padding:8px; border-radius:8px; border:1px solid #eee; font-weight:850; font-size:0.6rem; background:${hStatus === 'warn' ? '#f1c40f' : 'white'}; color:${hStatus === 'warn' ? 'white' : '#666'};">BRIST</button>
+                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'danger')" style="flex:1; padding:8px; border-radius:8px; border:1px solid #eee; font-weight:850; font-size:0.6rem; background:${hStatus === 'danger' ? '#e30613' : 'white'}; color:${hStatus === 'danger' ? 'white' : '#666'};">FÖRBUD</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div id="tab-journal" class="fm-pane ${activeTab === 'tab-journal' ? 'active' : ''}" style="display:${activeTab === 'tab-journal' ? 'flex' : 'none'}; flex-direction:column; height:100%;">
-                    <div id="chat-feed-v3" style="flex:1; overflow-y:auto; padding:20px;">
+                <div id="tab-journal" class="fm-pane ${activeTab === 'tab-journal' ? 'active' : ''}">
+                    <div id="chat-feed-v3" style="flex:1; overflow-y:auto; padding:15px; background:#f9f9f9;">
                         ${notes.map(n => `
-                            <div class="bubble-vision ${n.category === 'brist' ? 'brist' : 'info'} ${n.resolved ? 'resolved' : ''}" style="padding:12px; border-radius:15px; margin-bottom:12px; border-left:4px solid ${n.category === 'brist' ? 'var(--fog-red)' : '#0078d4'}; background:${n.category === 'brist' ? '#fff5f5' : '#f0f7ff'};">
-                                <div style="font-size:0.65rem; font-weight:700; opacity:0.5; margin-bottom:4px;">${n.author} • ${n.date}</div>
-                                <div style="display:flex; justify-content:space-between; align-items:center;">
-                                    <span style="font-size:0.9rem;">${n.text}</span>
-                                    ${n.category === 'brist' && !n.resolved ? `<button onclick="window.resolveFleetNote('${unit.id}', '${type}', '${n.id}')" style="background:#2ecc71; color:white; border:none; padding:4px 10px; border-radius:6px; font-size:0.7rem; font-weight:700; cursor:pointer;">Åtgärda</button>` : ''}
-                                </div>
+                            <div class="bubble-vision ${n.category}" style="border-left:4px solid ${n.category === 'brist' ? 'var(--fog-red)' : '#0078d4'}; padding:10px; background:white; margin-bottom:10px; border-radius:12px;">
+                                <div style="font-size:0.6rem; opacity:0.5; margin-bottom:3px;">${n.author} • ${n.date}</div>
+                                <div style="font-size:0.85rem;">${n.text}</div>
                             </div>
                         `).join('')}
                     </div>
+                    <div style="padding:10px; background:white; border-top:1px solid #eee; display:flex; gap:8px;">
+                        <input type="text" id="chat-text-input" placeholder="Skriv..." style="flex:1; padding:8px 15px; border-radius:20px; border:1px solid #ddd; outline:none;">
+                        <button onclick="window.saveFleetNote('${unit.id}', '${type}')" style="background:var(--fog-brown); color:white; border:none; width:35px; height:35px; border-radius:50%;"><i class="fas fa-paper-plane"></i></button>
                     </div>
+                </div>
             </div>
         </div>
     `;
