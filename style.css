@@ -1890,3 +1890,80 @@ body {
     font-size: 0.65rem;
     font-weight: 800;
 }
+
+/*
+TEST
+*/
+
+/* --- NYA MODERNA KOMPONENTER --- */
+
+/* 1. Dashboard Datum-Badge */
+.date-badge {
+    background: var(--fog-brown);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    min-width: 65px;
+    text-align: center;
+}
+.date-badge .day { font-size: 1.4rem; font-weight: 900; line-height: 1; }
+.date-badge .month { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; opacity: 0.8; }
+
+/* 2. Resurs-piller på Dashboard */
+.resource-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.res-pill {
+    background: #f0f0f0;
+    padding: 3px 10px;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #666;
+}
+.res-pill.danger-alert { 
+    border: 1.5px solid var(--fog-red); 
+    color: var(--fog-red); 
+    background: #fff5f5; 
+}
+
+/* 3. Bento-Grid för Fleet Modal */
+.bento-grid-modal {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 20px;
+    padding: 20px;
+}
+
+.bento-box {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid #eee;
+}
+
+/* 4. Status Pulse Animation */
+.status-pulse-badge {
+    padding: 6px 15px;
+    background: #fff5f5;
+    color: var(--fog-red);
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 900;
+    animation: statusPulse 2s infinite;
+}
+
+@keyframes statusPulse {
+    0% { box-shadow: 0 0 0 0 rgba(227, 6, 19, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(227, 6, 19, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(227, 6, 19, 0); }
+}
+
+/* Responsivitet för Bento */
+@media (max-width: 768px) {
+    .bento-grid-modal { grid-template-columns: 1fr; }
+}
