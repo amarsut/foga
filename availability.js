@@ -228,6 +228,8 @@ function renderFleetGroup(title, icon, items, type) {
     `;
 }
 
+const getInitials = (name) => name ? name.split(' ').map(n => n[0]).join('').toUpperCase() : '?';
+
 export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overview', allEvents = []) {
     // ... tidigare logik för hStatus, usage etc behålls ...
     const notes = unit.notes || [];
