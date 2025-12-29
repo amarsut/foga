@@ -70,10 +70,11 @@
     /* Startposition: utanför skärmen till vänster */
     bottom: 0 !important;
     right: auto !important;
-    width: 280px !important;
+    width: 240px !important;
     height: 100vh !important;
     margin: 0 !important;
     border-radius: 0 !important;
+    overflow-y: auto !important;
 
     /* Layout */
     display: flex !important;
@@ -102,17 +103,21 @@
 .sidebar-nav {
     display: flex !important;
     flex-direction: column !important;
-    padding: 20px !important;
+    padding: 10px !important;
 }
 
 .nav-item {
     flex: none !important;
     width: 100% !important;
     height: auto !important;
-    padding: 15px !important;
+    padding: 12px 15px !important;
     justify-content: flex-start !important;
     font-size: 0.9rem !important;
     color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.sidebar-footer {
+    padding: 10px 15px !important;
 }
 
 /* ==========================================================================
@@ -872,4 +877,30 @@
     /* Minskad padding för att få bort "luften" */
     background: #fff !important;
     border-top: 1px solid #eee !important;
+}
+
+/* ==========================================================================
+   STATISTIK-VY PÅ MOBILEN
+   ========================================================================== */
+
+/* --- MOBILANPASSNING FÖR STATISTIK --- */
+@media (max-width: 768px) {
+    .stats-kpi-row {
+        grid-template-columns: repeat(2, 1fr); /* Två KPI-kort i bredd på mobil */
+        gap: 10px;
+    }
+
+    .stats-main-grid {
+        grid-template-columns: 1fr; /* Stapla graferna vertikalt */
+        gap: 15px;
+    }
+
+    .chart-container-card {
+        min-height: 200px; /* Något lägre grafer på mobil */
+        padding: 10px;
+    }
+
+    .kpi-val {
+        font-size: 1rem;
+    }
 }
