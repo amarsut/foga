@@ -28,88 +28,91 @@
 /* ==========================================================================
    DEN FLYTANDE BAREN (Symmetri & Fixerad höjd)
    ========================================================================== */
-.sidebar {
-    position: fixed;
-    bottom: 20px;
-    left: 12px;
-    right: 12px;
-    width: auto !important;
 
-    /* Strikt höjd för kontroll */
-    height: 65px !important;
-
-    background: rgba(92, 64, 51, 0.96) !important;
-    backdrop-filter: blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px);
-
-    border-radius: 20px !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-
-    /* Kraftfull centrering av alla 5 knappar */
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: space-around !important;
-    align-items: stretch !important;
-    /* Låter barnen fylla hela höjden för centrering */
-
-    padding: 0 5px !important;
-    margin: 0 !important;
-    z-index: 10000;
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35) !important;
+/* Minska marginaler för att få mer plats */
+.main-content {
+    padding: 10px !important;
+    /* Minskat från 15px */
+    padding-bottom: 80px !important;
 }
 
-/* Tvingar containers att inte störa layouten */
-.sidebar-top,
-.sidebar-bottom,
-.sidebar-nav {
-    display: contents !important;
+#content-area {
+    padding: 0 !important;
+    /* Tar bort dubbel padding inuti vyer */
+}
+
+/* Rensa bort gamla header-ikoner som spökar */
+.sidebar {
+    display: none;
+    /* Döljs som standard, visas via .mobile-active */
+}
+
+.sidebar.mobile-active {
+    display: flex !important;
+    left: 0 !important;
+}
+
+/* Gör korten i kalendern bredare */
+.day-card {
+    margin: 0 0 10px 0 !important;
+    width: 100% !important;
 }
 
 /* ==========================================================================
-   DE 5 KNAPPARNA (Identisk behandling & vertikal centrering)
+   NY SIDEBAR-LOGIK (ERSÄTTER BOTTOM BAR)
    ========================================================================== */
-.nav-item,
-.bug-report-link {
-    /* Ger varje knapp exakt 20% av bredden */
-    flex: 1 !important;
 
+.sidebar {
+    /* Återställ från bottom-bar till sidebar */
+    position: fixed !important;
+    top: 0 !important;
+    left: -280px !important;
+    /* Startposition: utanför skärmen till vänster */
+    bottom: 0 !important;
+    right: auto !important;
+    width: 280px !important;
+    height: 100vh !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+
+    /* Layout */
     display: flex !important;
     flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    /* Centrerar ikoner och text vertikalt */
-
-    height: 100% !important;
-    background: transparent !important;
-    border: none !important;
-    outline: none !important;
-    box-shadow: none !important;
-
-    color: rgba(255, 255, 255, 0.45) !important;
-    transition: all 0.3s ease;
-    -webkit-tap-highlight-color: transparent;
-    padding: 0 !important;
-    margin: 0 !important;
+    background: var(--fog-brown) !important;
+    z-index: 10000 !important;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 5px 0 25px rgba(0, 0, 0, 0.5) !important;
 }
 
-/* Ikonernas storlek */
-.nav-item i,
-.bug-report-link i {
-    font-size: 1.25rem !important;
-    margin: 0 0 3px 0 !important;
+/* När menyn är aktiv */
+.sidebar.mobile-active {
+    left: 0 !important;
+}
+
+/* Visa element som tidigare var dolda på mobil */
+.sidebar .logo-area,
+.sidebar .sidebar-header-wrapper,
+.sidebar .nav-item span,
+.sidebar .user-info-text {
     display: block !important;
+    opacity: 1 !important;
 }
 
-/* Texten - Anpassad för att allt ska få plats på en rad */
-.nav-item,
-.bug-report-link {
-    font-size: 0.52rem !important;
-    /* Något mindre för att "Rapportera Bugg" ska få plats */
-    font-weight: 800 !important;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-    line-height: 1.1 !important;
-    text-align: center;
+/* Tvinga nav-items att staplas vertikalt */
+.sidebar-nav {
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 20px !important;
+}
+
+.nav-item {
+    flex: none !important;
+    width: 100% !important;
+    height: auto !important;
+    padding: 15px !important;
+    justify-content: flex-start !important;
+    font-size: 0.9rem !important;
+    color: rgba(255, 255, 255, 0.8) !important;
 }
 
 /* ==========================================================================
@@ -120,9 +123,10 @@
 }
 
 .nav-item.active i {
-    color: var(--fog-red) !important;
+    color: white !important;
+    /* Ändra från var(--fog-red) till white */
     transform: scale(1.1);
-    filter: drop-shadow(0 0 10px rgba(227, 6, 19, 0.7));
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.3));
 }
 
 /* HEADER & WEATHER */
@@ -155,7 +159,8 @@
 .modal-overlay {
     padding: 0 !important;
     align-items: stretch !important;
-    overflow: hidden !important; /* Förhindrar dubbla scroll-lister */
+    overflow: hidden !important;
+    /* Förhindrar dubbla scroll-lister */
 }
 
 /* Tvingar modalens innehåll till 100% bredd och höjd */
@@ -164,12 +169,14 @@
     height: 100% !important;
     max-width: none !important;
     border-radius: 0 !important;
-    
+
     /* NYA REGLER FÖR SCROLL: */
     display: flex !important;
     flex-direction: column !important;
-    overflow-y: auto !important; /* Aktiverar vertikal scroll */
-    -webkit-overflow-scrolling: touch; /* Ger mjuk "iOS-känsla" vid scroll */
+    overflow-y: auto !important;
+    /* Aktiverar vertikal scroll */
+    -webkit-overflow-scrolling: touch;
+    /* Ger mjuk "iOS-känsla" vid scroll */
     background-color: #fdfcfb !important;
 }
 
@@ -830,7 +837,7 @@
 /* ==========================================================================
    FLEET-MODAL CHAT-VY FÖR MOBIL
    ========================================================================== */
-   
+
 /* 1. Tvinga modalen att inte växa utanför skärmen */
 .fm-premium-container {
     height: 100dvh !important;
