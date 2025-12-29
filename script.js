@@ -901,7 +901,11 @@ window.renderStatsView = (area) => {
                     <canvas id="chartArea"></canvas>
                 </div>
                 <div class="chart-container-card">
-                    <h5>FORDONSUTNYTTJANDE</h5>
+                    <h5>NYTTJANDE FOGAROLLIBIL</h5>
+                    <canvas id="chartCarts"></canvas>
+                </div>
+                <div class="chart-container-card">
+                    <h5>NYTTJANDE FÖRETAGSBIL</h5>
                     <canvas id="chartResources"></canvas>
                 </div>
                 <div class="chart-container-card">
@@ -964,6 +968,40 @@ function initStatsCharts() {
             datasets: [{ data: Object.values(packStatus), backgroundColor: ['#2ecc71', '#e30613'] }]
         },
         options: { plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } } }
+    });
+
+    // 4. Räkna vagnutnyttjande/Fogarollibil
+    const cartUsage = {};
+    assignments.forEach(a => {
+        if (a.carts && Array.isArray(a.carts)) {
+            a.carts.forEach(cartId => {
+                cartUsage[cartId] = (cartUsage[cartId] || 0) + 1;
+            });
+        }
+    });
+    
+    // 2. Sortera för att visa de 5 mest använda vagnarna
+    const sortedCarts = Object.entries(cartUsage)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5);
+    
+    // 3. Skapa grafen
+    statsCharts.carts = new Chart(document.getElementById('chartCarts'), {
+        type: 'bar',
+        data: {
+            labels: sortedCarts.map(c => c[0]),
+            datasets: [{
+                label: 'Antal Uppdrag',
+                data: sortedCarts.map(c => c[1]),
+                backgroundColor: '#e30613', // Fogarolli-röd för vagnarna
+                borderRadius: 5
+            }]
+        },
+        options: {
+            indexAxis: 'y', // Pro-tip: Horisontella staplar är snyggt för vagnnamn
+            scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } },
+            plugins: { legend: { display: false } }
+        }
     });
 }
 
