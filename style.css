@@ -81,15 +81,15 @@ body {
 
 /* Header & Logga */
 .sidebar-header-wrapper {
-    padding: 25px 20px;
+    padding: 15px 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    min-height: 100px;
+    min-height: 70px;
 }
 
 .sidebar-logo {
-    max-width: 140px;
+    max-width: 110px;
     transition: opacity var(--transition-speed);
 }
 
@@ -123,14 +123,18 @@ body {
 .sidebar-nav {
     padding: 0 15px;
     flex: 1;
+
+    overflow-y: auto;
+    scrollbar-width: none; /* Göm scrollbar Firefox */
 }
+.sidebar-nav::-webkit-scrollbar { display: none; } /* Göm scrollbar Chrome/Safari */
 
 .nav-section-label {
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     text-transform: uppercase;
     letter-spacing: 1px;
     color: rgba(255,255,255,0.4);
-    margin: 20px 0 10px 15px;
+    margin: 10px 0 5px 15px;
     transition: opacity var(--transition-speed);
 }
 
@@ -141,13 +145,14 @@ body {
 .nav-item {
     display: flex;
     align-items: center;
-    padding: 12px 15px;
-    margin-bottom: 5px;
+    padding: 8px 15px;
+    margin-bottom: 2px;
     border-radius: 10px;
     color: rgba(255,255,255,0.7);
     cursor: pointer;
     white-space: nowrap;
     transition: all 0.2s;
+    font-size: 0.85rem;
 }
 
 .nav-item i {
@@ -1519,4 +1524,369 @@ body {
 
 .form-check-item.checked .comment-input-transparent {
     opacity: 0.6;
+}
+
+/* ==========================================================================
+   LAGER-TV & STATISTIKVY
+   ========================================================================== */
+
+   /* ==========================================
+   STATISTIK DASHBOARD - KOMPAKT & MODERN
+   ========================================== */
+.stats-dashboard-compact {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding-top: 5px;
+}
+
+.stats-kpi-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.kpi-box {
+    background: white;
+    padding: 12px 15px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    border: 1px solid #f0f0f0;
+}
+
+.kpi-icon {
+    width: 35px;
+    height: 35px;
+    background: #fdf6f6;
+    color: #e30613;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    font-size: 1.1rem;
+}
+
+.kpi-box.warning .kpi-icon { background: #fffdf0; color: #f1c40f; }
+
+.kpi-data { display: flex; flex-direction: column; }
+.kpi-val { font-size: 1.1rem; font-weight: 850; color: #5c4033; line-height: 1.2; }
+.kpi-lab { font-size: 0.7rem; color: #999; font-weight: 700; text-transform: uppercase; }
+
+.stats-main-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.chart-container-card {
+    background: white;
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    border: 1px solid #f0f0f0;
+    min-height: 250px;
+}
+
+.chart-container-card h5 {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #bbb;
+    margin-bottom: 15px;
+    text-align: center;
+    letter-spacing: 0.5px;
+}
+
+/* ==========================================================================
+   KOMPLETT CSS FÖR LAGER-TV v3.0 & STATS-DASHBOARD
+   ========================================================================== */
+
+/* 1. GEMENSAMMA MODERNA VARIABLER */
+:root {
+    --tv-glass-white: rgba(255, 255, 255, 0.03);
+    --tv-glass-border: rgba(255, 255, 255, 0.1);
+    --tv-glow-red: rgba(227, 6, 19, 0.4);
+    --tv-glow-green: rgba(46, 204, 113, 0.4);
+}
+
+/* 2. STATISTIK DASHBOARD - KOMPAKT MANAGEMENT-VY */
+.stats-dashboard-compact {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 10px 0;
+}
+
+.stats-kpi-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.kpi-box {
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    border: 1px solid #f0f0f0;
+    transition: transform 0.2s ease;
+}
+
+.kpi-box:hover { transform: translateY(-2px); }
+
+.kpi-icon {
+    width: 40px;
+    height: 40px;
+    background: #fdf6f6;
+    color: var(--fog-red);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    font-size: 1.2rem;
+}
+
+.kpi-box.warning .kpi-icon { background: #fffdf0; color: #f1c40f; }
+
+.kpi-data { display: flex; flex-direction: column; }
+.kpi-val { font-size: 1.2rem; font-weight: 850; color: var(--fog-brown); line-height: 1.1; }
+.kpi-lab { font-size: 0.65rem; color: #999; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.stats-main-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.chart-container-card {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    border: 1px solid #f0f0f0;
+}
+
+.chart-container-card h5 {
+    font-size: 0.75rem;
+    font-weight: 850;
+    color: #bbb;
+    margin-bottom: 20px;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+/* 3. LAGER-TV v3.0 - TOTAL SCREEN STYLING */
+.tv-screen {
+    position: fixed;
+    top: 0;
+    left: 90px; /* Anpassat för den kollapsade sidebaren */
+    right: 0;
+    bottom: 0;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 30px;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tv-screen.dark-theme { background: #0a0a0a; color: #fff; }
+.tv-screen.light-theme { background: #fdfcfb; color: #333; }
+
+/* 4. TV HEADER - GLASSMORPHISM & WIDGETS */
+.tv-header-glass {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    border-radius: 20px;
+    margin-bottom: 25px;
+    border: 1px solid var(--tv-glass-border);
+}
+
+.dark-theme .tv-header-glass { background: var(--tv-glass-white); backdrop-filter: blur(15px); }
+.light-theme .tv-header-glass { background: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-color: #eee; }
+
+/* Väder & Titel */
+.tv-title-group { display: flex; align-items: center; gap: 30px; }
+.tv-weather-widget { display: flex; align-items: center; gap: 12px; }
+.weather-icon { font-size: 1.8rem; color: #f1c40f; filter: drop-shadow(0 0 10px rgba(241, 196, 15, 0.3)); }
+.weather-text .temp { font-size: 1.1rem; font-weight: 900; display: block; }
+.weather-text .desc { font-size: 0.65rem; font-weight: 700; opacity: 0.6; text-transform: uppercase; }
+
+.tv-title-group h1 { font-size: 1.8rem; font-weight: 900; margin: 0; letter-spacing: -1.5px; }
+
+/* Dagsmätare i headern */
+.tv-total-progress-box { flex: 1; max-width: 350px; padding: 0 40px; }
+.tv-total-progress-box .label { font-size: 0.65rem; font-weight: 900; margin-bottom: 6px; opacity: 0.5; display: block; }
+.total-bar-container { height: 10px; background: rgba(128,128,128,0.15); border-radius: 10px; position: relative; overflow: hidden; }
+.total-bar-fill { height: 100%; background: linear-gradient(90deg, var(--fog-red), #ff4d4d); transition: width 1.5s ease; box-shadow: 0 0 10px var(--tv-glow-red); }
+.total-percent { position: absolute; right: 0; top: -18px; font-size: 0.75rem; font-weight: 900; color: var(--fog-red); }
+
+/* Klocka & Kontroller */
+.tv-controls { display: flex; align-items: center; gap: 20px; }
+.tv-clock-modern { text-align: right; line-height: 1.1; }
+.tv-clock-modern .time { display: block; font-size: 1.2rem; font-weight: 900; color: var(--fog-red); }
+.tv-clock-modern .date { font-size: 0.75rem; font-weight: 700; opacity: 0.5; }
+
+.theme-toggle-modern, .tv-exit-modern {
+    width: 40px; height: 40px; border-radius: 12px; border: none; cursor: pointer;
+    background: rgba(128,128,128,0.1); color: inherit; transition: 0.2s;
+}
+.theme-toggle-modern:hover { background: rgba(128,128,128,0.2); }
+.tv-exit-modern { background: var(--fog-red); color: white; }
+
+/* 5. TV LAYOUT - MISSIONS & SIDEBAR */
+.tv-layout-grid { display: grid; grid-template-columns: 1fr 320px; gap: 25px; flex: 1; overflow: hidden; }
+
+.tv-section-label { font-size: 0.75rem; font-weight: 900; color: #777; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1.5px; }
+
+/* Mission Cards */
+.tv-mission-list { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; padding-right: 5px; }
+.tv-card-glass {
+    padding: 18px 25px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center;
+    border-left: 6px solid #333; transition: 0.3s;
+}
+.dark-theme .tv-card-glass { background: #151515; border-bottom: 1px solid #222; }
+.light-theme .tv-card-glass { background: #fff; border: 1px solid #eee; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+
+.tv-card-glass.complete { border-left-color: #2ecc71; opacity: 0.7; }
+.tv-card-glass:not(.complete) { border-left-color: var(--fog-red); }
+
+.tv-event-title { font-size: 1.25rem; font-weight: 850; display: block; margin-bottom: 4px; }
+.tv-event-meta { font-size: 0.8rem; opacity: 0.5; font-weight: 600; }
+
+.tv-card-progress { width: 180px; display: flex; flex-direction: column; gap: 6px; }
+.prog-label { font-size: 0.8rem; font-weight: 900; text-align: right; }
+.prog-bar-bg { height: 8px; background: rgba(128,128,128,0.1); border-radius: 10px; overflow: hidden; }
+.prog-bar-fill { height: 100%; background: var(--fog-red); transition: width 1s ease; }
+.complete .prog-bar-fill { background: #2ecc71; box-shadow: 0 0 10px var(--tv-glow-green); }
+
+/* 6. SIDEBAR - FLEET STATUS & INFO */
+.tv-side-col { display: flex; flex-direction: column; gap: 25px; }
+.side-section { background: rgba(128,128,128,0.05); padding: 20px; border-radius: 20px; border: 1px solid rgba(128,128,128,0.1); }
+.light-theme .side-section { background: #fff; border: 1px solid #eee; }
+
+/* Fleet Tags - FIXADE FÄRGER */
+.tv-fleet-list { display: flex; flex-direction: column; gap: 8px; }
+.tv-fleet-tag-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: rgba(0,0,0,0.2); border-radius: 10px; }
+.light-theme .tv-fleet-tag-row { background: #f9f9f9; }
+
+.unit-name { font-weight: 800; font-size: 0.85rem; }
+.status-badge {
+    padding: 3px 10px; border-radius: 6px; font-size: 0.65rem; font-weight: 900;
+    text-transform: uppercase; color: #fff !important; text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.tv-fleet-tag-row.danger .status-badge { background: #e30613 !important; }
+.tv-fleet-tag-row.warn .status-badge { background: #f1c40f !important; color: #5c4033 !important; text-shadow: none; }
+
+/* Info Card */
+.tv-info-card {
+    background: rgba(241, 196, 15, 0.08); border-left: 4px solid #f1c40f;
+    padding: 15px; border-radius: 12px; display: flex; gap: 12px; align-items: flex-start;
+}
+.tv-info-card i { color: #f1c40f; font-size: 1.1rem; margin-top: 2px; }
+.tv-info-card p { font-size: 0.8rem; line-height: 1.5; margin: 0; font-weight: 600; opacity: 0.8; }
+
+/* 7. ANIMATIONER */
+@keyframes shimmer {
+    0% { background-position: -468px 0; }
+    100% { background-position: 468px 0; }
+}
+
+/* Scrollbar-fix för TV */
+.tv-mission-list::-webkit-scrollbar { width: 4px; }
+.tv-mission-list::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.2); border-radius: 10px; }
+
+/* ==========================================================================
+   DASHBOARD REFINED - GRID ALIGNMENT
+   ========================================================================== */
+
+/* Kompakt KPI-sektion */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    background: white;
+    padding: 15px 20px;
+    border-radius: 12px;
+    border: 1px solid #eee;
+}
+
+.stat-card h3 { font-size: 1.6rem; color: var(--fog-brown); font-weight: 850; margin: 0; }
+.stat-card p { font-size: 0.7rem; color: #999; text-transform: uppercase; font-weight: 700; margin-top: 4px; }
+
+/* Uppdragskort med strikt Grid */
+.mission-card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.dashboard-mission-grid {
+    display: grid;
+    /* Kolumner: Bil(15%), Släp(15%), Vagn(15%), Event(Flex), Status(100px), Pil(40px) */
+    grid-template-columns: 1.2fr 1.2fr 1.2fr 3fr 100px 40px;
+    align-items: center;
+    padding: 12px 20px;
+    gap: 15px;
+    cursor: pointer;
+}
+
+.grid-col {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.grid-col label {
+    font-size: 0.6rem;
+    font-weight: 800;
+    color: #bbb;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+}
+
+.grid-col span {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--fog-brown);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Specifik styling för event-text */
+.event-info-col strong {
+    font-size: 0.95rem;
+    font-weight: 850;
+    color: #333;
+    display: block;
+}
+
+.event-info-col small {
+    font-size: 0.75rem;
+    color: #888;
+}
+
+/* Kompaktare status-taggar */
+.status-tag {
+    padding: 4px 0;
+    width: 80px;
+    text-align: center;
+    border-radius: 50px;
+    font-size: 0.65rem;
+    font-weight: 800;
 }
