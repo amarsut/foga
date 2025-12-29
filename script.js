@@ -201,8 +201,18 @@ window.showView = (view, preDate = null) => {
     currentView = view;
     selectedStartDate = preDate;
 
-    // SÄKERHETSSPÄRR: Om vi inte redigerar något och går till create, 
-    // se till att minnet är tomt.
+    // --- NYTT: STÄNG SIDEBAR PÅ MOBIL ---
+    if (window.innerWidth <= 768) {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        if (sidebar) sidebar.classList.remove('mobile-active');
+        if (overlay) {
+            overlay.classList.remove('active');
+            overlay.style.display = 'none';
+        }
+    }
+    // ------------------------------------
+
     if (view === 'create' && !editingAssignmentId) {
         window.pendingAssignmentData = null;
         window.unitChecklists = {};
@@ -450,7 +460,19 @@ function renderChecklist() {
         if (!window.listSectionsExpanded[item.sectionId]) return '';
         return `
                     <div class="form-check-item ${item.done ? 'checked' : ''}" onclick="window.toggleFormCheck('${window.activeUnitId}', ${i})">
-                        <span>${formatItemName(item.name)}</span>
+                        <div class="item-content-wrapper">
+                            <span class="item-main-text">
+                                <strong>${item.qty || ''}${item.qty ? 'x ' : ''}</strong>${item.name}
+                            </span>
+                            
+                            <div class="item-comment-area" onclick="event.stopPropagation()">
+                                <input type="text" 
+                                    placeholder="+ Notering (t.ex. 85x)" 
+                                    value="${item.comment || ''}" 
+                                    onchange="window.updateComment('${window.activeUnitId}', ${i}, this.value)"
+                                    class="comment-input-transparent">
+                            </div>
+                        </div>
                         <i class="${item.done ? 'fas fa-check-square' : 'far fa-square'}"></i>
                     </div>`;
     }).join('')}
@@ -805,3 +827,18 @@ window.updateStep = async (id, step) => {
 
 document.getElementById('current-date').innerText = new Date().toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' });
 showView('calendar');
+
+window.updateComment = (unitId, index, val) => {
+    if (window.unitChecklists[unitId] && window.unitChecklists[unitId][index]) {
+        window.unitChecklists[unitId][index].comment = val;
+        console.log(`Notering sparad för ${window.unitChecklists[unitId][index].name}: ${val}`);
+    }
+};
+
+// Kör detta när sidan laddas för att återställa tidigare tillstånd
+document.addEventListener('DOMContentLoaded', () => {
+    const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+    if (isCollapsed) {
+        document.getElementById('sidebar').classList.add('collapsed');
+    }
+});
