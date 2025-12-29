@@ -2026,3 +2026,80 @@ TEST DASHBOARD KORT
     height: 100%;
     transition: width 0.4s ease;
 }
+
+/* ======================================
+TEST FLEET MODAL
+========================================= */
+
+/* --- BENTO GRID MODAL STYLING --- */
+.bento-modal {
+    background: #fdfcfb;
+    border-radius: 24px;
+    width: 950px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.15);
+}
+
+.bento-grid-modal {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr; /* Vänster box är större */
+    gap: 20px;
+    padding: 25px;
+    overflow-y: auto;
+}
+
+.bento-box {
+    background: white;
+    border-radius: 20px;
+    padding: 22px;
+    border: 1px solid #f0f0f0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    display: flex;
+    flex-direction: column;
+}
+
+.bento-title {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #bbb;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-bottom: 15px;
+}
+
+/* Användnings-kort (Brunt) */
+.usage-card {
+    background: var(--fog-brown);
+    color: white;
+    padding: 22px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.usage-val { font-size: 2.2rem; font-weight: 900; line-height: 1; margin: 5px 0; }
+.usage-label { font-size: 0.75rem; opacity: 0.8; font-weight: 600; }
+
+/* Status-piller för Header */
+.pulse-danger {
+    background: #fff5f5;
+    color: var(--fog-red);
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-weight: 900;
+    font-size: 0.75rem;
+    animation: pulseGlow 2s infinite;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+@keyframes pulseGlow {
+    0% { box-shadow: 0 0 0 0 rgba(227, 6, 19, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(227, 6, 19, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(227, 6, 19, 0); }
+}
