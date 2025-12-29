@@ -770,6 +770,81 @@
 }
 
 /* ==========================================================================
+   FLEET-MODAL
+   ========================================================================== */
+
+/* --- MOBILANPASSAD BENTO MODAL --- */
+@media (max-width: 768px) {
+    /* 1. Tvinga modalen att fylla skärmen */
+    .modal-content {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        height: 100% !important;
+        border-radius: 0 !important;
+    }
+
+    .bento-modal {
+        width: 100% !important;
+        height: 100% !important;
+        max-height: 100vh !important;
+        border-radius: 0 !important;
+    }
+
+    /* 2. Stapla Bento-boxarna vertikalt */
+    .bento-grid-modal {
+        grid-template-columns: 1fr !important; /* En kolumn istället för två */
+        padding: 15px !important;
+        gap: 15px !important;
+    }
+
+    /* 3. Justera Headern för små skärmar */
+    .modal-header-vision {
+        padding: 10px 15px !important;
+        flex-wrap: wrap; /* Tillåt radbrytning om statusen är lång */
+        gap: 10px;
+    }
+
+    .modal-header-vision h3 {
+        font-size: 1rem !important;
+    }
+
+    /* 4. Gör flikarna större för fingrar */
+    .fm-nav-tabs {
+        padding: 0 15px !important;
+        gap: 15px !important;
+    }
+
+    .fm-tab-link {
+        font-size: 0.8rem !important;
+        padding: 15px 0 !important;
+        flex: 1;
+        text-align: center;
+    }
+
+    /* 5. Anpassa användningsboxen */
+    .usage-tile-vision {
+        padding: 15px !important;
+    }
+
+    /* 6. Bildgalleri på mobil */
+    .image-grid-overview {
+        grid-template-columns: repeat(3, 1fr) !important; /* 3 bilder per rad */
+    }
+
+    /* 7. Status-pill i headern */
+    .status-pill-header {
+        order: 3; /* Flytta ner statusen under ID:t på extremt smala skärmar */
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .header-right-actions {
+        order: 2;
+    }
+}
+
+/* ==========================================================================
    FLEET-MODAL FÖR FORDON FLYTTAR TEKNISKDATA TILL TOPPEN OCH GÖR DET SNYGGARE
    ========================================================================== */
 
@@ -904,3 +979,4 @@
         font-size: 1rem;
     }
 }
+
