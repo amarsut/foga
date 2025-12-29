@@ -2063,3 +2063,98 @@ TEST
 .bubble.info { background: #f0f7ff; border-left-color: #0078d4; }
 .bubble.resolved { opacity: 0.6; background: #f9f9f9; border-left-color: #2ecc71; }
 .bubble .meta { font-size: 0.65rem; font-weight: 700; opacity: 0.5; margin-bottom: 4px; }
+
+/* --- DASHBOARD GRID (2-3 KORT I BREDD) --- */
+.mission-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 15px;
+    padding: 10px 0;
+}
+
+/* --- KOMPAKTA DASHBOARD-KORT (BILD 3/4 FIX) --- */
+.mission-card-vision {
+    background: white;
+    border-radius: 12px;
+    display: flex;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    cursor: pointer;
+    border: 1px solid #eee;
+    height: 110px; /* Minskad höjd för ett mer kompakt utseende */
+    transition: transform 0.2s;
+}
+
+.mission-card-vision:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+
+.date-badge {
+    background: var(--fog-brown);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    min-width: 75px;
+    flex-shrink: 0;
+}
+.date-badge .day { font-size: 1.6rem; font-weight: 900; line-height: 1; }
+.date-badge .month { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+
+.mission-content { 
+    padding: 10px 15px; 
+    flex: 1; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: space-between; /* Sprider ut innehållet vertikalt */
+    min-width: 0; 
+}
+
+.mission-title { 
+    font-weight: 800; 
+    font-size: 1rem; 
+    color: #333; 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    margin-bottom: 2px;
+}
+
+/* --- BENTO MODAL BOXAR (FIXAR BILD 2) --- */
+.bento-grid-modal {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 20px;
+    padding: 20px;
+    background: #fbfbfb;
+}
+
+.bento-box {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid #eee;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+}
+
+.bento-title {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #bbb;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    display: block;
+}
+
+/* Journal Bubblor */
+.bubble {
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+    border-left: 4px solid transparent;
+}
+.bubble.brist { background: #fff5f5; border-left-color: var(--fog-red); }
+.bubble.info { background: #f0f7ff; border-left-color: #0078d4; }
+.bubble.resolved { opacity: 0.6; background: #f9f9f9; border-left-color: #2ecc71; }
