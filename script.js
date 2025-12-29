@@ -905,7 +905,7 @@ window.renderStatsView = (area) => {
                     <canvas id="chartCarts"></canvas>
                 </div>
                 <div class="chart-container-card">
-                    <h5>NYTTJANDE FÖRETAGSBIL</h5>
+                    <h5>NYTTJANDE TRANSPORTBIL</h5>
                     <canvas id="chartResources"></canvas>
                 </div>
                 <div class="chart-container-card">
