@@ -233,97 +233,109 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
     const hStatus = unit.healthStatus || 'ok';
     const notes = unit.notes || [];
     
-    // Beräkna användning
+    // 1. Beräkna användning
     const thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(new Date().getDate() - 30);
-    const unitEvents = allEvents.filter(e => e.car === unit.id || (e.carts && e.carts.includes(unit.id)));
+    const unitEvents = (allEvents || []).filter(e => e.car === unit.id || (e.carts && e.carts.includes(unit.id)));
     const activeDays = unitEvents.filter(e => new Date(e.startDate) >= thirtyDaysAgo).length;
     const usagePercent = Math.round((activeDays / 30) * 100);
 
-    // Senaste 3 loggar
-    const recentNotes = [...notes].reverse().slice(0, 3);
+    // 2. Kontrollera besiktning för röda klockan
+    const now = new Date();
+    const nextInsp = unit.nextInspection ? new Date(unit.nextInspection) : null;
+    const isInspExpired = nextInsp && now > nextInsp;
+
+    // 3. Senaste loggar för översikten (Säkerställ att vi mappar rätt)
+    const recentNotesHtml = [...notes].reverse().slice(0, 3).map(n => `
+        <div class="bubble-vision ${n.category === 'brist' ? 'brist' : 'info'}" style="padding:10px; border-radius:12px; margin-bottom:8px; border-left:4px solid ${n.category === 'brist' ? 'var(--fog-red)' : '#0078d4'}; background:${n.category === 'brist' ? '#fff5f5' : '#f0f7ff'};">
+            <div style="font-size:0.6rem; font-weight:700; opacity:0.5; margin-bottom:3px;">${n.author} • ${n.date}</div>
+            <div style="font-size:0.8rem;">${n.text}</div>
+        </div>
+    `).join('');
 
     body.innerHTML = `
         <div class="bento-modal">
             <header class="modal-header-vision">
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <i class="fas ${type === 'car' ? 'fa-truck-pickup' : 'fa-coffee'}" style="font-size: 1.2rem; color: var(--fog-brown)"></i>
-                    <h3 style="margin:0; font-weight:900; font-size:1.1rem;">${unit.id} <span style="background:#005a9e; color:white; padding:1px 6px; border-radius:4px; font-size:0.7rem; margin-left:5px;">${unit.regNo || '---'}</span></h3>
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <i class="fas ${type === 'car' ? 'fa-truck-pickup' : 'fa-coffee'}" style="font-size: 1.3rem; color: var(--fog-brown)"></i>
+                    <h3 style="margin:0; font-weight:900;">${unit.id} <span style="background:#005a9e; color:white; padding:2px 7px; border-radius:5px; font-size:0.75rem; margin-left:5px;">${unit.regNo || '---'}</span></h3>
                 </div>
                 <div class="header-right-actions">
-                    ${hStatus === 'danger' ? `<div class="pulse-pill danger"><i class="fas fa-radiation"></i> KÖRFÖRBUD</div>` : ''}
+                    ${hStatus === 'danger' ? `<div class="pulse-danger-badge"><i class="fas fa-radiation"></i> KÖRFÖRBUD</div>` : ''}
                     <button class="fm-close-icon" onclick="window.closeUnitModal()"><i class="fas fa-times"></i></button>
                 </div>
             </header>
 
-            <nav class="fm-nav-tabs" style="display:flex; gap:20px; padding:0 20px; border-bottom:1px solid #f0f0f0;">
+            <nav class="fm-nav-tabs" style="padding: 0 25px; border-bottom: 1px solid #f0f0f0;">
                 <button class="fm-tab-link ${activeTab === 'tab-overview' ? 'active' : ''}" onclick="window.switchModalTab(this, 'tab-overview')">Översikt & Planering</button>
                 <button class="fm-tab-link ${activeTab === 'tab-journal' ? 'active' : ''}" onclick="window.switchModalTab(this, 'tab-journal')">Journal (${notes.length})</button>
             </nav>
             
-            <div class="fm-viewport" style="background:#fbfcfd; overflow-y:auto;">
-                <div id="tab-overview" class="fm-pane ${activeTab === 'tab-overview' ? 'active' : ''}">
+            <div class="fm-viewport" style="background:#fbfcfd; flex:1; overflow-y:auto;">
+                <div id="tab-overview" class="fm-pane ${activeTab === 'tab-overview' ? 'active' : ''}" style="display:${activeTab === 'tab-overview' ? 'block' : 'none'};">
                     <div class="bento-grid-modal">
                         <div class="bento-box">
                             <span class="bento-title">Senaste Journalanteckningar</span>
-                            ${recentNotes.length > 0 ? recentNotes.map(n => `
-                                <div class="bubble-vision ${n.category === 'brist' ? 'brist' : 'info'}">
-                                    <div class="meta">${n.author} • ${n.date}</div>
-                                    <div>${n.text}</div>
-                                </div>
-                            `).join('') : '<p style="color:#ccc; font-size:0.8rem;">Inga anteckningar.</p>'}
+                            <div style="margin-top:10px;">
+                                ${notes.length > 0 ? recentNotesHtml : '<p style="color:#ccc; font-size:0.8rem; font-style:italic;">Inga anteckningar i loggen.</p>'}
+                            </div>
                         </div>
 
                         <div style="display:flex; flex-direction:column; gap:15px;">
                             <div class="bento-box">
                                 <span class="bento-title">Besiktning & Service</span>
-                                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:5px;">
                                     <div>
                                         <label style="font-size:0.55rem; font-weight:800; color:#bbb; text-transform:uppercase;">Service</label>
-                                        <div style="font-weight:700; font-size:0.8rem;">${unit.lastService || '---'}</div>
+                                        <div style="font-weight:700; font-size:0.85rem;">${unit.lastService || '---'}</div>
                                     </div>
                                     <div>
                                         <label style="font-size:0.55rem; font-weight:800; color:#bbb; text-transform:uppercase;">Besiktning</label>
-                                        <div style="font-weight:700; font-size:0.8rem; color:${hStatus === 'danger' ? 'var(--fog-red)' : 'inherit'};">${unit.nextInspection || '---'}</div>
+                                        <div style="font-weight:700; font-size:0.85rem; color:${isInspExpired ? 'var(--fog-red)' : 'inherit'};">
+                                            ${unit.nextInspection || '---'} ${isInspExpired ? '<i class="fas fa-clock" style="margin-left:3px;"></i>' : ''}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="usage-card-vision">
-                                <span class="bento-title" style="color:rgba(255,255,255,0.5);">Användning</span>
-                                <div class="usage-val">${usagePercent}%</div>
-                                <span class="usage-label">Bokad ${activeDays} av 30 dagar</span>
+                            <div class="usage-tile-vision">
+                                <div>
+                                    <span style="font-size:0.6rem; font-weight:800; text-transform:uppercase; opacity:0.7;">Användning</span>
+                                    <div style="font-size:1.5rem; font-weight:900;">${usagePercent}%</div>
+                                </div>
+                                <div style="font-size:0.65rem; text-align:right; font-weight:700; opacity:0.8;">Bokad ${activeDays}<br>av 30 dagar</div>
                             </div>
 
-                            <div class="bento-box" style="padding:10px;">
+                            <div class="bento-box">
                                 <span class="bento-title">Systemstatus</span>
-                                <div style="display:flex; gap:5px;">
-                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'ok')" style="flex:1; padding:6px; border-radius:8px; border:1px solid #eee; font-weight:800; font-size:0.7rem; background:${hStatus === 'ok' ? '#2ecc71' : 'white'}; color:${hStatus === 'ok' ? 'white' : '#666'};">OK</button>
-                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'danger')" style="flex:1; padding:6px; border-radius:8px; border:1px solid #eee; font-weight:800; font-size:0.7rem; background:${hStatus === 'danger' ? '#e30613' : 'white'}; color:${hStatus === 'danger' ? 'white' : '#666'};">FÖRBUD</button>
+                                <div style="display:flex; gap:5px; margin-top:5px;">
+                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'ok')" style="flex:1; padding:8px 0; border-radius:10px; border:1px solid #eee; font-weight:850; font-size:0.65rem; background:${hStatus === 'ok' ? '#2ecc71' : 'white'}; color:${hStatus === 'ok' ? 'white' : '#666'};">OK</button>
+                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'warn')" style="flex:1; padding:8px 0; border-radius:10px; border:1px solid #eee; font-weight:850; font-size:0.65rem; background:${hStatus === 'warn' ? '#f1c40f' : 'white'}; color:${hStatus === 'warn' ? 'white' : '#666'};">BRIST</button>
+                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'danger')" style="flex:1; padding:8px 0; border-radius:10px; border:1px solid #eee; font-weight:850; font-size:0.65rem; background:${hStatus === 'danger' ? '#e30613' : 'white'}; color:${hStatus === 'danger' ? 'white' : '#666'};">FÖRBUD</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div id="tab-journal" class="fm-pane ${activeTab === 'tab-journal' ? 'active' : ''}" style="display:${activeTab === 'tab-journal' ? 'flex' : 'none'}; flex-direction:column; min-height:400px;">
-                    <div id="chat-feed-v3" style="flex:1; overflow-y:auto; padding:15px;">
-                        ${notes.map(n => `
-                            <div class="bubble-vision ${n.category === 'brist' ? 'brist' : 'info'} ${n.resolved ? 'resolved' : ''}" style="margin-left:0; border-left-width:4px;">
-                                <div class="meta">${n.author} • ${n.date}</div>
+                <div id="tab-journal" class="fm-pane ${activeTab === 'tab-journal' ? 'active' : ''}" style="display:${activeTab === 'tab-journal' ? 'flex' : 'none'}; flex-direction:column; height:100%;">
+                    <div id="chat-feed-v3" style="flex:1; overflow-y:auto; padding:20px;">
+                        ${notes.length > 0 ? notes.map(n => `
+                            <div class="bubble-vision ${n.category === 'brist' ? 'brist' : 'info'} ${n.resolved ? 'resolved' : ''}" style="padding:12px; border-radius:15px; margin-bottom:12px; border-left:4px solid ${n.category === 'brist' ? 'var(--fog-red)' : '#0078d4'}; background:${n.category === 'brist' ? '#fff5f5' : '#f0f7ff'};">
+                                <div style="font-size:0.65rem; font-weight:700; opacity:0.5; margin-bottom:4px;">${n.author} • ${n.date}</div>
                                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                                    <span>${n.text}</span>
-                                    ${n.category === 'brist' && !n.resolved ? `<button onclick="window.resolveFleetNote('${unit.id}', '${type}', '${n.id}')" style="background:#2ecc71; color:white; border:none; padding:3px 8px; border-radius:4px; font-size:0.65rem; cursor:pointer;">Åtgärda</button>` : ''}
+                                    <span style="font-size:0.9rem;">${n.text}</span>
+                                    ${n.category === 'brist' && !n.resolved ? `<button onclick="window.resolveFleetNote('${unit.id}', '${type}', '${n.id}')" style="background:#2ecc71; color:white; border:none; padding:4px 10px; border-radius:6px; font-size:0.7rem; font-weight:700; cursor:pointer;">Åtgärda</button>` : ''}
                                 </div>
                             </div>
-                        `).join('')}
+                        `).join('') : '<div style="text-align:center; padding:40px; color:#ccc;">Inga journalnoteringar ännu.</div>'}
                     </div>
-                    <div style="padding:10px 15px; background:white; border-top:1px solid #eee; display:flex; gap:8px; align-items:center;">
-                        <select id="chat-cat-select" style="padding:5px; border-radius:8px; border:1px solid #ddd; font-size:0.7rem; font-weight:700;">
+                    <div style="padding:15px 20px; background:white; border-top:1px solid #eee; display:flex; gap:10px; align-items:center;">
+                        <select id="chat-cat-select" style="padding:8px; border-radius:10px; border:1px solid #ddd; font-size:0.75rem; font-weight:800;">
                             <option value="info">Info</option>
                             <option value="brist">Brist</option>
                         </select>
-                        <input type="text" id="chat-text-input" placeholder="Skriv i journalen..." style="flex:1; padding:8px 15px; border-radius:20px; border:1px solid #ddd; outline:none; font-size:0.85rem;">
-                        <button onclick="window.saveFleetNote('${unit.id}', '${type}')" style="background:var(--fog-brown); color:white; border:none; width:35px; height:35px; border-radius:50%; cursor:pointer;"><i class="fas fa-paper-plane"></i></button>
+                        <input type="text" id="chat-text-input" placeholder="Skriv i loggen..." style="flex:1; padding:10px 20px; border-radius:25px; border:1px solid #eee; outline:none; font-size:0.9rem;">
+                        <button onclick="window.saveFleetNote('${unit.id}', '${type}')" style="background:var(--fog-brown); color:white; border:none; width:40px; height:40px; border-radius:50%; cursor:pointer;"><i class="fas fa-paper-plane"></i></button>
                     </div>
                 </div>
             </div>
