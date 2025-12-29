@@ -278,21 +278,24 @@ function renderMissionCard(a) {
                 <span class="day">${day}</span>
             </div>
             <div class="mission-content">
-                <div class="mission-header" style="display:flex; justify-content:space-between;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
                     <span class="mission-title">${a.event}</span>
-                    <i class="fas fa-chevron-right" style="color:#ccc; font-size: 0.8rem;"></i>
+                    <i class="fas fa-chevron-right" style="color:#eee; font-size:0.7rem;"></i>
                 </div>
-                <div class="resource-row" style="display:flex; gap:6px; flex-wrap:wrap;">
-                    ${a.car && a.car !== 'Ej kopplad' ? `<div class="res-pill" style="font-size:0.65rem; background:#f0f0f0; padding:2px 8px; border-radius:10px;"><i class="fas fa-truck"></i> ${a.car}</div>` : ''}
-                    ${(a.carts || []).map(c => `<div class="res-pill" style="font-size:0.65rem; background:#f0f0f0; padding:2px 8px; border-radius:10px;"><i class="fas fa-coffee"></i> ${c}</div>`).join('')}
+                
+                <div class="resource-row" style="display:flex; gap:5px; flex-wrap:nowrap; overflow:hidden;">
+                    ${a.car && a.car !== 'Ej kopplad' ? `<div class="res-pill" style="font-size:0.6rem; background:#f5f5f5; padding:2px 6px; border-radius:4px;"><i class="fas fa-truck"></i> ${a.car}</div>` : ''}
+                    ${(a.carts || []).slice(0,2).map(c => `<div class="res-pill" style="font-size:0.6rem; background:#f5f5f5; padding:2px 6px; border-radius:4px;"><i class="fas fa-coffee"></i> ${c}</div>`).join('')}
+                    ${(a.carts || []).length > 2 ? `<div style="font-size:0.6rem; color:#999;">+${a.carts.length - 2}</div>` : ''}
                 </div>
+
                 <div class="pack-progress-container">
-                    <div style="display:flex; justify-content:space-between; font-size:0.6rem; font-weight:800; color:#999; text-transform:uppercase;">
+                    <div style="display:flex; justify-content:space-between; font-size:0.55rem; font-weight:800; color:#bbb; text-transform:uppercase;">
                         <span>Packning</span>
                         <span>${doneItems}/${totalItems.length}</span>
                     </div>
-                    <div style="height:5px; background:#eee; border-radius:10px; margin-top:3px; overflow:hidden;">
-                        <div style="height:100%; width:${progressPercent}%; background:${progressPercent === 100 ? '#2ecc71' : '#e30613'}; transition:width 0.4s;"></div>
+                    <div style="height:4px; background:#f0f0f0; border-radius:10px; margin-top:2px; overflow:hidden;">
+                        <div style="height:100%; width:${progressPercent}%; background:${progressPercent === 100 ? '#2ecc71' : 'var(--fog-red)'}; transition:width 0.4s;"></div>
                     </div>
                 </div>
             </div>
