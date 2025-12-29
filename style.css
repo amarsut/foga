@@ -1892,187 +1892,26 @@ body {
 }
 
 /*
-TEST
+TEST DASHBOARD KORT
 */
 
-/* --- NYA MODERNA KOMPONENTER --- */
-
-/* 1. Dashboard Datum-Badge */
-.date-badge {
-    background: var(--fog-brown);
-    color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
-    min-width: 65px;
-    text-align: center;
-}
-.date-badge .day { font-size: 1.4rem; font-weight: 900; line-height: 1; }
-.date-badge .month { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; opacity: 0.8; }
-
-/* 2. Resurs-piller på Dashboard */
-.resource-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
-.res-pill {
-    background: #f0f0f0;
-    padding: 3px 10px;
-    border-radius: 50px;
-    font-size: 0.7rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    color: #666;
-}
-.res-pill.danger-alert { 
-    border: 1.5px solid var(--fog-red); 
-    color: var(--fog-red); 
-    background: #fff5f5; 
-}
-
-/* 3. Bento-Grid för Fleet Modal */
-.bento-grid-modal {
-    display: grid;
-    grid-template-columns: 1.5fr 1fr;
-    gap: 20px;
-    padding: 20px;
-}
-
-.bento-box {
-    background: white;
-    border-radius: 16px;
-    padding: 20px;
-    border: 1px solid #eee;
-}
-
-/* 4. Status Pulse Animation */
-.status-pulse-badge {
-    padding: 6px 15px;
-    background: #fff5f5;
-    color: var(--fog-red);
-    border-radius: 50px;
-    font-size: 0.75rem;
-    font-weight: 900;
-    animation: statusPulse 2s infinite;
-}
-
-@keyframes statusPulse {
-    0% { box-shadow: 0 0 0 0 rgba(227, 6, 19, 0.4); }
-    70% { box-shadow: 0 0 0 10px rgba(227, 6, 19, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(227, 6, 19, 0); }
-}
-
-/* Responsivitet för Bento */
-@media (max-width: 768px) {
-    .bento-grid-modal { grid-template-columns: 1fr; }
-}
-
-/* Sidostaplade Dashboard-kort */
-.mission-card-vision {
-    background: white;
-    border-radius: 16px;
-    display: flex;
-    overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    margin-bottom: 15px;
-    cursor: pointer;
-    border: 1px solid #eee;
-    transition: transform 0.2s;
-}
-.mission-card-vision:hover { transform: translateX(5px); }
-
-.date-badge {
-    background: var(--fog-brown);
-    color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 15px;
-    min-width: 80px;
-}
-.date-badge .day { font-size: 1.8rem; font-weight: 900; }
-.date-badge .month { font-size: 0.7rem; font-weight: 700; }
-
-.mission-content { padding: 15px 20px; flex: 1; display: flex; flex-direction: column; gap: 8px; }
-.mission-title { font-weight: 800; font-size: 1.2rem; color: #333; }
-
-/* Bento Boxar */
-.bento-grid-modal { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; padding: 20px; }
-.bento-box { background: white; border-radius: 16px; padding: 20px; border: 1px solid #eee; }
-.bento-title { font-size: 0.65rem; font-weight: 800; color: #bbb; text-transform: uppercase; margin-bottom: 15px; display: block; }
-
-/* --- DASHBOARD GRID (2-3 KORT I BREDD) --- */
+/* --- DASHBOARD GRID (MAX 2 KORT I BREDD) --- */
 .mission-list {
     display: grid;
-    /* Skapar kolumner som är minst 350px breda. Fyller ut 2-3 stycken beroende på skärmbredd */
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 20px;
-    padding: 10px 0;
-}
-
-/* --- DASHBOARD KORT (BILD 3 STIL) --- */
-.mission-card-vision {
-    background: white;
-    border-radius: 16px;
-    display: flex;
-    overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    cursor: pointer;
-    border: 1px solid #eee;
-    transition: transform 0.2s, box-shadow 0.2s;
-    height: 140px; /* Fast höjd för symmetri i gridden */
-}
-
-.mission-card-vision:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-}
-
-.date-badge {
-    background: var(--fog-brown);
-    color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 15px;
-    min-width: 85px;
-    flex-shrink: 0;
-}
-.date-badge .day { font-size: 1.8rem; font-weight: 900; line-height: 1; }
-.date-badge .month { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-top: 5px; }
-
-.mission-content { 
-    padding: 15px 20px; 
-    flex: 1; 
-    display: flex; 
-    flex-direction: column; 
-    justify-content: space-between;
-    min-width: 0; 
-}
-.mission-title { font-weight: 800; font-size: 1.1rem; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-/* --- BENTO MODAL & JOURNAL BUBBLES --- */
-.bento-modal { background: white; border-radius: 24px; width: 900px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
-.bento-grid-modal { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; padding: 20px; flex: 1; overflow-y: auto; }
-
-.bubble { padding: 12px; border-radius: 12px; font-size: 0.85rem; line-height: 1.4; margin-bottom: 10px; position: relative; border-left: 4px solid transparent; }
-.bubble.brist { background: #fff5f5; border-left-color: var(--fog-red); }
-.bubble.info { background: #f0f7ff; border-left-color: #0078d4; }
-.bubble.resolved { opacity: 0.6; background: #f9f9f9; border-left-color: #2ecc71; }
-.bubble .meta { font-size: 0.65rem; font-weight: 700; opacity: 0.5; margin-bottom: 4px; }
-
-/* --- DASHBOARD GRID (2-3 KORT I BREDD) --- */
-.mission-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    /* Som standard 1 kolumn (mobil) */
+    grid-template-columns: 1fr; 
     gap: 15px;
     padding: 10px 0;
 }
 
-/* --- KOMPAKTA DASHBOARD-KORT (BILD 3/4 FIX) --- */
+/* På skärmar bredare än 768px visas max 2 kort i bredd */
+@media (min-width: 768px) {
+    .mission-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* --- KOMPAKTA DASHBOARD-KORT (VISION-STIL) --- */
 .mission-card-vision {
     background: white;
     border-radius: 12px;
@@ -2081,14 +1920,18 @@ TEST
     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     cursor: pointer;
     border: 1px solid #eee;
-    height: 110px; /* Minskad höjd för ett mer kompakt utseende */
-    transition: transform 0.2s;
+    height: 110px; /* Den nya kompakta höjden */
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.mission-card-vision:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+.mission-card-vision:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
 
+/* Den bruna sidostapeln för datum */
 .date-badge {
-    background: var(--fog-brown);
+    background: var(--fog-brown); /* Använder din bruna färg */
     color: white;
     display: flex;
     flex-direction: column;
@@ -2098,63 +1941,88 @@ TEST
     min-width: 75px;
     flex-shrink: 0;
 }
-.date-badge .day { font-size: 1.6rem; font-weight: 900; line-height: 1; }
-.date-badge .month { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
 
-.mission-content { 
-    padding: 10px 15px; 
-    flex: 1; 
-    display: flex; 
-    flex-direction: column; 
-    justify-content: space-between; /* Sprider ut innehållet vertikalt */
-    min-width: 0; 
+.date-badge .day {
+    font-size: 1.6rem;
+    font-weight: 900;
+    line-height: 1;
 }
 
-.mission-title { 
-    font-weight: 800; 
-    font-size: 1rem; 
-    color: #333; 
-    white-space: nowrap; 
-    overflow: hidden; 
-    text-overflow: ellipsis; 
+.date-badge .month {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+/* Innehållsyta i kortet */
+.mission-content {
+    padding: 10px 15px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-width: 0;
+}
+
+.mission-title {
+    font-weight: 800;
+    font-size: 1rem;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     margin-bottom: 2px;
 }
 
-/* --- BENTO MODAL BOXAR (FIXAR BILD 2) --- */
-.bento-grid-modal {
-    display: grid;
-    grid-template-columns: 1.4fr 1fr;
-    gap: 20px;
-    padding: 20px;
-    background: #fbfbfb;
+/* Resurs-etiketter (Bilar/Vagnar) */
+.resource-row {
+    display: flex;
+    gap: 5px;
+    flex-wrap: nowrap;
+    overflow: hidden;
 }
 
-.bento-box {
-    background: white;
-    border-radius: 16px;
-    padding: 20px;
-    border: 1px solid #eee;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+.res-pill {
+    font-size: 0.6rem;
+    background: #f5f5f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #666;
 }
 
-.bento-title {
-    font-size: 0.65rem;
+/* Röd varningsstil för resurser med brister */
+.res-pill.danger-alert {
+    border: 1px solid var(--fog-red);
+    color: var(--fog-red);
+    background: #fff5f5;
+}
+
+/* Packningsstatus och Progress Bar */
+.pack-progress-container {
+    width: 100%;
+}
+
+.pack-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.55rem;
     font-weight: 800;
     color: #bbb;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 12px;
-    display: block;
 }
 
-/* Journal Bubblor */
-.bubble {
-    padding: 12px;
-    border-radius: 12px;
-    font-size: 0.85rem;
-    margin-bottom: 10px;
-    border-left: 4px solid transparent;
+.progress-bar-bg {
+    height: 4px;
+    background: #f0f0f0;
+    border-radius: 10px;
+    margin-top: 2px;
+    overflow: hidden;
 }
-.bubble.brist { background: #fff5f5; border-left-color: var(--fog-red); }
-.bubble.info { background: #f0f7ff; border-left-color: #0078d4; }
-.bubble.resolved { opacity: 0.6; background: #f9f9f9; border-left-color: #2ecc71; }
+
+.progress-fill {
+    height: 100%;
+    transition: width 0.4s ease;
+}
