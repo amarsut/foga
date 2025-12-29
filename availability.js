@@ -255,126 +255,72 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
     const pastEvents = unitEvents.filter(e => new Date(e.startDate) < now).sort((a,b) => new Date(b.startDate) - new Date(a.startDate)).slice(0, 2);
 
     body.innerHTML = `
-        <div class="fm-premium-container compact-mode">
-            <header class="fm-header-slim">
-                <div class="fm-id-block">
-                    <i class="fas ${type === 'car' ? 'fa-truck-pickup' : type === 'trailer' ? 'fa-trailer' : 'fa-coffee'}"></i>
-                    <div>
-                        <h3>${unit.id} ${unit.regNo ? `<span class="fm-reg-header">${unit.regNo}</span>` : ''}</h3>
-                        <small>STATUS: ${hStatus.toUpperCase()}</small>
-                    </div>
+        <div class="fm-premium-container" style="height: 650px;">
+            <header class="modal-header-vision">
+                <div style="display:flex; align-items:center; gap:15px;">
+                    <i class="fas ${type === 'car' ? 'fa-truck-pickup' : 'fa-coffee'}" style="font-size: 1.5rem; color: var(--fog-brown)"></i>
+                    <h3 style="margin:0; font-weight:900;">${unit.id} ${unit.regNo ? `<span style="color:#999; font-weight:400; font-size:0.9rem;">${unit.regNo}</span>` : ''}</h3>
                 </div>
+                ${hStatus === 'danger' ? `
+                    <div class="status-pulse-badge">
+                        <i class="fas fa-exclamation-triangle"></i> KÖRFÖRBUD (DANGER)
+                    </div>
+                ` : `<div style="color:var(--success); font-weight:800; font-size:0.8rem;"><i class="fas fa-check-circle"></i> STATUS: OK</div>`}
                 <button class="fm-close-icon" onclick="window.closeUnitModal()"><i class="fas fa-times"></i></button>
             </header>
-
+    
             <nav class="fm-nav-tabs">
-                <button class="fm-tab-link ${activeTab === 'tab-overview' ? 'active' : ''}" 
-                        onclick="window.switchModalTab(this, 'tab-overview')">Översikt & Planering</button>
-                <button class="fm-tab-link ${activeTab === 'tab-journal' ? 'active' : ''}" 
-                        onclick="window.switchModalTab(this, 'tab-journal')">
-                    Journal ${notesCount > 0 ? `<span class="fm-note-badge">${notesCount}</span>` : ''}
-                </button>
+                <button class="fm-tab-link ${activeTab === 'tab-overview' ? 'active' : ''}" onclick="window.switchModalTab(this, 'tab-overview')">Översikt & Planering</button>
+                <button class="fm-tab-link ${activeTab === 'tab-journal' ? 'active' : ''}" onclick="window.switchModalTab(this, 'tab-journal')">Journal (${notesCount})</button>
             </nav>
             
             <div class="fm-viewport">
                 <div id="tab-overview" class="fm-pane ${activeTab === 'tab-overview' ? 'active' : ''}">
-                    <div class="fm-two-col-grid reversed">
-                        
-                        <div class="fm-col">
-                            <section class="fm-sub-section compact">
-                                <label class="fm-mini-label">Kommande Uppdrag</label>
-                                <div class="fm-timeline-mini">
-                                    ${futureEvents.length > 0 ? futureEvents.map(e => `
-                                        <div class="fm-tl-item future">
-                                            <div class="fm-tl-indicator"></div>
-                                            <div class="fm-tl-content">
-                                                <div class="fm-tl-date">${e.startDate}</div>
-                                                <strong>${e.event}</strong>
-                                                <span><i class="fas fa-map-marker-alt"></i> Planerat</span>
-                                            </div>
+                    <div class="bento-grid-modal">
+                        <div class="bento-box">
+                            <span class="bento-title">Kommande Uppdrag</span>
+                            <div class="fm-timeline-mini">
+                                ${futureEvents.length > 0 ? futureEvents.map(e => `
+                                    <div class="fm-tl-item future">
+                                        <div class="fm-tl-content">
+                                            <div class="fm-tl-date">${e.startDate}</div>
+                                            <strong>${e.event}</strong>
                                         </div>
-                                    `).join('') : '<div class="fm-empty-state">Inga bokade uppdrag</div>'}
-                                </div>
-                            </section>
-
-                            <section class="fm-sub-section compact">
-                                <label class="fm-mini-label">Senaste 2 uppdrag (Historik)</label>
-                                <div class="fm-timeline-mini">
-                                    ${pastEvents.length > 0 ? pastEvents.map(e => `
-                                        <div class="fm-tl-item past">
-                                            <div class="fm-tl-indicator"></div>
-                                            <div class="fm-tl-content">
-                                                <div class="fm-tl-date">${e.startDate}</div>
-                                                <strong>${e.event}</strong>
-                                                <span><i class="fas fa-check-circle"></i> Utfört</span>
-                                            </div>
-                                        </div>
-                                    `).join('') : '<div class="fm-empty-state">Ingen historik tillgänglig</div>'}
-                                </div>
-                            </section>
+                                    </div>
+                                `).join('') : '<div class="fm-empty-text">Inga bokade uppdrag</div>'}
+                            </div>
                         </div>
-
-                        <div class="fm-col fm-col-right-compact">
-                            <section class="fm-sub-section compact">
-                                <label class="fm-mini-label">Fordonsspecifikation</label>
-                                <div class="fm-data-grid-minimal">
-                                    <div class="fm-input-group-minimal">
-                                        <label>Registreringsnr</label>
-                                        <input type="text" id="inp-reg" value="${unit.regNo || ''}" placeholder="---">
+    
+                        <div style="display:flex; flex-direction:column; gap:20px;">
+                            <div class="bento-box">
+                                <span class="bento-title">Teknisk Specifikation</span>
+                                <div class="specs-mini-grid">
+                                    <div class="spec-item">
+                                        <label>Reg-nr</label>
+                                        <input type="text" id="inp-reg" value="${unit.regNo || ''}" class="comment-input-transparent" style="font-weight:700;">
                                     </div>
-                                    <div class="fm-input-group-minimal ${isServiceOld ? 'warning-active' : ''}">
-                                        <label>Senaste Service ${isServiceOld ? '<i class="fas fa-tools"></i>' : ''}</label>
-                                        <input type="date" id="inp-last-serv" value="${unit.lastService || ''}">
+                                    <div class="spec-item ${isInspExpired ? 'alert' : ''}">
+                                        <label>Nästa Besiktning</label>
+                                        <input type="date" id="inp-next-insp" value="${unit.nextInspection || ''}" class="comment-input-transparent" style="color:${isInspExpired ? 'var(--fog-red)' : 'inherit'}">
                                     </div>
-                                    ${!isCart ? `
-                                        <div class="fm-input-group-minimal">
-                                            <label>Senaste Besiktning</label>
-                                            <input type="date" id="inp-last-insp" value="${unit.lastInspection || ''}">
-                                        </div>
-                                        <div class="fm-input-group-minimal ${isInspExpired ? 'danger-active' : ''}">
-                                            <label>Nästa Besiktning ${isInspExpired ? '<i class="fas fa-exclamation-triangle"></i>' : ''}</label>
-                                            <input type="date" id="inp-next-insp" value="${unit.nextInspection || ''}">
-                                        </div>
-                                    ` : ''}
                                 </div>
-                                <div class="fm-save-container">
-                                    <button class="fm-btn-save-discrete" onclick="window.saveVehicleData('${unit.id}', '${type}')">
-                                        Uppdatera information
-                                    </button>
-                                </div>
-                            </section>
-
-                            <section class="fm-sub-section compact">
-                                <label class="fm-mini-label">Systemstatus</label>
+                                <button class="fm-btn-save-discrete" style="margin-top:15px; width:100%;" onclick="window.saveVehicleData('${unit.id}', '${type}')">Spara ändringar</button>
+                            </div>
+    
+                            <div class="bento-box">
+                                <span class="bento-title">Ändra Systemstatus</span>
                                 <div class="fm-status-list-compact">
                                     <div class="fm-status-item-mini ok ${hStatus === 'ok' ? 'active' : ''}" onclick="window.setFleetStatus('${unit.id}', '${type}', 'ok')">OK</div>
                                     <div class="fm-status-item-mini warn ${hStatus === 'warn' ? 'active' : ''}" onclick="window.setFleetStatus('${unit.id}', '${type}', 'warn')">BRIST</div>
                                     <div class="fm-status-item-mini danger ${hStatus === 'danger' ? 'active' : ''}" onclick="window.setFleetStatus('${unit.id}', '${type}', 'danger')">FÖRBUD</div>
                                 </div>
-                            </section>
+                            </div>
                         </div>
                     </div>
                 </div>
-
+    
                 <div id="tab-journal" class="fm-pane ${activeTab === 'tab-journal' ? 'active' : ''}">
-                    <div class="fm-chat-wrapper">
-                        <div class="fm-chat-feed" id="chat-feed-v3">
-                            ${notes.length > 0 ? notes.map(n => renderModernBubble(n, unit.id, type)).join('') : '<div class="fm-empty-chat">Inga journalanteckningar ännu.</div>'}
-                        </div>
-                        <div class="fm-chat-input-area">
-                            <div class="fm-cat-selector-modern">
-                                <i class="fas fa-info-circle status-info" id="chat-icon-status"></i>
-                                <select id="chat-cat-select" onchange="window.updateChatStatusIcon(this)">
-                                    <option value="info">Info</option>
-                                    <option value="brist">Brist</option>
-                                </select>
-                            </div>
-                            <input type="text" id="chat-text-input" placeholder="Skriv en notering..." onkeydown="if(event.key==='Enter') window.saveFleetNote('${unit.id}', '${type}')">
-                            <button class="fm-btn-send" onclick="window.saveFleetNote('${unit.id}', '${type}')">
-                                <i class="fas fa-paper-plane"></i>
-                            </button>
-                        </div>
-                    </div>
+                    ...
                 </div>
             </div>
         </div>
