@@ -239,57 +239,57 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
 
     body.innerHTML = `
         <div class="bento-modal">
-            <header class="modal-header-vision" style="padding:20px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
+            <header class="modal-header-vision" style="padding:15px 25px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
                 <div style="display:flex; align-items:center; gap:12px;">
                     <i class="fas ${type === 'car' ? 'fa-truck-pickup' : 'fa-coffee'}" style="font-size:1.4rem; color:var(--fog-brown);"></i>
-                    <h3 style="margin:0;">${unit.id} <span style="color:#999; font-weight:400;">${unit.regNo || ''}</span></h3>
+                    <h3 style="margin:0; font-weight:900;">${unit.id} <span style="background:#005a9e; color:white; padding:2px 6px; border-radius:4px; font-size:0.7rem; margin-left:8px;">${unit.regNo || ''}</span></h3>
                 </div>
-                ${hStatus === 'danger' ? `<div class="status-pulse-badge" style="background:#fff5f5; color:var(--fog-red); padding:5px 12px; border-radius:20px; font-weight:800; font-size:0.7rem;"><i class="fas fa-radiation"></i> KÖRFÖRBUD</div>` : ''}
+                ${hStatus === 'danger' ? `<div class="status-pulse-badge" style="background:#fff5f5; color:var(--fog-red); padding:5px 12px; border-radius:20px; font-weight:800; font-size:0.7rem;"><i class="fas fa-radiation"></i> KÖRFÖRBUD (DANGER)</div>` : ''}
                 <button class="fm-close-icon" onclick="window.closeUnitModal()" style="border:none; background:#f5f5f5; width:30px; height:30px; border-radius:50%; cursor:pointer;"><i class="fas fa-times"></i></button>
             </header>
 
-            <nav class="fm-nav-tabs" style="display:flex; gap:20px; padding:0 20px; border-bottom:1px solid #eee;">
-                <button class="fm-tab-link ${activeTab === 'tab-overview' ? 'active' : ''}" onclick="window.switchModalTab(this, 'tab-overview')">Översikt</button>
+            <nav class="fm-nav-tabs" style="display:flex; gap:25px; padding:0 25px; border-bottom:1px solid #eee;">
+                <button class="fm-tab-link ${activeTab === 'tab-overview' ? 'active' : ''}" onclick="window.switchModalTab(this, 'tab-overview')">Översikt & Planering</button>
                 <button class="fm-tab-link ${activeTab === 'tab-journal' ? 'active' : ''}" onclick="window.switchModalTab(this, 'tab-journal')">Journal (${notes.length})</button>
             </nav>
             
-            <div class="fm-viewport" style="flex:1; overflow:hidden;">
-                <div id="tab-overview" class="fm-pane ${activeTab === 'tab-overview' ? 'active' : ''}" style="display:${activeTab === 'tab-overview' ? 'block' : 'none'}; padding:20px;">
+            <div class="fm-viewport" style="flex:1; overflow:hidden; background:#fbfbfb;">
+                <div id="tab-overview" class="fm-pane ${activeTab === 'tab-overview' ? 'active' : ''}" style="display:${activeTab === 'tab-overview' ? 'block' : 'none'};">
                     <div class="bento-grid-modal">
                         <div class="bento-box">
                             <span class="bento-title">Kommande Uppdrag</span>
-                            <div class="fm-timeline-mini">
+                            <div class="fm-timeline-mini" style="max-height:300px; overflow-y:auto;">
                                 ${futureEvents.length > 0 ? futureEvents.map(e => `
-                                    <div style="padding:8px; border-bottom:1px solid #f9f9f9;">
-                                        <small style="color:#999; font-weight:800;">${e.startDate}</small><br>
-                                        <strong style="font-size:0.85rem;">${e.event}</strong>
+                                    <div style="padding:10px; border-bottom:1px solid #f9f9f9; display:flex; gap:15px; align-items:center;">
+                                        <div style="color:#999; font-weight:800; font-size:0.7rem; min-width:80px;">${e.startDate}</div>
+                                        <div style="flex:1;"><strong style="font-size:0.85rem;">${e.event}</strong><br><small style="color:#aaa;">Planerat</small></div>
                                     </div>
-                                `).join('') : '<p style="color:#ccc; font-style:italic; font-size:0.8rem;">Inga uppdrag bokade.</p>'}
+                                `).join('') : '<p style="color:#ccc; font-style:italic; padding:20px;">Inga bokade uppdrag.</p>'}
                             </div>
                         </div>
 
-                        <div style="display:flex; flex-direction:column; gap:15px;">
+                        <div style="display:flex; flex-direction:column; gap:20px;">
                             <div class="bento-box">
-                                <span class="bento-title">Teknisk Data</span>
-                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                                <span class="bento-title">Teknisk Specifikation</span>
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                                    <div class="spec-item">
+                                        <label style="font-size:0.6rem; font-weight:800; color:#bbb; text-transform:uppercase;">Reg-nr</label>
+                                        <div style="font-weight:700;">${unit.regNo || '---'}</div>
+                                    </div>
                                     <div class="spec-item">
                                         <label style="font-size:0.6rem; font-weight:800; color:#bbb; text-transform:uppercase;">Nästa Besiktning</label>
                                         <input type="date" id="inp-next-insp" value="${unit.nextInspection || ''}" style="width:100%; border:1px solid #eee; padding:5px; border-radius:5px;">
                                     </div>
-                                    <div class="spec-item">
-                                        <label style="font-size:0.6rem; font-weight:800; color:#bbb; text-transform:uppercase;">Senaste Service</label>
-                                        <input type="date" id="inp-last-serv" value="${unit.lastService || ''}" style="width:100%; border:1px solid #eee; padding:5px; border-radius:5px;">
-                                    </div>
                                 </div>
-                                <button onclick="window.saveVehicleData('${unit.id}', '${type}')" style="width:100%; margin-top:10px; background:var(--fog-brown); color:white; border:none; padding:8px; border-radius:5px; cursor:pointer; font-weight:700;">Spara Ändringar</button>
+                                <button onclick="window.saveVehicleData('${unit.id}', '${type}')" style="width:100%; margin-top:15px; background:var(--fog-brown); color:white; border:none; padding:10px; border-radius:8px; cursor:pointer; font-weight:700;">Uppdatera Information</button>
                             </div>
 
                             <div class="bento-box">
                                 <span class="bento-title">Systemstatus</span>
                                 <div style="display:flex; gap:5px;">
-                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'ok')" style="flex:1; padding:8px; border:1px solid #eee; border-radius:5px; background:${hStatus === 'ok' ? '#2ecc71' : 'white'}; color:${hStatus === 'ok' ? 'white' : '#666'}; font-weight:800;">OK</button>
-                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'warn')" style="flex:1; padding:8px; border:1px solid #eee; border-radius:5px; background:${hStatus === 'warn' ? '#f1c40f' : 'white'}; color:${hStatus === 'warn' ? 'white' : '#666'}; font-weight:800;">BRIST</button>
-                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'danger')" style="flex:1; padding:8px; border:1px solid #eee; border-radius:5px; background:${hStatus === 'danger' ? '#e30613' : 'white'}; color:${hStatus === 'danger' ? 'white' : '#666'}; font-weight:800;">FÖRBUD</button>
+                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'ok')" style="flex:1; padding:10px; border:1px solid #eee; border-radius:8px; background:${hStatus === 'ok' ? '#2ecc71' : 'white'}; color:${hStatus === 'ok' ? 'white' : '#666'}; font-weight:800;">OK</button>
+                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'warn')" style="flex:1; padding:10px; border:1px solid #eee; border-radius:8px; background:${hStatus === 'warn' ? '#f1c40f' : 'white'}; color:${hStatus === 'warn' ? 'white' : '#666'}; font-weight:800;">BRIST</button>
+                                    <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'danger')" style="flex:1; padding:10px; border:1px solid #eee; border-radius:8px; background:${hStatus === 'danger' ? '#e30613' : 'white'}; color:${hStatus === 'danger' ? 'white' : '#666'}; font-weight:800;">FÖRBUD</button>
                                 </div>
                             </div>
                         </div>
@@ -297,26 +297,19 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
                 </div>
 
                 <div id="tab-journal" class="fm-pane ${activeTab === 'tab-journal' ? 'active' : ''}" style="display:${activeTab === 'tab-journal' ? 'flex' : 'none'}; flex-direction:column; height:100%;">
-                    <div id="chat-feed-v3" style="flex:1; overflow-y:auto; padding:20px; background:#fbfbfb;">
+                    <div id="chat-feed-v3" style="flex:1; overflow-y:auto; padding:20px;">
                         ${notes.length > 0 ? notes.map(n => `
                             <div class="bubble ${n.category === 'brist' ? 'brist' : 'info'} ${n.resolved ? 'resolved' : ''}">
-                                <div class="meta">${n.author} • ${n.date}</div>
+                                <div class="meta" style="font-size:0.65rem; color:#999; margin-bottom:5px;">${n.author} • ${n.date}</div>
                                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                                    <span>${n.text} ${n.resolved ? '✅' : ''}</span>
-                                    <div style="display:flex; gap:10px;">
-                                        ${n.category === 'brist' && !n.resolved ? `<button onclick="window.resolveFleetNote('${unit.id}', '${type}', '${n.id}')" style="background:#2ecc71; color:white; border:none; padding:2px 8px; border-radius:4px; font-size:0.7rem; cursor:pointer;">Åtgärda</button>` : ''}
-                                        <button onclick="window.deleteFleetNote('${unit.id}', '${type}', '${n.id}')" style="background:none; border:none; color:#ccc; cursor:pointer;"><i class="fas fa-trash"></i></button>
-                                    </div>
+                                    <span>${n.text}</span>
+                                    ${n.category === 'brist' && !n.resolved ? `<button onclick="window.resolveFleetNote('${unit.id}', '${type}', '${n.id}')" style="background:#2ecc71; color:white; border:none; padding:3px 10px; border-radius:5px; font-size:0.7rem; cursor:pointer;">Åtgärda</button>` : ''}
                                 </div>
                             </div>
                         `).join('') : '<p style="text-align:center; color:#ccc; padding:40px;">Inga journalnoteringar.</p>'}
                     </div>
-                    <div class="fm-chat-input-area" style="padding:15px; border-top:1px solid #eee; background:white; display:flex; gap:10px;">
-                        <select id="chat-cat-select" style="padding:8px; border-radius:8px; border:1px solid #eee; font-weight:700;">
-                            <option value="info">Info</option>
-                            <option value="brist">Brist</option>
-                        </select>
-                        <input type="text" id="chat-text-input" placeholder="Skriv en notering..." style="flex:1; padding:8px 15px; border-radius:20px; border:1px solid #eee;">
+                    <div style="padding:15px; border-top:1px solid #eee; background:white; display:flex; gap:10px;">
+                        <input type="text" id="chat-text-input" placeholder="Skriv i loggen..." style="flex:1; padding:10px 15px; border-radius:20px; border:1px solid #eee;">
                         <button onclick="window.saveFleetNote('${unit.id}', '${type}')" style="background:var(--fog-brown); color:white; border:none; width:40px; height:40px; border-radius:50%; cursor:pointer;"><i class="fas fa-paper-plane"></i></button>
                     </div>
                 </div>
@@ -324,10 +317,6 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
         </div>
     `;
     modal.style.display = 'flex';
-    setTimeout(() => {
-        const feed = document.getElementById('chat-feed-v3');
-        if (feed) feed.scrollTop = feed.scrollHeight;
-    }, 100);
 }
 
 function renderModernBubble(note, unitId, uType) {
