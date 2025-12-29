@@ -22,87 +22,184 @@ body {
 
 .app-container { display: flex; height: 100vh; }
 
-/* ==========================================================================
-   2. LAYOUT (SIDEBAR & MAIN)
-   ========================================================================== */
-.sidebar { 
-    width: 230px; 
-    background: var(--fog-brown); 
-    color: white; 
-    display: flex; 
-    flex-direction: column; 
-    padding: 20px; 
-}
-
-.sidebar-header { margin-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; }
-
-.nav-item { 
-    display: flex; align-items: center; padding: 15px 20px; margin-bottom: 10px; 
-    cursor: pointer; border-radius: 12px; color: rgba(255,255,255,0.7); font-weight: 500; 
-}
-
-.nav-item.active { background: var(--fog-red); color: white; box-shadow: 0 4px 15px rgba(227,6,19,0.3); }
-
 .main-content { flex: 1; padding: 25px; overflow-y: auto; min-width: 0; }
 
 .top-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
 
-.sidebar-bottom {
-    margin-top: auto;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255,255,255,0.1);
+@media (min-width: 769px) {
+    /* 1. Dölj alltid hamburgermenyn på datorn */
+    .mobile-nav-toggle {
+        display: none !important;
+    }
+
+    /* 2. Justera headern så titeln hamnar till vänster */
+    .top-header {
+        display: flex;
+        justify-content: flex-start; /* Ändra från space-between till flex-start */
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 25px;
+        padding: 0; /* Eller den padding du önskar på datorn */
+    }
+
+    /* 3. Se till att innehållsytan tar upp resten av bredden bredvid sidebaren */
+    .main-content {
+        flex: 1;
+        min-width: 0;
+    }
+}
+
+/* ==========================================================================
+   2. LAYOUT (SIDEBAR & MAIN)
+   ========================================================================== */
+   
+/* --- MODERNA SIDEBAR VARIABLER --- */
+:root {
+    --sidebar-width: 260px;
+    --sidebar-collapsed-width: 90px;
+    --transition-speed: 0.3s;
+}
+
+/* --- SIDEBAR LAYOUT --- */
+.sidebar {
+    width: var(--sidebar-width);
+    background: var(--fog-brown);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 0; /* Ta bort padding för att kontrollera inner-elementen */
+    transition: width var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 1000;
+    flex-shrink: 0;
+}
+
+/* --- COLLAPSED STATE --- */
+.sidebar.collapsed {
+    width: var(--sidebar-collapsed-width);
+}
+
+/* Header & Logga */
+.sidebar-header-wrapper {
+    padding: 25px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 100px;
+}
+
+.sidebar-logo {
+    max-width: 140px;
+    transition: opacity var(--transition-speed);
+}
+
+.sidebar.collapsed .sidebar-logo {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Toggle Knapp */
+.sidebar-toggle-btn {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform var(--transition-speed);
+}
+
+.sidebar.collapsed .sidebar-toggle-btn {
+    transform: rotate(180deg);
+    position: absolute;
+    right: 25px;
+}
+
+/* Navigation */
+.sidebar-nav {
+    padding: 0 15px;
+    flex: 1;
+}
+
+.nav-section-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.4);
+    margin: 20px 0 10px 15px;
+    transition: opacity var(--transition-speed);
+}
+
+.sidebar.collapsed .nav-section-label {
+    opacity: 0;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    margin-bottom: 5px;
+    border-radius: 10px;
+    color: rgba(255,255,255,0.7);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
 }
 
 .nav-item i {
-    margin-right: 5px; /* Mellanrum mellan ikon och text */
-    width: 20px;        /* Säkerställer att texten börjar på samma ställe för alla rader */
+    font-size: 1.2rem;
+    min-width: 30px;
+    margin-right: 15px;
     text-align: center;
 }
 
-/* --- ADMIN-PROFIL LÄNGST NER --- */
-.user-profile {
+.nav-item span {
+    transition: opacity var(--transition-speed);
+}
+
+.sidebar.collapsed .nav-item span {
+    opacity: 0;
+}
+
+.nav-item:hover {
+    background: rgba(255,255,255,0.05);
+    color: white;
+}
+
+.nav-item.active {
+    background: var(--fog-red);
+    color: white;
+}
+
+/* Footer & Profil */
+.sidebar-footer {
+    padding: 20px;
+    background: rgba(0,0,0,0.1);
+}
+
+.user-profile-compact {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255,255,255,0.1);
-    color: white;
+    gap: 15px;
+    overflow: hidden;
 }
 
 .user-avatar i {
     font-size: 2rem;
     opacity: 0.8;
+    min-width: 40px;
 }
 
-.user-info strong {
-    display: block;
-    font-size: 0.9rem;
+.user-info-text {
+    transition: opacity var(--transition-speed);
 }
 
-.user-info span {
-    font-size: 0.75rem;
-    opacity: 0.6;
-}
-
-/* --- BUGGRAPPORTERING --- */
-.bug-report-link {
-    background: transparent;
-    border: none;
-    color: rgba(255,255,255,0.5);
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 15px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: 0.2s;
-}
-
-.bug-report-link:hover {
-    color: #fff;
+.sidebar.collapsed .user-info-text {
+    opacity: 0;
 }
 
 /* ==========================================================================
@@ -1357,3 +1454,69 @@ body {
     transition: 0.2s;
 }
 .close-modal-btn:hover { background: #e0e0e0; color: var(--fog-red); }
+
+/* ==========================================================================
+   PACKLISTA (KOMMENTAR OCH DISKRETAFÄLT)
+   ========================================================================== */
+
+.form-check-item {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 12px 15px !important;
+    background: #fff !important;
+    border-bottom: 1px solid #f5f5f5 !important;
+}
+
+.item-content-wrapper {
+    display: flex;
+    flex-direction: row; /* Lägger text och notering på samma rad */
+    align-items: center;
+    flex: 1;
+    gap: 10px;
+    overflow: hidden;
+}
+
+.item-main-text {
+    font-size: 0.95rem;
+    color: #333;
+    white-space: nowrap; /* Hindrar radbrytning på huvudtexten */
+}
+
+.item-main-text strong {
+    font-weight: 850;
+    margin-right: 4px;
+}
+
+.item-comment-area {
+    flex: 1;
+    display: flex;
+}
+
+/* Noteringsfältet - Diskret och transparent */
+.comment-input-transparent {
+    width: 100%;
+    border: none !important;
+    background: transparent !important;
+    font-size: 0.8rem !important;
+    font-style: italic;
+    color: #999; /* Ljusare färg för att inte störa */
+    outline: none !important;
+    padding: 0 !important;
+}
+
+.comment-input-transparent:focus {
+    color: var(--fog-brown);
+    border-bottom: 1px solid #eee !important;
+}
+
+/* När raden är markerad som klar (Grön) */
+.form-check-item.checked .item-main-text,
+.form-check-item.checked .comment-input-transparent,
+.form-check-item.checked i {
+    color: #2ecc71 !important;
+}
+
+.form-check-item.checked .comment-input-transparent {
+    opacity: 0.6;
+}
