@@ -235,6 +235,7 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
     const notes = unit.notes || [];
     const images = unit.attachedImages || [];
     
+    // Beräkna användning
     const thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(new Date().getDate() - 30);
     const unitEvents = (allEvents || []).filter(e => e.car === unit.id || (e.carts && e.carts.includes(unit.id)));
     const activeDays = unitEvents.filter(e => new Date(e.startDate) >= thirtyDaysAgo).length;
@@ -244,13 +245,21 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
     const nextInsp = unit.nextInspection ? new Date(unit.nextInspection) : null;
     const isInspExpired = nextInsp && now > nextInsp;
 
-    // Status-konfiguration (Alltid synlig nu)
+    // Status-konfiguration
     const statusCfg = {
         ok: { cl: 'ok', icon: 'fa-check-circle', txt: 'Driftklar' },
         warn: { cl: 'warn', icon: 'fa-exclamation-triangle', txt: 'Brist' },
         danger: { cl: 'danger', icon: 'fa-radiation', txt: 'Körförbud' }
     };
     const s = statusCfg[hStatus];
+
+    // GENERERA 5 SENASTE LOGGAR (Punkt 2)
+    const recentNotesHtml = notes.length > 0 ? [...notes].reverse().slice(0, 5).map(n => `
+        <div class="bubble-vision ${n.category}">
+            <div style="font-size:0.6rem; font-weight:700; opacity:0.5; margin-bottom:3px;">${n.author} • ${n.date}</div>
+            <div style="font-size:0.8rem;">${n.text}</div>
+        </div>
+    `).join('') : '<p style="color:#ccc; font-size:0.8rem; font-style:italic; padding:10px;">Inga anteckningar i loggen.</p>';
 
     body.innerHTML = `
         <div class="bento-modal">
@@ -277,13 +286,8 @@ export function showUnitManagementModal(unit, type, db, activeTab = 'tab-overvie
                     <div class="bento-grid-modal">
                         <div style="display:flex; flex-direction:column; gap:15px;">
                             <div class="bento-box">
-                                <span class="bento-title">Senaste Loggar</span>
-                                ${notes.length > 0 ? [...notes].reverse().slice(0, 2).map(n => `
-                                    <div class="bubble-vision ${n.category}" style="border-left:3px solid ${n.category === 'brist' ? 'var(--fog-red)' : '#0078d4'}; padding:8px; background:#f9f9f9; border-radius:8px; margin-bottom:5px;">
-                                        <div style="font-size:0.6rem; opacity:0.5;">${n.author} • ${n.date}</div>
-                                        <div style="font-size:0.75rem;">${n.text}</div>
-                                    </div>
-                                `).join('') : '<p style="color:#ccc; font-size:0.75rem; font-style:italic;">Inga noteringar.</p>'}
+                                <span class="bento-title">Senaste Journalanteckningar</span>
+                                <div style="margin-top:5px;">${recentNotesHtml}</div>
                             </div>
                             
                             <div class="bento-box">
