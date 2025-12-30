@@ -1031,20 +1031,34 @@ window.render = () => {
         return;
     }
 
+    // DIN BEFINTLIGA LOGIK FÖR ANDRA VYER
     area.innerHTML = '';
     if (currentView === 'dashboard') renderDashboard(area);
     if (currentView === 'create') renderCreate(area);
     if (currentView === 'availability') renderAvailabilityView(area, cars, trailers, carts, db, assignments);
     if (currentView === 'stats') renderStatsView(area);
-    if (currentView === 'settings') renderAdminView(area); // Ändrat från 'admin' till 'settings' för att matcha menyn
+    if (currentView === 'calendar') renderCalendarView(assignments, db, cars, trailers, carts, selectedStartDate);
+};
+
+// Lägg till 'admin' i din showView och render logik
+window.render = () => {
+    const area = document.getElementById('content-area');
+    area.innerHTML = '';
+
+    if (currentView === 'dashboard') renderDashboard(area);
+    if (currentView === 'create') renderCreate(area);
+    if (currentView === 'availability') renderAvailabilityView(area, cars, trailers, carts, db, assignments);
+    if (currentView === 'stats') renderStatsView(area);
+    if (currentView === 'admin') renderAdminView(area); // <--- NY
     if (currentView === 'calendar') renderCalendarView(assignments, db, cars, trailers, carts, selectedStartDate);
 };
 
 /* =============================================================
-   ADMIN & SYSTEM: FORDONS- OCH MALLHANTERING (SLUTGILTIG)
+   ADMIN & SYSTEM: FORDONS- OCH MALLHANTERING (FIXAD)
    ============================================================= */
 
 window.renderAdminView = async (area) => {
+    // Vi använder variablerna direkt från filens topp
     const allUnits = [...cars, ...trailers, ...carts];
     
     area.innerHTML = `
@@ -1073,7 +1087,7 @@ window.renderAdminView = async (area) => {
                                     </td>
                                     <td><button class="btn-delete-icon" onclick="window.deleteUnitPermanent('${u.id}', '${uType}')"><i class="fas fa-trash"></i></button></td>
                                 </tr>`;
-                            }).join('') : '<tr><td colspan="3">Laddar fordon...</td></tr>'}
+                            }).join('') : '<tr><td colspan="3">Inga fordon hittades i databasen.</td></tr>'}
                         </tbody>
                     </table>
                 </div>
@@ -1096,7 +1110,7 @@ window.initTemplateEditor = async () => {
     const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
     const docSnap = await getDoc(doc(window.db, "settings", "packing_templates"));
 
-    if (!docSnap.exists()) return alert("Inga mallar hittades. Kör migreringen i konsolen.");
+    if (!docSnap.exists()) return alert("Inga mallar hittades. Kör migreringen i konsolen igen.");
     window.currentEditingTemplates = docSnap.data();
 
     container.innerHTML = `
@@ -1132,6 +1146,7 @@ window.loadTemplateToEdit = (val) => {
         </div>
         <div class="items-editor-grid" style="display:flex; flex-direction:column; gap:8px;">
             ${template.items.map((item, i) => {
+                // Hanterar nu både gamla strängar och nya objekt för både bil och vagn
                 const name = typeof item === 'string' ? item : (item.n || "");
                 const qty = typeof item === 'string' ? 1 : (item.q || 1);
 
@@ -1154,6 +1169,7 @@ window.loadTemplateToEdit = (val) => {
 };
 
 window.addTemplateItem = (type, tIdx) => {
+    // Skapar alltid ett objekt med namn och antal nu
     window.currentEditingTemplates[type][tIdx].items.push({ n: "Ny artikel", q: 1 });
     window.loadTemplateToEdit(`${type}-${tIdx}`);
 };
@@ -1166,10 +1182,13 @@ window.removeTemplateItem = (type, tIdx, iIdx) => {
 window.updateItemValue = (type, tIdx, iIdx, key, val) => {
     const template = window.currentEditingTemplates[type][tIdx];
     let item = template.items[iIdx];
+    
+    // Om det gamla formatet var en sträng, konvertera till objekt vid ändring
     if (typeof item === 'string') {
         item = { n: item, q: 1 };
         template.items[iIdx] = item;
     }
+    
     if (key === 'q') item.q = parseFloat(val) || 0;
     else item.n = val;
 };
