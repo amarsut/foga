@@ -1049,50 +1049,88 @@ window.renderAdminView = async (area) => {
         <div class="admin-container">
             <div class="admin-card">
                 <h4><i class="fas fa-bus"></i> Hantera Fordonsparken</h4>
-                <p class="admin-hint">Här kan du dölja fordon från Fleet-vyn eller ta bort dem permanent.</p>
                 <div class="admin-table-wrapper">
-                    <table class="admin-table">
-                        <thead>
-                            <tr>
-                                <th>Enhet</th>
-                                <th>Typ</th>
-                                <th>Visa i Fleet</th>
-                                <th>Åtgärd</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${allUnits.map(u => {
-                                const uType = cars.find(c => c.id === u.id) ? 'car' : trailers.find(t => t.id === u.id) ? 'trailer' : 'cart';
-                                return `
-                                <tr>
-                                    <td><strong>${u.id}</strong></td>
-                                    <td><span class="type-badge">${uType}</span></td>
-                                    <td>
-                                        <label class="switch-ios">
-                                            <input type="checkbox" ${u.isVisible !== false ? 'checked' : ''} 
-                                                   onchange="window.toggleUnitVisibility('${u.id}', '${uType}', this.checked)">
-                                            <span class="slider-ios"></span>
-                                        </label>
-                                    </td>
-                                    <td>
-                                        <button class="btn-delete-icon" onclick="window.deleteUnitPermanent('${u.id}', '${uType}')">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </td>
-                                </tr>`;
-                            }).join('')}
-                        </tbody>
-                    </table>
-                </div>
+                    </div>
             </div>
 
             <div class="admin-card">
-                <h4><i class="fas fa-boxes"></i> Packmallar (Kommer snart)</h4>
-                <p>Här kommer du kunna lägga till och ta bort artiklar i dina Tkr-mallar direkt.</p>
-                <button class="btn-primary-modern" onclick="alert('Funktion under uppbyggnad')">Öppna Mall-editor</button>
+                <h4><i class="fas fa-boxes"></i> Packmallar</h4>
+                <p class="admin-hint">Välj en mall för att redigera innehållet i packlistorna.</p>
+                <div id="admin-template-editor-container">
+                    <button class="btn-primary-modern" onclick="window.initTemplateEditor()">
+                        <i class="fas fa-edit"></i> Öppna Mall-editor
+                    </button>
+                </div>
             </div>
         </div>
     `;
+};
+
+// --- LOGIK FÖR MALL-EDITOR ---
+window.initTemplateEditor = async () => {
+    const container = document.getElementById('admin-template-editor-container');
+    const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+    const docSnap = await getDoc(doc(window.db, "settings", "packing_templates"));
+
+    if (!docSnap.exists()) return alert("Inga mallar hittades i databasen.");
+    window.currentEditingTemplates = docSnap.data();
+
+    container.innerHTML = `
+        <div class="template-editor-ui">
+            <select id="sel-template-to-edit" class="modern-select" onchange="window.loadTemplateToEdit(this.value)">
+                <option value="">Välj mall att ändra...</option>
+                <optgroup label="Transportbilar">
+                    ${window.currentEditingTemplates.car.map((t, i) => `<option value="car-${i}">${t.name}</option>`).join('')}
+                </optgroup>
+                <optgroup label="Fogarollibilar">
+                    ${window.currentEditingTemplates.cart.map((t, i) => `<option value="cart-${i}">${t.name}</option>`).join('')}
+                </optgroup>
+            </select>
+            <div id="template-items-list" class="items-list-admin"></div>
+        </div>
+    `;
+};
+
+window.loadTemplateToEdit = (val) => {
+    if (!val) return;
+    const [type, index] = val.split('-');
+    const template = window.currentEditingTemplates[type][index];
+    const area = document.getElementById('template-items-list');
+
+    area.innerHTML = `
+        <div class="editor-header">
+            <h5>${template.name}</h5>
+            <button class="btn-add" onclick="window.addTemplateItem('${type}', ${index})"><i class="fas fa-plus"></i> Lägg till rad</button>
+        </div>
+        <div class="items-editor-grid">
+            ${template.items.map((item, i) => {
+                const name = typeof item === 'string' ? item : item.n;
+                const qty = typeof item === 'string' ? null : item.q;
+                return `
+                    <div class="item-edit-row">
+                        <input type="text" value="${name}" onchange="window.updateItemValue('${type}', ${index}, ${i}, 'n', this.value)">
+                        ${qty !== null ? `<input type="number" step="0.1" value="${qty}" onchange="window.updateItemValue('${type}', ${index}, ${i}, 'q', this.value)">` : ''}
+                        <button class="btn-remove" onclick="window.removeTemplateItem('${type}', ${index}, ${i})"><i class="fas fa-times"></i></button>
+                    </div>`;
+            }).join('')}
+        </div>
+        <button class="btn-save-all" onclick="window.saveTemplatesToFirebase()">SPARA ÄNDRINGAR I DATABASEN</button>
+    `;
+};
+
+window.updateItemValue = (type, tIdx, iIdx, key, val) => {
+    const template = window.currentEditingTemplates[type][tIdx];
+    if (typeof template.items[iIdx] === 'string') {
+        template.items[iIdx] = val;
+    } else {
+        template.items[iIdx][key] = key === 'q' ? parseFloat(val) : val;
+    }
+};
+
+window.saveTemplatesToFirebase = async () => {
+    const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+    await setDoc(doc(window.db, "settings", "packing_templates"), window.currentEditingTemplates);
+    alert("Alla mallar har uppdaterats!");
 };
 
 // Logik för att dölja/visa fordon
@@ -1106,74 +1144,6 @@ window.deleteUnitPermanent = async (id, type) => {
     if (!confirm(`Är du helt säker? Detta raderar ${id} och all dess historik permanent från databasen.`)) return;
     const colMap = { car: 'cars', trailer: 'trailers', cart: 'carts' };
     await deleteDoc(doc(db, colMap[type], id));
-};
-
-// Kör denna funktion EN GÅNG i konsolen eller via en knapp för att ladda upp mallarna
-window.migrateTemplatesToFirebase = async () => {
-    try {
-        // Vi hämtar datan direkt från ditt objekt i script.js
-        // Om PACKING_TEMPLATES inte är global kan vi behöva definiera den här igen
-        const dataToUpload = {
-            car: {
-                "Mall 1 (Low Capacity)": ["Parasoll", "Bord & stolar", "Kabel", "5kg bönor", "Muggar"],
-                "Mall 2 (High Capacity)": ["Stort Tält", "4st Bord", "Långelkabel", "15kg bönor", "Muggar", "Vattentank"]
-            },
-            cart: {
-                "15 Tkr": [
-                    { n: "Koppar 16 Oz (rör)", q: 4 }, { n: "Koppar 12 Oz (rör)", q: 5 }, { n: "Koppar 6 Oz (rör)", q: 2 }, { n: "Koppar 4 Oz (rör)", q: 1 }, { n: "Lock 12/16 Oz (rör)", q: 2 },
-                    { n: "Diskmedel (flaska)", q: 0.25 }, { n: "Rengöringsspray (flaska)", q: 0.25 },
-                    { n: "Hela bönor (kg)", q: 8 }, { n: "Malda bönor (kg)", q: 3 }, { n: "Kaffefilter (burk)", q: 0.5 }, { n: "Socker (låda)", q: 0.5 }, { n: "Rörpinnar (låda)", q: 0.5 },
-                    { n: "Earl Gray (st)", q: 7 }, { n: "Gottland (st)", q: 7 }, { n: "Öland (st)", q: 7 }, { n: "Sugrör (låda)", q: 0.5 },
-                    { n: "Servetter (påse)", q: 0.5 }, { n: "Torky (rulle)", q: 0.5 },
-                    { n: "Karamellsirap (flaska)", q: 1.5 }, { n: "Vaniljsirap (flaska)", q: 1.5 }, { n: "Sopsäckar (rulle)", q: 0.5 },
-                    { n: "Burk, malt (st)", q: 4 }, { n: "Burk, choklad (st)", q: 4 }, { n: "Burk, hela bönor (st)", q: 4 },
-                    { n: "Förkläde (st)", q: 2 }, { n: "Svarta trasor (st)", q: 4 }, { n: "Grå trasor (st)", q: 2 },
-                    { n: "Cantucci (burk)", q: 0.8 }, { n: "Chaipulver (burk)", q: 1.5 }, { n: "Chokladpåsar (st)", q: 6 },
-                    { n: "Mjölk (liter)", q: 40 }, { n: "Havremjölk (liter)", q: 8 }, { n: "Grädde (patron)", q: 4 },
-                    { n: "Puly caff (burk)", q: 0.25 }, { n: "Plasthandskar (låda)", q: 0.25 }, { n: "Vatten (liter)", q: 60 },
-                    { n: "Chokladbollar (st)", q: 45 }, { n: "Kakor (st)", q: 52 }, { n: "Muffins (st)", q: 72 }, { n: "Is (box)", q: 0.66 }
-                ],
-                "25 Tkr": [
-                    { n: "Koppar 16 Oz (rör)", q: 6 }, { n: "Koppar 12 Oz (rör)", q: 7 }, { n: "Koppar 6 Oz (rör)", q: 3 }, { n: "Koppar 4 Oz (rör)", q: 1 }, { n: "Lock 12/16 Oz (rör)", q: 4 },
-                    { n: "Diskmedel (flaska)", q: 0.25 }, { n: "Rengöringsspray (flaska)", q: 0.25 },
-                    { n: "Hela bönor (kg)", q: 10 }, { n: "Malda bönor (kg)", q: 4 }, { n: "Kaffefilter (burk)", q: 0.7 }, { n: "Socker (låda)", q: 0.5 }, { n: "Rörpinnar (låda)", q: 0.5 },
-                    { n: "Earl Gray (st)", q: 10 }, { n: "Gottland (st)", q: 10 }, { n: "Öland (st)", q: 10 }, { n: "Sugrör (låda)", q: 0.7 },
-                    { n: "Servetter (påse)", q: 0.5 }, { n: "Torky (rulle)", q: 0.5 },
-                    { n: "Karamellsirap (flaska)", q: 1.5 }, { n: "Vaniljsirap (flaska)", q: 1.5 }, { n: "Sopsäckar (rulle)", q: 0.5 },
-                    { n: "Burk, malt (st)", q: 4 }, { n: "Burk, choklad (st)", q: 4 }, { n: "Burk, hela bönor (st)", q: 4 },
-                    { n: "Förkläde (st)", q: 2 }, { n: "Svarta trasor (st)", q: 4 }, { n: "Grå trasor (st)", q: 2 },
-                    { n: "Cantucci (burk)", q: 1 }, { n: "Chaipulver (burk)", q: 2 }, { n: "Chokladpåsar (st)", q: 10 },
-                    { n: "Mjölk (liter)", q: 65 }, { n: "Havremjölk (liter)", q: 12 }, { n: "Grädde (patron)", q: 6 },
-                    { n: "Puly caff (burk)", q: 0.25 }, { n: "Plasthandskar (låda)", q: 0.25 }, { n: "Vatten (liter)", q: 60 },
-                    { n: "Chokladbollar (st)", q: 60 }, { n: "Kakor (st)", q: 72 }, { n: "Muffins (st)", q: 96 }, { n: "Is (box)", q: 1 }
-                ],
-                "40 Tkr": [
-                    { n: "Koppar 16 Oz (rör)", q: 9 }, { n: "Koppar 12 Oz (rör)", q: 12 }, { n: "Koppar 6 Oz (rör)", q: 3 }, { n: "Koppar 4 Oz (rör)", q: 2 }, { n: "Lock 12/16 Oz (rör)", q: 6 },
-                    { n: "Diskmedel (flaska)", q: 0.25 }, { n: "Rengöringsspray (flaska)", q: 0.25 },
-                    { n: "Hela bönor (kg)", q: 14 }, { n: "Malda bönor (kg)", q: 6 }, { n: "Kaffefilter (burk)", q: 1 }, { n: "Socker (låda)", q: 0.5 }, { n: "Rörpinnar (låda)", q: 0.5 },
-                    { n: "Earl Gray (st)", q: 15 }, { n: "Gottland (st)", q: 15 }, { n: "Öland (st)", q: 15 }, { n: "Sugrör (låda)", q: 1 },
-                    { n: "Servetter (påse)", q: 1 }, { n: "Torky (rulle)", q: 0.5 },
-                    { n: "Karamellsirap (flaska)", q: 2 }, { n: "Vaniljsirap (flaska)", q: 2 }, { n: "Sopsäckar (rulle)", q: 0.5 },
-                    { n: "Burk, malt (st)", q: 4 }, { n: "Burk, choklad (st)", q: 4 }, { n: "Burk, hela bönor (st)", q: 4 },
-                    { n: "Förkläde (st)", q: 2 }, { n: "Svarta trasor (st)", q: 4 }, { n: "Grå trasor (st)", q: 2 },
-                    { n: "Cantucci (burk)", q: 1 }, { n: "Chaipulver (burk)", q: 3 }, { n: "Chokladpåsar (st)", q: 14 },
-                    { n: "Mjölk (liter)", q: 73 }, { n: "Havremjölk (liter)", q: 12 }, { n: "Grädde (patron)", q: 10 },
-                    { n: "Puly caff (burk)", q: 0.25 }, { n: "Plasthandskar (låda)", q: 0.25 }, { n: "Vatten (liter)", q: 60 },
-                    { n: "Chokladbollar (st)", q: 90 }, { n: "Kakor (st)", q: 108 }, { n: "Muffins (st)", q: 96 }, { n: "Is (box)", q: 1 }
-                ]
-            }
-        };
-
-        const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
-        
-        // Vi sparar i en samling som heter 'settings' och dokumentet 'packing_templates'
-        await setDoc(doc(window.db, "settings", "packing_templates"), dataToUpload);
-        
-        console.log("SUCCESS: Mallar sparade i Firebase!");
-        alert("Mallar sparade! Kontrollera samlingen 'settings' i din Firebase Console.");
-    } catch (e) {
-        console.error("ERROR vid migrering:", e);
-    }
 };
 
 window.renderTemplateEditor = async (container) => {
