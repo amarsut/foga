@@ -289,24 +289,11 @@ window.updateTemplateItems = async () => {
     const data = window.pendingAssignmentData;
     if (!data) return;
 
-    // Hämta mallar från Firebase
     const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
     const docSnap = await getDoc(doc(window.db, "settings", "packing_templates"));
     const PACKING_TEMPLATES = docSnap.exists() ? docSnap.data() : null;
 
     if (!PACKING_TEMPLATES) return;
-
-    // Kontroll för att behålla bockar vid redigering
-    if (editingAssignmentId && Object.keys(window.unitChecklists).length > 0) {
-        const ass = assignments.find(a => a.id === editingAssignmentId);
-        if (ass && ass.carTemplate === data.carTemplate && ass.cartTemplate === data.cartTemplate &&
-            ass.car === data.carId && JSON.stringify(ass.carts) === JSON.stringify(data.selectedCarts)) {
-            
-            // Säkerställ att vi har en aktiv flik vald även om vi returnerar tidigt
-            if (!window.activeUnitId) window.activeUnitId = Object.keys(window.unitChecklists)[0];
-            return; 
-        }
-    }
 
     const carTemplateName = data.carTemplate;
     const cartTemplateName = data.cartTemplate;
@@ -316,51 +303,48 @@ window.updateTemplateItems = async () => {
 
     window.unitChecklists = {};
 
-    // 1. FÖRETAGSBILEN (Basutrustning + Påfyllning)
+    // 1. FÖRETAGSBILEN
     if (selectedCar) {
         let carList = [];
-        if (carTemplateName && PACKING_TEMPLATES.car[carTemplateName]) {
+        const carTmpl = PACKING_TEMPLATES.car.find(t => t.name === carTemplateName);
+        
+        if (carTmpl) {
             carList.push({ type: 'header', sectionId: 'base', name: `Basutrustning: ${carTemplateName}`, unitId: selectedCar });
-            PACKING_TEMPLATES.car[carTemplateName].forEach(name => {
-                carList.push({ name, done: false, type: 'item', sectionId: 'base', unitId: selectedCar });
+            carTmpl.items.forEach(item => {
+                const displayName = typeof item === 'string' ? item : `${item.q}x ${item.n}`;
+                carList.push({ name: displayName, done: false, type: 'item', sectionId: 'base', unitId: selectedCar });
             });
         }
 
-        // --- REFILL-KALKYL START ---
-        // Vi packar för (Dagar - 1) i bilen eftersom Dag 1 finns i vagnen. 
-        // Vi multiplicerar med antal vagnar.
+        // Påfyllning (Refill)
         const refillDaysTotal = Math.max(0, (numDays - 1) * selectedCarts.length);
-        if (cartTemplateName && refillDaysTotal > 0 && PACKING_TEMPLATES.cart[cartTemplateName]) {
+        const cartTmplForRefill = PACKING_TEMPLATES.cart.find(t => t.name === cartTemplateName);
+        
+        if (refillDaysTotal > 0 && cartTmplForRefill) {
             carList.push({ type: 'header', sectionId: 'refill', name: `Sammanställd Påfyllning (${refillDaysTotal} extra dagsransoner)` });
-            PACKING_TEMPLATES.cart[cartTemplateName].forEach(item => {
+            cartTmplForRefill.items.forEach(item => {
                 carList.push({ 
                     name: `${(item.q * refillDaysTotal).toLocaleString('sv-SE')}x ${item.n}`, 
-                    done: false, 
-                    type: 'item',
-                    sectionId: 'refill',
-                    unitId: selectedCar
+                    done: false, type: 'item', sectionId: 'refill', unitId: selectedCar
                 });
             });
         }
-        // --- REFILL-KALKYL SLUT ---
         window.unitChecklists[selectedCar] = carList;
     }
 
-    // 2. VAGNARNA (Alltid 1 dagsranson i vagnen)
-    selectedCarts.forEach(id => {
-        if (cartTemplateName && PACKING_TEMPLATES.cart[cartTemplateName]) {
+    // 2. KAFFEVAGNARNA
+    const cartTmpl = PACKING_TEMPLATES.cart.find(t => t.name === cartTemplateName);
+    if (cartTmpl) {
+        selectedCarts.forEach(id => {
             window.unitChecklists[id] = [
                 { type: 'header', sectionId: 'base', name: `Dag 1 - Lager i vagn`, unitId: id },
-                ...PACKING_TEMPLATES.cart[cartTemplateName].map(item => ({
+                ...cartTmpl.items.map(item => ({
                     name: `${item.q.toLocaleString('sv-SE')}x ${item.n}`,
-                    done: false,
-                    type: 'item',
-                    sectionId: 'base',
-                    unitId: id 
+                    done: false, type: 'item', sectionId: 'base', unitId: id 
                 }))
             ];
-        }
-    });
+        });
+    }
 
     const keys = Object.keys(window.unitChecklists);
     if (keys.length > 0) window.activeUnitId = keys[0];
@@ -1135,16 +1119,16 @@ window.loadTemplateToEdit = (val) => {
         </div>
         <div class="items-editor-grid" style="display:flex; flex-direction:column; gap:8px;">
             ${template.items.map((item, i) => {
-                const isCar = type === 'car';
-                const name = isCar ? item : (item.n || "");
-                const qty = isCar ? null : (item.q || 0);
+                // Hanterar nu både gamla strängar och nya objekt för både bil och vagn
+                const name = typeof item === 'string' ? item : (item.n || "");
+                const qty = typeof item === 'string' ? 1 : (item.q || 1);
 
                 return `
                     <div class="item-edit-row" style="display:flex; gap:8px;">
                         <input type="text" value="${name}" placeholder="Namn" style="flex:1; padding:10px; border:1px solid #ddd; border-radius:8px;" 
                                onchange="window.updateItemValue('${type}', ${index}, ${i}, 'n', this.value)">
-                        ${!isCar ? `<input type="number" step="0.01" value="${qty}" style="width:75px; padding:10px; border:1px solid #ddd; border-radius:8px;" 
-                                     onchange="window.updateItemValue('${type}', ${index}, ${i}, 'q', this.value)">` : ''}
+                        <input type="number" step="0.01" value="${qty}" style="width:75px; padding:10px; border:1px solid #ddd; border-radius:8px;" 
+                                     onchange="window.updateItemValue('${type}', ${index}, ${i}, 'q', this.value)">
                         <button onclick="window.removeTemplateItem('${type}', ${index}, ${i})" style="background:none; border:none; color:#e30613; padding:5px; cursor:pointer;">
                             <i class="fas fa-times"></i>
                         </button>
@@ -1158,8 +1142,8 @@ window.loadTemplateToEdit = (val) => {
 };
 
 window.addTemplateItem = (type, tIdx) => {
-    const newItem = type === 'car' ? "Ny artikel" : { n: "Ny artikel", q: 1 };
-    window.currentEditingTemplates[type][tIdx].items.push(newItem);
+    // Skapar alltid ett objekt med namn och antal nu
+    window.currentEditingTemplates[type][tIdx].items.push({ n: "Ny artikel", q: 1 });
     window.loadTemplateToEdit(`${type}-${tIdx}`);
 };
 
@@ -1170,12 +1154,16 @@ window.removeTemplateItem = (type, tIdx, iIdx) => {
 
 window.updateItemValue = (type, tIdx, iIdx, key, val) => {
     const template = window.currentEditingTemplates[type][tIdx];
-    if (type === 'car') {
-        template.items[iIdx] = val;
-    } else {
-        if (key === 'q') template.items[iIdx].q = parseFloat(val) || 0;
-        else template.items[iIdx].n = val;
+    let item = template.items[iIdx];
+    
+    // Om det gamla formatet var en sträng, konvertera till objekt vid ändring
+    if (typeof item === 'string') {
+        item = { n: item, q: 1 };
+        template.items[iIdx] = item;
     }
+    
+    if (key === 'q') item.q = parseFloat(val) || 0;
+    else item.n = val;
 };
 
 window.saveTemplatesToFirebase = async () => {
