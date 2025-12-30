@@ -1211,3 +1211,76 @@ window.deleteUnitPermanent = async (id, type) => {
     const { doc, deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
     await deleteDoc(doc(window.db, colMap[type], id));
 };
+
+
+let deferredPrompt;
+
+// 1. Registrera Service Worker
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js');
+}
+
+// 2. Lyssna efter installations-förfrågan
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    // Visa din egna "Installera app"-knapp här om du vill
+    console.log("Appen är redo att installeras!");
+    
+    // Om du vill visa en knapp automatiskt i din Admin-vy t.ex:
+    const adminArea = document.querySelector('.admin-container');
+    if (adminArea) {
+        const installBtn = document.createElement('button');
+        installBtn.className = 'btn-primary-modern';
+        installBtn.style.marginTop = '20px';
+        installBtn.innerHTML = '<i class="fas fa-mobile-alt"></i> Installera som App';
+        installBtn.onclick = async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') deferredPrompt = null;
+            }
+        };
+        adminArea.appendChild(installBtn);
+    }
+});
+
+// Funktion för att visa iOS-instruktioner
+window.showIOSInstallInstructions = () => {
+    // 1. Kolla om det är iOS (iPhone/iPad)
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    
+    // 2. Kolla om appen redan körs i "standalone" (installerat läge)
+    const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+
+    // Visa bara om det är iOS och INTE installerat
+    if (isIOS && !isStandalone) {
+        // Kolla om användaren redan stängt ner rutan denna session
+        if (sessionStorage.getItem('ios_banner_closed')) return;
+
+        const banner = document.createElement('div');
+        banner.className = 'ios-install-banner';
+        banner.innerHTML = `
+            <div class="ios-banner-header">
+                <h4>Installera Fogarolli-appen</h4>
+                <button class="ios-close-btn" onclick="this.parentElement.parentElement.remove(); sessionStorage.setItem('ios_banner_closed', 'true');">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="ios-instruction-step">
+                <div class="ios-icon-bg"><i class="fa-solid fa-arrow-up-from-bracket"></i></div>
+                <span>Tryck på <strong>Dela-knappen</strong> i verktygsfältet längst ner.</span>
+            </div>
+            <div class="ios-instruction-step">
+                <div class="ios-icon-bg"><i class="fa-regular fa-square-plus ios-add-icon"></i></div>
+                <span>Skrolla ner och välj <strong>"Lägg till på hemskärmen"</strong>.</span>
+            </div>
+        `;
+        document.body.appendChild(banner);
+    }
+};
+
+// Kör kollen när sidan laddats
+window.addEventListener('load', () => {
+    setTimeout(window.showIOSInstallInstructions, 2000); // Vänta 2 sekunder innan rutan visas
+});
