@@ -1,0 +1,202 @@
+/* ==========================================================================
+   SAMMANSTÄLLD CSS FÖR CHATT & JOURNAL (FLEET MANAGEMENT)
+   Innehåller: Meddelandeplacering, Bubblor, Media & Modern Input
+   ========================================================================== */
+
+/* 1. HUVUDBEHÅLLARE FÖR CHATT-FLÖDET */
+#chat-feed-v3 {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+    padding: 20px 40px !important; /* Extra luft på sidorna för raderingsknappar */
+    background: #f5f5f5 !important;
+    overflow-y: auto !important;
+}
+
+/* 2. MEDDELANDERADER (PLACERING) */
+.teams-msg-row {
+    display: flex !important;
+    width: 100% !important;
+    gap: 12px !important;
+}
+
+/* Mina meddelanden (VÄNSTER) */
+.teams-msg-row.user-msg {
+    flex-direction: row !important;
+    justify-content: flex-start !important;
+    align-self: flex-start !important;
+}
+
+/* Systemmeddelanden (HÖGER) */
+.teams-msg-row.system-msg {
+    flex-direction: row-reverse !important;
+    justify-content: flex-start !important;
+    align-self: flex-end !important;
+}
+
+/* 3. INNEHÅLLS-WRAPPER & TEXTJUSTERING */
+.teams-content-wrapper {
+    display: flex !important;
+    flex-direction: column !important;
+    max-width: 75% !important;
+}
+
+.user-msg .teams-content-wrapper { align-items: flex-start !important; }
+.system-msg .teams-content-wrapper { align-items: flex-end !important; }
+
+.teams-msg-header { 
+    font-size: 0.7rem; 
+    margin-bottom: 3px; 
+    color: #616161; 
+}
+
+/* 4. MEDDELANDEBUBBLOR */
+.teams-bubble-container {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+}
+
+/* Vänd ordning för systemmeddelanden så papperskorgen hamnar på rätt sida */
+.system-msg .teams-bubble-container { flex-direction: row-reverse !important; }
+
+.teams-bubble {
+    background: #ffffff !important;
+    padding: 10px 14px !important;
+    border: 1px solid #e1dfdd !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+    width: fit-content !important; /* Kramar texten */
+}
+
+/* Teams-hörn (Olika beroende på sida) */
+.user-msg .teams-bubble { border-radius: 0px 10px 10px 10px !important; }
+.system-msg .teams-bubble { border-radius: 10px 0px 10px 10px !important; }
+
+/* Markering för BRIST */
+.teams-msg-row.brist-style .teams-bubble {
+    border-left: 4px solid #e30613 !important;
+    background: #fff8f8 !important;
+}
+
+/* 5. KNAPPAR & IKONER INUTI CHATTEN */
+
+/* Radera-knapp (Papperskorg) */
+.teams-del-btn {
+    color: #ccc !important;
+    cursor: pointer !important;
+    font-size: 0.85rem !important;
+    opacity: 0; /* Syns bara vid hovring */
+    transition: 0.2s !important;
+}
+
+.teams-msg-row:hover .teams-del-btn {
+    opacity: 1 !important;
+}
+
+.teams-del-btn:hover {
+    color: #e30613 !important;
+}
+
+/* Åtgärda-knapp (Grön knapp inuti bubblan) */
+.teams-res-btn {
+    display: block !important;
+    margin-top: 10px !important;
+    background: #2ecc71 !important;
+    color: white !important;
+    border: none !important;
+    padding: 5px 12px !important;
+    border-radius: 4px !important;
+    font-size: 0.75rem !important;
+    font-weight: 800 !important;
+    cursor: pointer !important;
+}
+
+/* 6. MODERN INPUT-RAD (NEDERKANT) */
+.teams-input-container {
+    padding: 10px 20px !important;
+    background: #f5f5f5 !important;
+    border-top: 1px solid #eee !important;
+}
+
+.teams-input-bar {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    background: #ffffff !important;
+    border: 1px solid #e1dfdd !important;
+    border-radius: 24px !important;
+    padding: 6px 14px !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
+}
+
+#chat-text-input {
+    flex: 1 !important;
+    border: none !important;
+    outline: none !important;
+    font-size: 0.9rem !important;
+    padding: 8px 0 !important;
+    background: transparent !important;
+}
+
+.chat-action-btn {
+    background: none !important;
+    border: none !important;
+    color: #616161 !important;
+    cursor: pointer !important;
+    font-size: 1.1rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: color 0.2s !important;
+}
+
+.chat-action-btn:hover {
+    color: var(--fog-brown) !important;
+}
+
+/* 7. INFO/BRIST TOGGLE (SEGMENTERAT REGLAGE) */
+.chat-category-pill {
+    display: flex !important;
+    background: #f0f0f0 !important;
+    padding: 2px !important;
+    border-radius: 20px !important;
+    cursor: pointer !important;
+    border: 1px solid #e1dfdd !important;
+    transition: 0.3s !important;
+    width: fit-content !important;
+    margin: 0 5px !important;
+    transform: scale(0.9) !important; /* Nättare storlek för input-raden */
+}
+
+.chat-category-pill span {
+    padding: 4px 12px !important;
+    border-radius: 18px !important;
+    font-size: 0.65rem !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+}
+
+/* Läge: INFO (Standard) */
+.chat-category-pill .opt-info {
+    background: #fff !important;
+    color: #444 !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+}
+.chat-category-pill .opt-brist {
+    color: #999 !important;
+}
+
+/* Läge: BRIST (Aktivt) */
+.chat-category-pill.is-brist {
+    border-color: #e30613 !important;
+    background: #fff5f5 !important;
+}
+.chat-category-pill.is-brist .opt-info {
+    background: transparent !important;
+    color: #999 !important;
+    box-shadow: none !important;
+}
+.chat-category-pill.is-brist .opt-brist {
+    background: #e30613 !important;
+    color: #fff !important;
+}
