@@ -25,17 +25,19 @@ window.isPackingPhase = false;
 const loadTemplatesFromDb = async () => {
     try {
         const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
-        const docSnap = await getDoc(doc(db, "settings", "packing_templates"));
+        const docSnap = await getDoc(doc(window.db, "settings", "packing_templates"));
         if (docSnap.exists()) {
             packingTemplates = docSnap.data();
-            console.log("Mallar laddade från Firebase");
+            console.log("Mallar synkade med databasen");
+            // Om vi redan står på 'create' vyn, rita om den nu när datan finns
+            if (currentView === 'create') window.render();
         }
     } catch (err) {
-        console.error("Kunde inte ladda mallar:", err);
+        console.error("Fel vid laddning av mallar:", err);
     }
 };
 
-// Starta hämtningen direkt
+// Kör hämtningen
 loadTemplatesFromDb();
 
 window.goToPacking = () => {
@@ -209,15 +211,31 @@ window.showView = (view, preDate = null) => {
 
 window.render = () => {
     const area = document.getElementById('content-area');
-    area.innerHTML = '';
+    if (!area) return;
 
+    // 1. Rensa ytan (om vi inte är i TV-läge som sköter sin egen rensning)
+    if (currentView !== 'tv') {
+        area.innerHTML = '';
+        toggleMainHeader(true); // Visa headern i vanliga vyer
+    }
+
+    // 2. Kontrollera att mallar är laddade innan vi ritar "Skapa uppdrag"
+    if (currentView === 'create' && !packingTemplates) {
+        area.innerHTML = '<div style="padding:40px; text-align:center;"><i class="fas fa-spinner fa-spin"></i> Laddar packmallar...</div>';
+        return;
+    }
+
+    // 3. Välj vy
     if (currentView === 'dashboard') renderDashboard(area);
-    if (currentView === 'map') renderMap(area);
     if (currentView === 'create') renderCreate(area);
     if (currentView === 'availability') renderAvailabilityView(area, cars, trailers, carts, db, assignments);
-
-    if (currentView === 'calendar') {
-        renderCalendarView(assignments, db, cars, trailers, carts, selectedStartDate);
+    if (currentView === 'stats') renderStatsView(area);
+    if (currentView === 'settings') renderAdminView(area); 
+    if (currentView === 'calendar') renderCalendarView(assignments, db, cars, trailers, carts, selectedStartDate);
+    
+    // TV-vyn anropas här
+    if (currentView === 'tv') {
+        window.renderTVDashboard(area);
     }
 };
 
