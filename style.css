@@ -667,6 +667,50 @@ body {
 .fleet-card-arrow { position: absolute; bottom: 10px; right: 10px; font-size: 0.7rem; opacity: 0; transition: 0.2s; }
 .fleet-card:hover .fleet-card-arrow { opacity: 0.3; transform: translateX(3px); }
 
+/* Fordonskorten i Fleetvyn */
+
+/* --- FORDONS-KORT META (IKONER & ARROW) --- */
+
+.fleet-meta {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding-top: 12px !important;
+    border-top: 1px solid #f5f5f5 !important;
+    margin-top: 10px !important;
+    font-size: 0.75rem !important;
+    color: #bbb !important; /* Ljusgrå som i prototypen */
+}
+
+.fleet-meta-left {
+    display: flex !important;
+    gap: 12px !important; /* Avstånd mellan ikongrupperna */
+    font-weight: 700 !important;
+}
+
+.fleet-meta-left span {
+    display: flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+}
+
+.fleet-card-arrow-icon {
+    font-size: 0.8rem !important;
+    color: #eee !important;
+    transition: transform 0.2s ease, color 0.2s ease !important;
+}
+
+/* Effekt vid hovring på hela kortet */
+.fleet-card:hover .fleet-card-arrow-icon {
+    color: var(--fog-brown) !important;
+    transform: translateX(3px) !important;
+}
+
+/* Ta bort den gamla absoluta pilen om den finns kvar */
+.fleet-card-arrow {
+    display: none !important;
+}
+
 /* ==========================================================================
    FLEET MODAL STYLING
    ========================================================================== */
@@ -1938,3 +1982,4 @@ TEST DASHBOARD KORT
 .general-note-textarea:focus {
     border-color: var(--fog-brown);
 }
+
