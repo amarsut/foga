@@ -844,75 +844,74 @@ function toggleMainHeader(show) {
 
 window.renderStatsView = (area) => {
     toggleMainHeader(true);
+    
     const totalMissions = assignments.length;
     const completedMissions = assignments.filter(a => a.step === 'Klar').length;
     const fleetFix = [...cars, ...trailers, ...carts].filter(u => u.healthStatus === 'danger' || u.healthStatus === 'warn').length;
 
     area.innerHTML = `
-        <div class="stats-dashboard-compact">
-            <div class="stats-kpi-row">
-                <div class="kpi-box">
-                    <div class="kpi-icon"><i class="fas fa-star"></i></div>
-                    <div class="kpi-data">
-                        <span class="kpi-val">${window.mostUsedCart || 'Andrea'}</span>
-                        <span class="kpi-lab">Mest använd vagn</span>
-                    </div>
+        <div class="stats-dashboard-premium">
+            <div class="premium-kpi-grid">
+                <div class="p-kpi-card mission">
+                    <span class="p-kpi-label">UPPDRAG</span>
+                    <span class="p-kpi-total">${totalMissions}</span>
+                    <div class="p-kpi-sub">Totalt genomförda</div>
                 </div>
-                <div class="kpi-box">
-                    <div class="kpi-icon"><i class="fas fa-calendar-check"></i></div>
-                    <div class="kpi-data">
-                        <span class="kpi-val">${totalMissions}</span>
-                        <span class="kpi-lab">Totalt Uppdrag</span>
-                    </div>
-                </div>
-                <div class="kpi-box">
-                    <div class="kpi-icon"><i class="fas fa-check-double"></i></div>
-                    <div class="kpi-data">
-                        <span class="kpi-val">${completedMissions}</span>
-                        <span class="kpi-lab">Slutförda</span>
-                    </div>
-                </div>
-                <div class="kpi-box warning">
-                    <div class="kpi-icon"><i class="fas fa-tools"></i></div>
-                    <div class="kpi-data">
-                        <span class="kpi-val">${fleetFix}</span>
-                        <span class="kpi-lab">Fordon att åtgärda</span>
-                    </div>
+                <div class="p-kpi-card fix">
+                    <span class="p-kpi-label">ATT ÅTGÄRDA</span>
+                    <span class="p-kpi-total">${fleetFix}</span>
+                    <div class="p-kpi-sub">Fordon & Släp</div>
                 </div>
             </div>
 
-            <div class="stats-main-grid">
-                <div class="chart-container-card">
-                    <h5>AFFÄRSOMRÅDEN</h5>
-                    <canvas id="chartArea"></canvas>
+            <div class="info-card-container">
+                <div class="infographic-card">
+                    <div class="card-info">
+                        <h5>Affärsområden</h5>
+                        <p>Fördelning av verksamhet</p>
+                    </div>
+                    <div class="chart-box">
+                        <canvas id="chartArea"></canvas>
+                        <div class="chart-center-label">
+                            <span id="center-total">${totalMissions}</span>
+                            <small>Event</small>
+                        </div>
+                    </div>
                 </div>
-                <div class="chart-container-card">
-                    <h5>NYTTJANDE FOGAROLLIBIL</h5>
-                    <canvas id="chartCarts"></canvas>
+
+                <div class="infographic-card">
+                    <div class="card-info">
+                        <h5>Fordonsutnyttjande</h5>
+                        <p>Topp 5 mest använda</p>
+                    </div>
+                    <div class="chart-box-bar">
+                        <canvas id="chartCarts"></canvas>
+                    </div>
                 </div>
-                <div class="chart-container-card">
-                    <h5>NYTTJANDE TRANSPORTBIL</h5>
-                    <canvas id="chartResources"></canvas>
-                </div>
-                <div class="chart-container-card">
-                    <h5>PACK-STATUS (TOTALT)</h5>
-                    <canvas id="chartPacking"></canvas>
+
+                <div class="infographic-card">
+                    <div class="card-info">
+                        <h5>Packningseffektivitet</h5>
+                        <p>Status på aktuella listor</p>
+                    </div>
+                    <div class="chart-box">
+                        <canvas id="chartPacking"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
     `;
 
-    // Rita graferna efter att DOM har laddats
     setTimeout(() => {
         initStatsCharts();
     }, 50);
 };
 
+// Uppdaterad graf-initialisering för en "mjukare" look
 function initStatsCharts() {
-    // Förstör gamla grafer om de finns
     Object.values(statsCharts).forEach(chart => chart.destroy());
 
-    // 1. Affärsområden
+    // 1. Affärsområden (Doughnut med rundade hörn)
     const areaData = { 'Event': 0, 'Catering': 0, 'Street': 0, 'FPJ': 0 };
     assignments.forEach(a => { if(areaData[a.businessArea] !== undefined) areaData[a.businessArea]++; });
 
@@ -923,27 +922,55 @@ function initStatsCharts() {
             datasets: [{
                 data: Object.values(areaData),
                 backgroundColor: ['#e30613', '#5c4033', '#2ecc71', '#f1c40f'],
-                borderWidth: 0
+                hoverOffset: 10,
+                borderWidth: 0,
+                borderRadius: 5
             }]
         },
-        options: { plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } }, cutout: '70%' }
+        options: {
+            cutout: '80%',
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(0,0,0,0.8)',
+                    padding: 12,
+                    cornerRadius: 10,
+                    displayColors: false
+                }
+            },
+            animation: { animateScale: true }
+        }
     });
 
-    // 2. Fordonsutnyttjande
-    const carUsage = {};
-    assignments.forEach(a => { carUsage[a.car] = (carUsage[a.car] || 0) + 1; });
-    const sortedCars = Object.entries(carUsage).sort((a,b) => b[1]-a[1]).slice(0, 5);
+    // 2. Vagnar (Horisontella staplar med gradients-känsla)
+    const cartUsage = {};
+    assignments.forEach(a => {
+        if (a.carts) a.carts.forEach(c => cartUsage[c] = (cartUsage[c] || 0) + 1);
+    });
+    const sortedCarts = Object.entries(cartUsage).sort((a,b) => b[1]-a[1]).slice(0, 5);
 
-    statsCharts.res = new Chart(document.getElementById('chartResources'), {
+    statsCharts.carts = new Chart(document.getElementById('chartCarts'), {
         type: 'bar',
         data: {
-            labels: sortedCars.map(c => c[0]),
-            datasets: [{ label: 'Uppdrag', data: sortedCars.map(c => c[1]), backgroundColor: '#5c4033', borderRadius: 5 }]
+            labels: sortedCarts.map(c => c[0]),
+            datasets: [{
+                data: sortedCarts.map(c => c[1]),
+                backgroundColor: '#5c4033',
+                borderRadius: 20,
+                barThickness: 12
+            }]
         },
-        options: { scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }, plugins: { legend: { display: false } } }
+        options: {
+            indexAxis: 'y',
+            scales: {
+                x: { display: false },
+                y: { grid: { display: false }, border: { display: false } }
+            },
+            plugins: { legend: { display: false } }
+        }
     });
 
-    // 3. Packstatus
+    // 3. Packstatus (Pie)
     const packStatus = { 'Klara': 0, 'Packas': 0 };
     assignments.forEach(a => { a.step === 'Klar' ? packStatus['Klara']++ : packStatus['Packas']++; });
 
@@ -951,42 +978,14 @@ function initStatsCharts() {
         type: 'pie',
         data: {
             labels: Object.keys(packStatus),
-            datasets: [{ data: Object.values(packStatus), backgroundColor: ['#2ecc71', '#e30613'] }]
-        },
-        options: { plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } } }
-    });
-
-    // 4. Räkna vagnutnyttjande/Fogarollibil
-    const cartUsage = {};
-    assignments.forEach(a => {
-        if (a.carts && Array.isArray(a.carts)) {
-            a.carts.forEach(cartId => {
-                cartUsage[cartId] = (cartUsage[cartId] || 0) + 1;
-            });
-        }
-    });
-    
-    // 2. Sortera för att visa de 5 mest använda vagnarna
-    const sortedCarts = Object.entries(cartUsage)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 5);
-    
-    // 3. Skapa grafen
-    statsCharts.carts = new Chart(document.getElementById('chartCarts'), {
-        type: 'bar',
-        data: {
-            labels: sortedCarts.map(c => c[0]),
             datasets: [{
-                label: 'Antal Uppdrag',
-                data: sortedCarts.map(c => c[1]),
-                backgroundColor: '#e30613', // Fogarolli-röd för vagnarna
-                borderRadius: 5
+                data: Object.values(packStatus),
+                backgroundColor: ['#2ecc71', '#e30613'],
+                borderWidth: 0
             }]
         },
         options: {
-            indexAxis: 'y', // Pro-tip: Horisontella staplar är snyggt för vagnnamn
-            scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } },
-            plugins: { legend: { display: false } }
+            plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, usePointStyle: true } } }
         }
     });
 }
