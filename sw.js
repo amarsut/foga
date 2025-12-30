@@ -1,21 +1,23 @@
-const CACHE_NAME = 'fogarolli-v1';
-const ASSETS = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/mobile.css',
-  '/script.js',
-  '/tv.js'
+// sw.js
+const CACHE_NAME = 'foga-logistik-v2';
+const ASSETS_TO_CACHE = [
+  './',
+  './index.html',
+  './style.css',
+  './mobile.css',
+  './script.js',
+  './tv.js',
+  './manifest.json'
 ];
 
-// Installera service worker och cacha filer
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(ASSETS_TO_CACHE);
+    })
   );
 });
 
-// Svara från cache om möjligt
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((response) => {
