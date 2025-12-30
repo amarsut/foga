@@ -209,35 +209,6 @@ window.showView = (view, preDate = null) => {
     render();
 };
 
-window.render = () => {
-    const area = document.getElementById('content-area');
-    if (!area) return;
-
-    // 1. Hantera TV-vyn separat (den sköter sin egen rensning/header)
-    if (currentView === 'tv') {
-        window.renderTVDashboard(area);
-        return;
-    }
-
-    // 2. Rensa ytan för vanliga vyer
-    area.innerHTML = '';
-    toggleMainHeader(true);
-
-    // 3. Kontrollera att mallar är laddade för "Skapa"
-    if (currentView === 'create' && !packingTemplates) {
-        area.innerHTML = '<div style="padding:40px; text-align:center;"><i class="fas fa-spinner fa-spin"></i> Laddar...</div>';
-        return;
-    }
-
-    // 4. Rendera vald vy
-    if (currentView === 'dashboard') renderDashboard(area);
-    if (currentView === 'create') renderCreate(area);
-    if (currentView === 'availability') renderAvailabilityView(area, cars, trailers, carts, db, assignments);
-    if (currentView === 'stats') renderStatsView(area);
-    if (currentView === 'settings' || currentView === 'admin') renderAdminView(area); 
-    if (currentView === 'calendar') renderCalendarView(assignments, db, cars, trailers, carts, selectedStartDate);
-};
-
 function renderDashboard(area) {
     const freeCars = cars.filter(c => c.status === 'Ledig').length;
     
@@ -1035,36 +1006,36 @@ function fleetAlertsCount() {
     return [...cars, ...trailers, ...carts].filter(u => u.healthStatus === 'danger' || u.healthStatus === 'warn').length;
 }
 
-// Uppdatera din befintliga window.render-funktion i script.js
-const originalRender = window.render;
 window.render = () => {
     const area = document.getElementById('content-area');
     if (!area) return;
 
+    // 1. Hantera TV-vyn separat (den sköter sin egen rensning och header)
     if (currentView === 'tv') {
         window.renderTVDashboard(area);
         return;
     }
 
-    // DIN BEFINTLIGA LOGIK FÖR ANDRA VYER
+    // 2. Rensa ytan och återställ headern för alla vanliga vyer
     area.innerHTML = '';
+    toggleMainHeader(true);
+
+    // 3. Kontrollera att mallar är laddade innan "Skapa uppdrag" ritas ut
+    if (currentView === 'create' && !packingTemplates) {
+        area.innerHTML = `
+            <div style="padding:100px; text-align:center; color:var(--fog-brown);">
+                <i class="fas fa-spinner fa-spin fa-2x"></i>
+                <p style="margin-top:15px; font-weight:bold;">Hämtar packmallar från databasen...</p>
+            </div>`;
+        return;
+    }
+
+    // 4. Välj vy baserat på currentView
     if (currentView === 'dashboard') renderDashboard(area);
     if (currentView === 'create') renderCreate(area);
     if (currentView === 'availability') renderAvailabilityView(area, cars, trailers, carts, db, assignments);
     if (currentView === 'stats') renderStatsView(area);
-    if (currentView === 'calendar') renderCalendarView(assignments, db, cars, trailers, carts, selectedStartDate);
-};
-
-// Lägg till 'admin' i din showView och render logik
-window.render = () => {
-    const area = document.getElementById('content-area');
-    area.innerHTML = '';
-
-    if (currentView === 'dashboard') renderDashboard(area);
-    if (currentView === 'create') renderCreate(area);
-    if (currentView === 'availability') renderAvailabilityView(area, cars, trailers, carts, db, assignments);
-    if (currentView === 'stats') renderStatsView(area);
-    if (currentView === 'admin') renderAdminView(area); // <--- NY
+    if (currentView === 'settings' || currentView === 'admin') renderAdminView(area); 
     if (currentView === 'calendar') renderCalendarView(assignments, db, cars, trailers, carts, selectedStartDate);
 };
 
