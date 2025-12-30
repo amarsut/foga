@@ -11,6 +11,16 @@ export function initAvailabilityModule(db) {
 export async function renderAvailabilityView(area, cars, trailers, carts, db, assignments = []) {
     dbInstance = db;
     
+    // NYTT: Filtrera bort dolda enheter direkt
+    const visibleCars = cars.filter(c => c.isVisible !== false);
+    const visibleTrailers = trailers.filter(t => t.isVisible !== false);
+    const visibleCarts = carts.filter(c => c.isVisible !== false);
+    const allVisibleUnits = [...visibleCars, ...visibleTrailers, ...visibleCarts];
+
+    const now = new Date();
+    const oneYearAgo = new Date(); 
+    oneYearAgo.setFullYear(now.getFullYear() - 1);
+    
     const allUnits = [...cars, ...trailers, ...carts];
     const now = new Date();
     const oneYearAgo = new Date(); 
@@ -47,8 +57,8 @@ export async function renderAvailabilityView(area, cars, trailers, carts, db, as
     };
 
     // Filtrera fram åtgärder
-    const maintenanceAlerts = allUnits.filter(u => {
-        const isCart = carts.find(c => c.id === u.id);
+    const maintenanceAlerts = allVisibleUnits.filter(u => {
+        const isCart = visibleCarts.find(c => c.id === u.id);
         const nextInsp = (!isCart && u.nextInspection) ? new Date(u.nextInspection) : null;
         const lastServ = u.lastService ? new Date(u.lastService) : null;
         return u.healthStatus === 'danger' || (nextInsp && nextInsp < now) || (lastServ && lastServ < oneYearAgo) || u.healthStatus === 'warn';
@@ -99,10 +109,12 @@ export async function renderAvailabilityView(area, cars, trailers, carts, db, as
                 </div>
             </div>
 
-            <div class="fleet-sections-grid">
-                ${renderFleetGroup('Företagsbilar', 'fa-truck-pickup', cars, 'car')}
-                ${renderFleetGroup('Släpvagnar', 'fa-trailer', trailers, 'trailer')}
-                ${renderFleetGroup('Kaffevagnar', 'fa-coffee', carts, 'cart')}
+            <div class="fleet-container">
+                <div class="fleet-sections-grid">
+                    ${renderFleetGroup('Företagsbilar', 'fa-truck-pickup', visibleCars, 'car')}
+                    ${renderFleetGroup('Släpvagnar', 'fa-trailer', visibleTrailers, 'trailer')}
+                    ${renderFleetGroup('Kaffevagnar', 'fa-coffee', visibleCarts, 'cart')}
+                </div>
             </div>
         </div>
     `;
