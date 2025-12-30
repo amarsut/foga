@@ -699,7 +699,7 @@ FÖRBÄTTRINGAR / JUSTERINGAR
 
 .checklist-header-flex,
 .panel-header {
-    padding: 8px 10px !important;
+    padding: 0px 10px !important;
     /* Tajtare rubrikområden */
 }
 
@@ -730,15 +730,20 @@ FÖRBÄTTRINGAR / JUSTERINGAR
 }
 
 /* 4. Separata Kalender-kort */
-
-/* 1. Nollställ bakgrunden för hela kalenderytan */
-.main-content {
-    background-color: transparent !important;
+#calendar-container.mobile-card-view {
+    background: transparent !important;
+    /* Tar bort den stora vita ytan */
+    box-shadow: none !important;
+    border: none !important;
 }
 
-#content-area {
-    background: transparent !important;
-    padding: 0 !important;
+.day-card {
+    margin-bottom: 12px !important;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+    /* Subtil skugga för "kort"-känsla */
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    background: #fff !important;
 }
 
 /* Ändrat från .mobile-card-view till .mobile-timeline-view för att matcha calendar.js */
@@ -749,45 +754,7 @@ FÖRBÄTTRINGAR / JUSTERINGAR
     padding: 0 !important;
 }
 
-/* 2. Dag-korten (Snygga flytande kort med 8px sidmarginal) */
-.day-card {
-    margin: 0 8px 12px 8px !important;
-    /* Ger lagom med "luft" på sidorna */
-    width: auto !important;
-    background: #ffffff !important;
-    border-radius: 18px !important;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
-    border: 1px solid rgba(0, 0, 0, 0.02) !important;
-    overflow: hidden;
-}
-
-.day-card-header {
-    padding: 10px 15px !important;
-    background: rgba(92, 64, 51, 0.03) !important;
-    /* Väldigt ljus Fogarolli-brun */
-    font-weight: 850 !important;
-}
-
-.m-empty-day {
-    padding: 30px 20px !important;
-    text-align: center;
-    background: #fafafa;
-    border-radius: 0 0 16px 16px;
-    color: #bbb !important;
-    font-size: 0.75rem !important;
-    font-weight: 600;
-}
-
-.m-empty-day::before {
-    content: "\f073"; /* Kalender-ikon */
-    font-family: "Font Awesome 6 Free";
-    display: block;
-    font-size: 1.2rem;
-    margin-bottom: 8px;
-    opacity: 0.3;
-}
-
-/* STATISTIKVY FÖRBÄTTRAD */
+/* FÖRBÄTTRAD STATISTIKVY */
 
 .stats-dashboard-premium {
     padding: 5px 10px !important;
@@ -890,39 +857,4 @@ FÖRBÄTTRINGAR / JUSTERINGAR
 
 .chart-box-bar {
     height: 200px;
-}
-
-/* Minska marginalen under KPI-raden */
-.premium-kpi-grid {
-    margin-bottom: 15px !important;
-    /* Minskat från 25px */
-    gap: 10px !important;
-    /* Något tätare mellan boxarna */
-}
-
-/* Minska padding och marginal på själva info-korten */
-.infographic-card {
-    padding: 15px !important;
-    /* Minskat inre avstånd från 20px */
-    margin-bottom: 12px !important;
-    /* Minskat avstånd mellan korten från 20px */
-    border-radius: 20px !important;
-    /* Något mindre rundning för att matcha kompaktare look */
-}
-
-/* Minska luft mellan rubrik och graf inuti kortet */
-.card-info p {
-    margin: 2px 0 8px 0 !important;
-    /* Minskat från 15px */
-}
-
-/* Justera höjden på graferna så de tar mindre vertikal plats */
-.chart-box {
-    height: 160px !important;
-    /* Minskat från 180px */
-}
-
-.chart-box-bar {
-    height: 180px !important;
-    /* Minskat från 200px */
 }
