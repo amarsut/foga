@@ -1043,19 +1043,47 @@ window.render = () => {
 };
 
 window.renderAdminView = async (area) => {
-    const allUnits = [...cars, ...trailers, ...carts];
+    // Säkerställ att vi har listorna, annars skapa tomma arrayer för att undvika krasch
+    const safeCars = window.cars || [];
+    const safeTrailers = window.trailers || [];
+    const safeCarts = window.carts || [];
+    const allUnits = [...safeCars, ...safeTrailers, ...safeCarts];
     
     area.innerHTML = `
         <div class="admin-container">
             <div class="admin-card">
                 <h4><i class="fas fa-bus"></i> Hantera Fordonsparken</h4>
                 <div class="admin-table-wrapper">
-                    </div>
+                    <table class="admin-table">
+                        <thead>
+                            <tr><th>Enhet</th><th>Visa i Fleet</th><th>Åtgärd</th></tr>
+                        </thead>
+                        <tbody>
+                            ${allUnits.length > 0 ? allUnits.map(u => {
+                                // Identifiera typ
+                                const isCar = safeCars.some(c => c.id === u.id);
+                                const isTrailer = safeTrailers.some(t => t.id === u.id);
+                                const uType = isCar ? 'car' : isTrailer ? 'trailer' : 'cart';
+
+                                return `<tr>
+                                    <td><strong>${u.id}</strong> <span class="type-badge">${uType}</span></td>
+                                    <td>
+                                        <label class="switch-ios">
+                                            <input type="checkbox" ${u.isVisible !== false ? 'checked' : ''} 
+                                                   onchange="window.toggleUnitVisibility('${u.id}', '${uType}', this.checked)">
+                                            <span class="slider-ios"></span>
+                                        </label>
+                                    </td>
+                                    <td><button class="btn-delete-icon" onclick="window.deleteUnitPermanent('${u.id}', '${uType}')"><i class="fas fa-trash"></i></button></td>
+                                </tr>`;
+                            }).join('') : '<tr><td colspan="3">Inga fordon hittades i databasen.</td></tr>'}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <div class="admin-card">
                 <h4><i class="fas fa-boxes"></i> Packmallar</h4>
-                <p class="admin-hint">Välj en mall för att redigera innehållet i packlistorna.</p>
                 <div id="admin-template-editor-container">
                     <button class="btn-primary-modern" onclick="window.initTemplateEditor()">
                         <i class="fas fa-edit"></i> Öppna Mall-editor
@@ -1094,27 +1122,47 @@ window.initTemplateEditor = async () => {
 window.loadTemplateToEdit = (val) => {
     if (!val) return;
     const [type, index] = val.split('-');
-    const template = window.currentEditingTemplates[type][index];
+    
+    // Hämta mallen säkert
+    const template = window.currentEditingTemplates && window.currentEditingTemplates[type] 
+                     ? window.currentEditingTemplates[type][index] 
+                     : null;
+
+    if (!template || !template.items) {
+        console.error("Kunde inte ladda mall-items:", template);
+        return alert("Fel: Kunde inte ladda innehållet i denna mall.");
+    }
+
     const area = document.getElementById('template-items-list');
 
     area.innerHTML = `
-        <div class="editor-header">
-            <h5>${template.name}</h5>
-            <button class="btn-add" onclick="window.addTemplateItem('${type}', ${index})"><i class="fas fa-plus"></i> Lägg till rad</button>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; margin-top:20px;">
+            <h5 style="margin:0; color:var(--fog-brown);">${template.name}</h5>
+            <button class="btn-add-item-small" onclick="window.addTemplateItem('${type}', ${index})" 
+                    style="padding:5px 10px; font-size:0.7rem; background:#eee; border:none; border-radius:5px;">
+                <i class="fas fa-plus"></i> Ny rad
+            </button>
         </div>
         <div class="items-editor-grid">
             ${template.items.map((item, i) => {
-                const name = typeof item === 'string' ? item : item.n;
-                const qty = typeof item === 'string' ? null : item.q;
+                // Hantera både enkla strängar (bilar) och objekt (vagnar)
+                const isCar = type === 'car';
+                const name = isCar ? item : (item.n || "");
+                const qty = isCar ? null : (item.q || 0);
+
                 return `
-                    <div class="item-edit-row">
-                        <input type="text" value="${name}" onchange="window.updateItemValue('${type}', ${index}, ${i}, 'n', this.value)">
-                        ${qty !== null ? `<input type="number" step="0.1" value="${qty}" onchange="window.updateItemValue('${type}', ${index}, ${i}, 'q', this.value)">` : ''}
-                        <button class="btn-remove" onclick="window.removeTemplateItem('${type}', ${index}, ${i})"><i class="fas fa-times"></i></button>
+                    <div class="item-edit-row" style="display:flex; gap:5px; margin-bottom:5px;">
+                        <input type="text" value="${name}" placeholder="Namn" style="flex:1; padding:8px; border:1px solid #ddd; border-radius:5px;" 
+                               onchange="window.updateItemValue('${type}', ${index}, ${i}, 'n', this.value)">
+                        ${!isCar ? `<input type="number" step="0.01" value="${qty}" style="width:65px; padding:8px; border:1px solid #ddd; border-radius:5px;" 
+                                     onchange="window.updateItemValue('${type}', ${index}, ${i}, 'q', this.value)">` : ''}
+                        <button class="btn-remove" style="color:red; background:none; border:none;" 
+                                onclick="window.removeTemplateItem('${type}', ${index}, ${i})"><i class="fas fa-times"></i></button>
                     </div>`;
             }).join('')}
         </div>
-        <button class="btn-save-all" onclick="window.saveTemplatesToFirebase()">SPARA ÄNDRINGAR I DATABASEN</button>
+        <button class="btn-save-all" style="width:100%; margin-top:15px; padding:12px; background:var(--fog-brown); color:white; border:none; border-radius:10px; font-weight:bold;" 
+                onclick="window.saveTemplatesToFirebase()">SPARA ÄNDRINGAR</button>
     `;
 };
 
