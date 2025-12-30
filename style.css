@@ -1983,3 +1983,36 @@ TEST DASHBOARD KORT
     border-color: var(--fog-brown);
 }
 
+/* ==========================================================================
+   ADMIN / INSTÄLLNINGAR VY
+   ========================================================================== */
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.admin-table th {
+    text-align: left;
+    padding: 15px;
+    background: #fcfaf8;
+    font-size: 0.7rem;
+    color: #999;
+    text-transform: uppercase;
+}
+
+.admin-table td {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+/* Toggle Switch Styling */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+}
