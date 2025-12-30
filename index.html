@@ -23,9 +23,10 @@
     // Registrera Service Worker
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-            .then(reg => console.log('Service Worker registrerad!'))
-            .catch(err => console.log('SW misslyckades:', err));
+            // Ta bort "/" före sw.js så den letar i samma mapp som index.html
+            navigator.serviceWorker.register('sw.js') 
+                .then(reg => console.log('Service Worker registrerad!'))
+                .catch(err => console.log('SW misslyckades:', err));
         });
     }
     </script>
