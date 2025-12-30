@@ -130,6 +130,8 @@ export function renderCalendarView(assignments, db, cars = [], trailers = [], ca
             weekNumbers: true,
             headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridTwoWeeks,dayGridMonth' },
             views: { dayGridTwoWeeks: { type: 'dayGrid', duration: { weeks: 2 }, buttonText: '2 Veckor' } },
+            buttonText: { today: 'Idag', month: 'Månad' },
+            weekText: 'v.',
             events: events,
             eventClassNames: function(arg) {
                 const p = arg.event.extendedProps;
