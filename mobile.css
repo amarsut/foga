@@ -1026,69 +1026,73 @@ FLEET & STATISTIK TEST CSS
 }
 
 /* ==========================================================================
-   FLEET MODAL - TOTAL MOBIL-REFORM
+   FLEET MODAL - TOTAL MOBIL-REFORM (FULLSKÄRM & FIXERAD SCROLL)
    ========================================================================== */
 
 @media (max-width: 768px) {
-    /* 1. MODAL GRUNDSTROME: Tvinga flex-stapling */
+    /* 1. MODAL-GRUND: Tvinga fullskärm och stapla element vertikalt */
     .modal-overlay {
         padding: 0 !important;
         align-items: flex-start !important;
-        overflow: hidden !important; /* Förhindra dubbel scroll */
+        overflow: hidden !important; /* Förhindra att hela sidan scrollar */
     }
 
     .modal-content, .bento-modal, .fm-premium-container {
         width: 100% !important;
-        height: 100dvh !important; /* Hela skärmhöjden */
+        height: 100dvh !important; /* Hela skärmens höjd */
         max-width: none !important;
         margin: 0 !important;
         border-radius: 0 !important;
         display: flex !important;
-        flex-direction: column !important; /* Stapla delarna vertikalt */
-        overflow: hidden !important; /* Innehållet ska inte skrolla härifrån */
+        flex-direction: column !important;
+        background-color: #fdfcfb !important;
+        overflow: hidden !important; /* Innehållet ska bara scrolla i viewporten */
     }
 
-    /* 2. HEADER: Fixa X och Status */
+    /* 2. HEADER: Fixa X och Status (Ombytta platser enligt önskemål) */
     .modal-header-vision, .fm-header-slim {
-        display: flex !important;
         height: 60px !important;
         padding: 0 15px !important;
+        display: flex !important;
         align-items: center !important;
         justify-content: space-between !important;
+        flex-shrink: 0 !important; /* Får inte skrolla bort */
         background: #fff !important;
-        flex-shrink: 0 !important; /* Får inte krympa eller skrolla bort */
         border-bottom: 1px solid #eee !important;
     }
 
-    /* Se till att Status-pillret ligger rätt och inte flyter iväg */
+    /* Status-pillret placeras i mitten/vänster och X-knappen längst till höger */
     .status-pill-header {
-        position: static !important;
-        transform: none !important;
-        margin: 0 !important;
-        font-size: 0.65rem !important;
-        order: 2; /* Placera mellan namn och X */
+        order: 1 !important; /* Flytta fram statusen */
+        margin-right: auto !important;
+        margin-left: 10px !important;
     }
 
-    /* 3. TABS: Håll dem synliga */
+    .fm-close-icon, .close-modal-btn {
+        order: 3 !important; /* Skicka X längst till höger */
+        margin-left: 10px !important;
+    }
+
+    /* 3. FLIKARNA (TABS): Lås dem under headern */
     .fm-nav-tabs {
-        display: flex !important;
-        background: #fff !important;
-        padding: 0 10px !important;
         height: 50px !important;
         flex-shrink: 0 !important;
+        display: flex !important;
+        padding: 0 10px !important;
+        background: #fff !important;
         border-bottom: 1px solid #eee !important;
         overflow-x: auto !important;
     }
 
-    /* 4. VIEWPORT: Det är här skrollet ska ske */
+    /* 4. VIEWPORT: Det enda stället som får scrolla */
     .fm-viewport {
-        flex: 1 !important; /* Ta upp allt ledigt utrymme */
-        overflow-y: auto !important; /* Endast här får det skrollas */
+        flex: 1 !important; /* Tar upp allt utrymme mellan flikar och chat-bar */
+        overflow-y: auto !important;
         -webkit-overflow-scrolling: touch;
-        background: #fbfcfd !important;
+        padding-bottom: 20px !important;
     }
 
-    /* 5. JOURNAL & CHAT FIX */
+    /* 5. JOURNAL & CHATT: Utnyttja hela bredden */
     #tab-journal.active {
         display: flex !important;
         flex-direction: column !important;
@@ -1105,40 +1109,51 @@ FLEET & STATISTIK TEST CSS
         flex: 1 !important;
         overflow-y: auto !important;
         padding: 10px !important;
+        display: flex !important;
+        flex-direction: column !important;
     }
 
-    /* Ta bort den stora luften på sidorna i chatten */
+    /* Ta bort de breda marginalerna på meddelandebubblorna */
     .fm-chat-msg {
-        max-width: 85% !important;
-        margin-left: 5px !important;
-        margin-right: 5px !important;
+        max-width: 88% !important;
+        margin: 5px 0 !important;
+        padding: 10px !important;
     }
 
-    /* Fixa inputfältet längst ner */
+    /* Justera avatarerna så de ligger mot kanten */
+    .fm-chat-msg-received { align-self: flex-start !important; margin-left: 5px !important; }
+    .fm-chat-msg-sent { align-self: flex-end !important; margin-right: 5px !important; }
+
+    /* 6. CHAT-INPUT: Lås i botten och tvinga skicka-knappen att synas */
     .fm-chat-input-area {
+        height: 70px !important;
         flex-shrink: 0 !important;
-        width: 100% !important;
-        padding: 10px !important;
+        padding: 10px 15px !important;
         background: #fff !important;
         border-top: 1px solid #eee !important;
         display: flex !important;
         align-items: center !important;
-        gap: 8px !important;
+        gap: 10px !important;
+        z-index: 100;
     }
 
     .fm-chat-input-area input {
         flex: 1 !important;
-        width: auto !important; /* Förhindra att den trycker ut knappen */
         height: 45px !important;
-        font-size: 16px !important; /* Förhindra zoom på iOS */
+        font-size: 16px !important; /* Förhindrar zoom på iPhone */
+        border-radius: 20px !important;
     }
 
+    /* Tvinga fram skicka-knappen */
     .btn-send-chat {
+        display: flex !important; /* Tvinga fram ikonen */
         width: 45px !important;
         height: 45px !important;
-        flex-shrink: 0 !important;
-        display: flex !important;
-        align-items: center !important;
         justify-content: center !important;
+        align-items: center !important;
+        flex-shrink: 0 !important;
+        background: var(--fog-brown) !important;
+        border-radius: 50% !important;
+        color: white !important;
     }
 }
