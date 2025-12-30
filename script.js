@@ -91,6 +91,40 @@ const firebaseConfig = {
     appId: "G-ZTPXPNDFT0"
 };
 
+// --- CENTRAL OCH SÄKER RENDER-FUNKTION ---
+function render() {
+    const area = document.getElementById('content-area');
+    if (!area) return;
+
+    // 1. Hantera TV-vyn (sköter sig själv)
+    if (window.currentView === 'tv') {
+        window.renderTVDashboard(area);
+        return;
+    }
+
+    // 2. Rensa ytan för vanliga vyer
+    area.innerHTML = '';
+    if (typeof toggleMainHeader === 'function') toggleMainHeader(true);
+
+    // 3. Säkerhetskoll för packmallar
+    if (window.currentView === 'create' && !window.packingTemplates) {
+        area.innerHTML = '<div style="padding:100px; text-align:center;"><i class="fas fa-spinner fa-spin fa-2x"></i><p>Hämtar mallar...</p></div>';
+        return;
+    }
+
+    // 4. Koppla vyer
+    const v = window.currentView;
+    if (v === 'dashboard') renderDashboard(area);
+    if (v === 'create') renderCreate(area);
+    if (v === 'availability') renderAvailabilityView(area, cars, trailers, carts, db, assignments);
+    if (v === 'stats') renderStatsView(area);
+    if (v === 'settings' || v === 'admin') renderAdminView(area); 
+    if (v === 'calendar') renderCalendarView(assignments, db, cars, trailers, carts, selectedStartDate);
+}
+
+// Gör funktionen tillgänglig globalt för andra moduler
+window.render = render;
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 window.db = db;
