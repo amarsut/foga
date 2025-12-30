@@ -1,0 +1,299 @@
+/* ==========================================================================
+   LAGER-TV & STATISTIKVY
+   ========================================================================== */
+
+:root {
+    --tv-bg: #f8f9fa;
+    --card-bg: #ffffff;
+    --card-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    --text-main: #1c1e21;
+    --text-muted: #65676b;
+    --accent: #e30613;
+    --card-radius: 24px;
+    --border-light: rgba(0,0,0,0.04);
+}
+
+/* MÖRKT LÄGE KONFIGURATION */
+.tv-screen.dark-theme {
+    --tv-bg: #0a0b0d;
+    --card-bg: #1a1c1e;
+    --card-shadow: 0 15px 45px rgba(0,0,0,0.4);
+    --text-main: #e4e6eb;
+    --text-muted: #b0b3b8;
+    --border-light: rgba(255,255,255,0.06);
+}
+
+.tv-container {
+    height: 100vh;
+    padding: 30px;
+    background: var(--tv-bg);
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* 1. HEADER & KLOCK-KLUSTER */
+.tv-header-v3 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tv-logo { font-weight: 900; font-size: 2rem; margin: 0; letter-spacing: -1.5px; color: var(--text-main); }
+.tv-logo span { font-weight: 300; opacity: 0.5; margin-left: 8px; }
+
+.tv-weather-badge {
+    background: var(--card-bg);
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    box-shadow: var(--card-shadow);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    border: 1px solid var(--border-light);
+}
+
+/* Kapseln i högra hörnet */
+.tv-clock-cluster {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    background: var(--card-bg);
+    padding: 10px 10px 10px 25px;
+    border-radius: 60px;
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--border-light);
+}
+
+.tv-clock-v3 { text-align: right; }
+.tv-clock-v3 .time { font-size: 1.8rem; font-weight: 900; line-height: 1; color: var(--text-main); }
+.tv-clock-v3 .date { font-size: 0.7rem; font-weight: 800; color: var(--accent); margin-top: 2px; }
+
+.tv-actions-v3 { display: flex; gap: 8px; }
+
+.tv-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--text-main);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+}
+.tv-btn:hover { background: rgba(0,0,0,0.05); }
+.tv-btn.exit { background: var(--accent); color: white; }
+
+/* 2. BENTO LAYOUT & HERO */
+.tv-bento-layout {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 340px;
+    gap: 25px;
+    flex: 1;
+    min-height: 0;
+}
+
+.bento-hero {
+    background: linear-gradient(135deg, var(--card-bg) 0%, var(--tv-bg) 100%);
+    border-radius: var(--card-radius);
+    padding: 40px;
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--border-light);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+.hero-label { color: var(--accent); font-weight: 900; font-size: 0.8rem; letter-spacing: 2px; }
+.bento-hero h2 { font-size: 3.5rem; margin: 20px 0; font-weight: 900; line-height: 1; color: var(--text-main); }
+
+/* Fordonspiller på en rad */
+.hero-unit-row { 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 12px; 
+    margin-top: 15px; 
+}
+
+.unit-status-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,0,0,0.03);
+    padding: 8px 14px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    border: 1px solid var(--border-light);
+    color: var(--text-main);
+}
+.dark-theme .unit-status-pill { background: rgba(255,255,255,0.05); }
+
+.status-icon { font-size: 0.8rem; color: #ddd; opacity: 0.5; }
+.fa-check-circle { color: #2ecc71 !important; opacity: 1; }
+
+.hero-prog-wrapper { margin-top: 20px; }
+.prog-text { font-size: 0.75rem; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; }
+.prog-track-v3 { height: 12px; background: rgba(0,0,0,0.05); border-radius: 20px; overflow: hidden; }
+.prog-fill-v3 { height: 100%; background: var(--accent); border-radius: 20px; transition: width 1s ease; }
+
+/* 3. COMPACT CARDS */
+.tv-compact-card {
+    background: var(--card-bg);
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid var(--border-light);
+    transition: 0.3s;
+}
+.tv-compact-card:hover { transform: translateY(-5px); border-color: var(--accent); }
+
+.c-name { display: block; font-weight: 800; font-size: 1.1rem; color: var(--text-main); }
+.c-unit-row { display: flex; gap: 10px; margin-top: 4px; }
+.c-cart-status { font-size: 0.7rem; color: var(--text-muted); font-weight: 700; display: flex; align-items: center; gap: 4px; }
+
+/* 4. FLEET STATUS (Tonad) */
+.alert-pill-clean {
+    display: flex;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+}
+.alert-pill-clean.danger { background: rgba(227, 6, 19, 0.04); color: var(--accent); }
+.alert-pill-clean.warn { background: rgba(241, 196, 15, 0.04); color: #b08d08; }
+
+.pill-id { font-weight: 800; font-size: 0.85rem; }
+.pill-status { font-weight: 900; font-size: 0.75rem; letter-spacing: 0.5px; }
+
+/* 5. NOTERINGAR */
+.sidebar-panel {
+    background: var(--card-bg);
+    padding: 30px;
+    border-radius: var(--card-radius);
+    box-shadow: var(--card-shadow);
+    margin-bottom: 25px;
+    border: 1px solid var(--border-light);
+}
+
+.sidebar-panel h3 { font-size: 0.75rem; font-weight: 900; color: var(--text-muted); margin: 0 0 20px 0; letter-spacing: 1px; }
+
+.sidebar-panel.info-note {
+    background: #fffdf5;
+    border: 1px solid #f9f2d5;
+}
+.dark-theme .sidebar-panel.info-note {
+    background: #1a1914;
+    border-color: #2a2820;
+}
+
+.note-body { position: relative; padding-left: 30px; color: var(--text-main); }
+.pin-icon { position: absolute; left: 0; top: 4px; opacity: 0.3; }
+.note-body p { margin: 0; font-weight: 600; font-size: 0.95rem; line-height: 1.5; }
+.update-ts { margin-top: 15px; font-size: 0.65rem; font-weight: 800; color: var(--text-muted); opacity: 0.8; }
+
+/* TV PREMIUM V9 - FINAL STABILITY */
+
+/* Låser hela vyn så ingenting försvinner under skärmkanten */
+.tv-container {
+    height: 100vh;
+    max-height: 100vh;
+    padding: 25px;
+    background: var(--tv-bg);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* Gör listan i mitten skrollbar om den blir för lång */
+.bento-scroll-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+/* Snyggare skrollist */
+.bento-scroll-list::-webkit-scrollbar { width: 5px; }
+.bento-scroll-list::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.05); border-radius: 10px; }
+
+/* Justering för datum och namn på samma rad */
+.c-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 4px;
+}
+
+.c-name { font-weight: 800; font-size: 1.05rem; color: var(--text-main); }
+.c-date-label { 
+    font-size: 0.75rem; 
+    font-weight: 700; 
+    color: var(--text-muted); 
+    opacity: 0.6;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Fordonspiller-design */
+.hero-unit-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+.unit-status-pill, .hero-date-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,0,0,0.03);
+    padding: 6px 12px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+.hero-date-pill { background: transparent; color: var(--text-muted); border: 1px solid var(--border-light); }
+
+/* Progress-staplar för sidokort */
+.c-prog-side { text-align: right; min-width: 60px; }
+.c-bar-mini { height: 4px; background: rgba(0,0,0,0.05); border-radius: 10px; overflow: hidden; margin-top: 4px; }
+.c-fill-mini { height: 100%; background: var(--accent); }
+.c-perc { font-size: 0.75rem; font-weight: 900; color: var(--accent); }
+
+/* Sidopaneler för klocka och knappar */
+.tv-clock-cluster {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: var(--card-bg);
+    padding: 8px 8px 8px 20px;
+    border-radius: 50px;
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--border-light);
+}
+
+.tv-clock-v3 .time { font-size: 1.6rem; font-weight: 900; line-height: 1; }
+.tv-clock-v3 .date { font-size: 0.65rem; font-weight: 800; color: var(--accent); }
+
+/* Fleet alerts med svag färg */
+.alert-pill-clean.danger { background: rgba(227, 6, 19, 0.04); color: var(--accent); }
+.alert-pill-clean.warn { background: rgba(241, 196, 15, 0.04); color: #f1c40f; }
+
+/* Noteringsfältet */
+.sidebar-panel.info-note { background: #fffdf5; border: 1px solid #f9f2d5; padding: 25px; }
+.note-body p { font-size: 0.9rem; line-height: 1.4; margin: 0; font-weight: 600; }
