@@ -2,6 +2,10 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, getDocs, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { renderCalendarView } from './calendar.js';
 import { renderAvailabilityView, initAvailabilityModule } from './availability.js';
+import { renderTVDashboard } from './tv.js'; // Importera den nya filen
+
+let tvRefreshInterval = null;
+
 let currentCarItems = [];
 let currentCartItems = [];
 
@@ -49,58 +53,6 @@ window.saveAndClose = () => {
     window.isPackingPhase = false; // Återställ till steg 1 för nästa gång
 };
 
-// Mallar för packlistor
-const PACKING_TEMPLATES = {
-    car: {
-        "Mall 1 (Low Capacity)": ["Parasoll", "Bord & stolar", "Kabel", "5kg bönor", "Muggar"],
-        "Mall 2 (High Capacity)": ["Stort Tält", "4st Bord", "Långelkabel", "15kg bönor", "Muggar", "Vattentank"]
-    },
-    cart: {
-        "15 Tkr": [
-            { n: "Koppar 16 Oz (rör)", q: 4 }, { n: "Koppar 12 Oz (rör)", q: 5 }, { n: "Koppar 6 Oz (rör)", q: 2 }, { n: "Koppar 4 Oz (rör)", q: 1 }, { n: "Lock 12/16 Oz (rör)", q: 2 },
-            { n: "Diskmedel (flaska)", q: 0.25 }, { n: "Rengöringsspray (flaska)", q: 0.25 },
-            { n: "Hela bönor (kg)", q: 8 }, { n: "Malda bönor (kg)", q: 3 }, { n: "Kaffefilter (burk)", q: 0.5 }, { n: "Socker (låda)", q: 0.5 }, { n: "Rörpinnar (låda)", q: 0.5 },
-            { n: "Earl Gray (st)", q: 7 }, { n: "Gottland (st)", q: 7 }, { n: "Öland (st)", q: 7 }, { n: "Sugrör (låda)", q: 0.5 },
-            { n: "Servetter (påse)", q: 0.5 }, { n: "Torky (rulle)", q: 0.5 },
-            { n: "Karamellsirap (flaska)", q: 1.5 }, { n: "Vaniljsirap (flaska)", q: 1.5 }, { n: "Sopsäckar (rulle)", q: 0.5 },
-            { n: "Burk, malt (st)", q: 4 }, { n: "Burk, choklad (st)", q: 4 }, { n: "Burk, hela bönor (st)", q: 4 },
-            { n: "Förkläde (st)", q: 2 }, { n: "Svarta trasor (st)", q: 4 }, { n: "Grå trasor (st)", q: 2 },
-            { n: "Cantucci (burk)", q: 0.8 }, { n: "Chaipulver (burk)", q: 1.5 }, { n: "Chokladpåsar (st)", q: 6 },
-            { n: "Mjölk (liter)", q: 40 }, { n: "Havremjölk (liter)", q: 8 }, { n: "Grädde (patron)", q: 4 },
-            { n: "Puly caff (burk)", q: 0.25 }, { n: "Plasthandskar (låda)", q: 0.25 }, { n: "Vatten (liter)", q: 60 },
-            { n: "Chokladbollar (st)", q: 45 }, { n: "Kakor (st)", q: 52 }, { n: "Muffins (st)", q: 72 }, { n: "Is (box)", q: 0.66 }
-        ],
-        "25 Tkr": [
-            { n: "Koppar 16 Oz (rör)", q: 6 }, { n: "Koppar 12 Oz (rör)", q: 7 }, { n: "Koppar 6 Oz (rör)", q: 3 }, { n: "Koppar 4 Oz (rör)", q: 1 }, { n: "Lock 12/16 Oz (rör)", q: 4 },
-            { n: "Diskmedel (flaska)", q: 0.25 }, { n: "Rengöringsspray (flaska)", q: 0.25 },
-            { n: "Hela bönor (kg)", q: 10 }, { n: "Malda bönor (kg)", q: 4 }, { n: "Kaffefilter (burk)", q: 0.7 }, { n: "Socker (låda)", q: 0.5 }, { n: "Rörpinnar (låda)", q: 0.5 },
-            { n: "Earl Gray (st)", q: 10 }, { n: "Gottland (st)", q: 10 }, { n: "Öland (st)", q: 10 }, { n: "Sugrör (låda)", q: 0.7 },
-            { n: "Servetter (påse)", q: 0.5 }, { n: "Torky (rulle)", q: 0.5 },
-            { n: "Karamellsirap (flaska)", q: 1.5 }, { n: "Vaniljsirap (flaska)", q: 1.5 }, { n: "Sopsäckar (rulle)", q: 0.5 },
-            { n: "Burk, malt (st)", q: 4 }, { n: "Burk, choklad (st)", q: 4 }, { n: "Burk, hela bönor (st)", q: 4 },
-            { n: "Förkläde (st)", q: 2 }, { n: "Svarta trasor (st)", q: 4 }, { n: "Grå trasor (st)", q: 2 },
-            { n: "Cantucci (burk)", q: 1 }, { n: "Chaipulver (burk)", q: 2 }, { n: "Chokladpåsar (st)", q: 10 },
-            { n: "Mjölk (liter)", q: 65 }, { n: "Havremjölk (liter)", q: 12 }, { n: "Grädde (patron)", q: 6 },
-            { n: "Puly caff (burk)", q: 0.25 }, { n: "Plasthandskar (låda)", q: 0.25 }, { n: "Vatten (liter)", q: 60 },
-            { n: "Chokladbollar (st)", q: 60 }, { n: "Kakor (st)", q: 72 }, { n: "Muffins (st)", q: 96 }, { n: "Is (box)", q: 1 }
-        ],
-        "40 Tkr": [
-            { n: "Koppar 16 Oz (rör)", q: 9 }, { n: "Koppar 12 Oz (rör)", q: 12 }, { n: "Koppar 6 Oz (rör)", q: 3 }, { n: "Koppar 4 Oz (rör)", q: 2 }, { n: "Lock 12/16 Oz (rör)", q: 6 },
-            { n: "Diskmedel (flaska)", q: 0.25 }, { n: "Rengöringsspray (flaska)", q: 0.25 },
-            { n: "Hela bönor (kg)", q: 14 }, { n: "Malda bönor (kg)", q: 6 }, { n: "Kaffefilter (burk)", q: 1 }, { n: "Socker (låda)", q: 0.5 }, { n: "Rörpinnar (låda)", q: 0.5 },
-            { n: "Earl Gray (st)", q: 15 }, { n: "Gottland (st)", q: 15 }, { n: "Öland (st)", q: 15 }, { n: "Sugrör (låda)", q: 1 },
-            { n: "Servetter (påse)", q: 1 }, { n: "Torky (rulle)", q: 0.5 },
-            { n: "Karamellsirap (flaska)", q: 2 }, { n: "Vaniljsirap (flaska)", q: 2 }, { n: "Sopsäckar (rulle)", q: 0.5 },
-            { n: "Burk, malt (st)", q: 4 }, { n: "Burk, choklad (st)", q: 4 }, { n: "Burk, hela bönor (st)", q: 4 },
-            { n: "Förkläde (st)", q: 2 }, { n: "Svarta trasor (st)", q: 4 }, { n: "Grå trasor (st)", q: 2 },
-            { n: "Cantucci (burk)", q: 1 }, { n: "Chaipulver (burk)", q: 3 }, { n: "Chokladpåsar (st)", q: 14 },
-            { n: "Mjölk (liter)", q: 73 }, { n: "Havremjölk (liter)", q: 12 }, { n: "Grädde (patron)", q: 10 },
-            { n: "Puly caff (burk)", q: 0.25 }, { n: "Plasthandskar (låda)", q: 0.25 }, { n: "Vatten (liter)", q: 60 },
-            { n: "Chokladbollar (st)", q: 90 }, { n: "Kakor (st)", q: 108 }, { n: "Muffins (st)", q: 96 }, { n: "Is (box)", q: 1 }
-        ]
-    }
-};
-
 // Hjälpfunktion för att skala upp mängder (t.ex. 5kg -> 10kg)
 function scaleItemQuantity(itemName, multiplier) {
     if (multiplier <= 1) return itemName;
@@ -121,6 +73,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+window.db = db;
 initAvailabilityModule(db); // Detta gör att buggrapporten fungerar direkt!
 
 let assignments = [];
@@ -176,7 +129,7 @@ window.editAssignment = (id) => {
         window.activeUnitId = keys[0];
     }
 
-    window.isPackingPhase = false; 
+    window.isPackingPhase = true; 
     window.showView('create');
 };
 
@@ -252,59 +205,68 @@ window.render = () => {
 
 function renderDashboard(area) {
     const freeCars = cars.filter(c => c.status === 'Ledig').length;
+    
+    // 1. Hämta dagens datum i formatet YYYY-MM-DD
+    const today = new Date().toISOString().split('T')[0];
+
+    // 2. Filtrera bort gamla uppdrag och sortera kommande
+    // Vi använder endDate för filtrering så att pågående flerdagarsevenemang inte försvinner
+    const sortedAssignments = assignments
+        .filter(a => (a.endDate || a.startDate) >= today) 
+        .sort((a, b) => (a.startDate || "").localeCompare(b.startDate || ""));
+
     area.innerHTML = `
         <div class="stats-grid">
-            <div class="stat-card"><h3>${assignments.length}</h3><p>Aktiva Uppdrag</p></div>
+            <div class="stat-card"><h3>${sortedAssignments.length}</h3><p>Aktiva Uppdrag</p></div>
             <div class="stat-card"><h3>${freeCars}</h3><p>Lediga Bilar</p></div>
             <div class="stat-card"><h3>${assignments.filter(a => a.step === 'På plats').length}</h3><p>Vagnar på fältet</p></div>
         </div>
-        <div class="mission-list">${assignments.map(a => renderMissionCard(a)).join('')}</div>
+        <div class="mission-list">
+            ${sortedAssignments.length > 0 
+                ? sortedAssignments.map(a => renderMissionCard(a)).join('') 
+                : '<div style="text-align:center; width:100%; padding:40px; color:#aaa;">Inga kommande uppdrag hittades.</div>'
+            }
+        </div>
     `;
 }
 
 function renderMissionCard(a) {
-    // Fixa "undefined" genom att titta på rätt fält och hantera arrayer
-    const carVal = a.car || 'Ingen bil';
-    const trailerVal = a.trailer || 'Inget släp';
-    const cartsVal = (a.carts && a.carts.length > 0) ? a.carts.join(', ') : 'Inga vagnar';
-    const isPackar = a.step === 'Packar';
+    const startDate = new Date(a.startDate);
+    const day = startDate.getDate();
+    const month = startDate.toLocaleDateString('sv-SE', { month: 'short' }).toUpperCase().replace('.', '');
+
+    const totalItems = (a.carItems || []).concat(a.cartItems || []).filter(i => i.type === 'item');
+    const doneItems = totalItems.filter(i => i.done).length;
+    const progressPercent = totalItems.length > 0 ? Math.round((doneItems / totalItems.length) * 100) : 0;
 
     return `
-        <div class="mission-card">
-            <div class="dashboard-mission-grid" onclick="toggleExpand('${a.id}', ${!a.expanded})">
-                <div class="grid-col">
-                    <label>Företagsbil</label>
-                    <span>${carVal}</span>
-                </div>
-                <div class="grid-col">
-                    <label>Släp</label>
-                    <span>${trailerVal}</span>
-                </div>
-                <div class="grid-col">
-                    <label>Kaffevagn</label>
-                    <span>${cartsVal}</span>
-                </div>
-                <div class="grid-col event-info-col">
-                    <strong>${a.event}</strong>
-                    <small>${a.businessArea || 'Event'} | ${a.startDate}</small>
-                </div>
-                <div class="grid-col" style="align-items: center;">
-                    <span class="status-tag ${isPackar ? 'bg-upptagen' : 'bg-ledig'}">
-                        ${a.step || 'Packar'}
-                    </span>
-                </div>
-                <div class="grid-col" style="align-items: flex-end;">
-                    <i class="fas fa-chevron-${a.expanded ? 'up' : 'down'}" style="color:#ccc; font-size:0.8rem;"></i>
-                </div>
+        <div class="mission-card-vision" onclick="window.editAssignment('${a.id}')">
+            <div class="date-badge">
+                <span class="month">${month}</span>
+                <span class="day">${day}</span>
             </div>
-            ${a.expanded ? `
-                <div class="expanded-content">
-                    <div style="padding: 10px 20px; border-top: 1px solid #f9f9f9; display: flex; gap: 20px;">
-                        <button onclick="deleteAssignment('${a.id}')" class="btn-delete-small">Radera</button>
-                        <button onclick="finishAssignment('${a.id}', '${a.car}', '${a.trailer}', '${a.carts}')" class="btn-finish">Avsluta Uppdrag</button>
+            <div class="mission-content">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span class="mission-title">${a.event}</span>
+                    <i class="fas fa-chevron-right" style="color:#eee; font-size:0.7rem;"></i>
+                </div>
+                
+                <div class="resource-row" style="display:flex; gap:5px; flex-wrap:nowrap; overflow:hidden;">
+                    ${a.car && a.car !== 'Ej kopplad' ? `<div class="res-pill" style="font-size:0.6rem; background:#f5f5f5; padding:2px 6px; border-radius:4px;"><i class="fas fa-truck"></i> ${a.car}</div>` : ''}
+                    ${(a.carts || []).slice(0,2).map(c => `<div class="res-pill" style="font-size:0.6rem; background:#f5f5f5; padding:2px 6px; border-radius:4px;"><i class="fas fa-coffee"></i> ${c}</div>`).join('')}
+                    ${(a.carts || []).length > 2 ? `<div style="font-size:0.6rem; color:#999;">+${a.carts.length - 2}</div>` : ''}
+                </div>
+
+                <div class="pack-progress-container">
+                    <div style="display:flex; justify-content:space-between; font-size:0.55rem; font-weight:800; color:#bbb; text-transform:uppercase;">
+                        <span>Packning</span>
+                        <span>${doneItems}/${totalItems.length}</span>
+                    </div>
+                    <div style="height:4px; background:#f0f0f0; border-radius:10px; margin-top:2px; overflow:hidden;">
+                        <div style="height:100%; width:${progressPercent}%; background:${progressPercent === 100 ? '#2ecc71' : 'var(--fog-red)'}; transition:width 0.4s;"></div>
                     </div>
                 </div>
-            ` : ''}
+            </div>
         </div>
     `;
 }
@@ -312,32 +274,26 @@ function renderMissionCard(a) {
 function renderAvailability(area) {
     area.innerHTML = `
         <div class="section-title" style="margin-bottom:20px; font-weight:bold; color:var(--fog-brown);">Företagsbilar</div>
-        <div class="fleet-grid">${cars.map(c => `<div class="unit-card"><i class="fas fa-truck-pickup"></i><h4>${c.id}</h4><span class="status-tag ${c.status === 'Ledig' ? 'bg-ledig' : 'bg-upptagen'}">${c.status}</span></div>`).join('')}</div>
+        <div class="fleet-grid">${${cars.filter(c => c.isVisible !== false).map(c => `<div class="unit-card"><i class="fas fa-truck-pickup"></i><h4>${c.id}</h4><span class="status-tag ${c.status === 'Ledig' ? 'bg-ledig' : 'bg-upptagen'}">${c.status}</span></div>`).join('')}</div>
         
         <div class="section-title" style="margin:40px 0 20px; font-weight:bold; color:var(--fog-brown);">Släpvagnar</div>
-        <div class="fleet-grid">${trailers.map(c => `<div class="unit-card"><i class="fas fa-trailer"></i><h4>${c.id}</h4><span class="status-tag ${c.status === 'Ledig' ? 'bg-ledig' : 'bg-upptagen'}">${c.status}</span></div>`).join('')}</div>
+        <div class="fleet-grid">${${trailers.filter(t => t.isVisible !== false).map(t => `<div class="unit-card"><i class="fas fa-trailer"></i><h4>${c.id}</h4><span class="status-tag ${c.status === 'Ledig' ? 'bg-ledig' : 'bg-upptagen'}">${c.status}</span></div>`).join('')}</div>
         
         <div class="section-title" style="margin:40px 0 20px; font-weight:bold; color:var(--fog-brown);">Kaffevagnar</div>
-        <div class="fleet-grid">${carts.map(c => `<div class="unit-card"><i class="fas fa-coffee"></i><h4>${c.id}</h4><span class="status-tag ${c.status === 'Ledig' ? 'bg-ledig' : 'bg-upptagen'}">${c.status}</span></div>`).join('')}</div>
+        <div class="fleet-grid">${${carts.filter(c => c.isVisible !== false).map(c => `<div class="unit-card"><i class="fas fa-coffee"></i><h4>${c.id}</h4><span class="status-tag ${c.status === 'Ledig' ? 'bg-ledig' : 'bg-upptagen'}">${c.status}</span></div>`).join('')}</div>
     `;
 }
 
 // Uppdaterar vagnens lista när man byter mall i dropdown-menyn
-window.updateTemplateItems = () => {
+window.updateTemplateItems = async () => {
     const data = window.pendingAssignmentData;
     if (!data) return;
 
-    // Kontroll för att behålla bockar vid redigering
-    if (editingAssignmentId && Object.keys(window.unitChecklists).length > 0) {
-        const ass = assignments.find(a => a.id === editingAssignmentId);
-        if (ass && ass.carTemplate === data.carTemplate && ass.cartTemplate === data.cartTemplate &&
-            ass.car === data.carId && JSON.stringify(ass.carts) === JSON.stringify(data.selectedCarts)) {
-            
-            // Säkerställ att vi har en aktiv flik vald även om vi returnerar tidigt
-            if (!window.activeUnitId) window.activeUnitId = Object.keys(window.unitChecklists)[0];
-            return; 
-        }
-    }
+    const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+    const docSnap = await getDoc(doc(window.db, "settings", "packing_templates"));
+    const PACKING_TEMPLATES = docSnap.exists() ? docSnap.data() : null;
+
+    if (!PACKING_TEMPLATES) return;
 
     const carTemplateName = data.carTemplate;
     const cartTemplateName = data.cartTemplate;
@@ -347,51 +303,48 @@ window.updateTemplateItems = () => {
 
     window.unitChecklists = {};
 
-    // 1. FÖRETAGSBILEN (Basutrustning + Påfyllning)
+    // 1. FÖRETAGSBILEN
     if (selectedCar) {
         let carList = [];
-        if (carTemplateName && PACKING_TEMPLATES.car[carTemplateName]) {
+        const carTmpl = PACKING_TEMPLATES.car.find(t => t.name === carTemplateName);
+        
+        if (carTmpl) {
             carList.push({ type: 'header', sectionId: 'base', name: `Basutrustning: ${carTemplateName}`, unitId: selectedCar });
-            PACKING_TEMPLATES.car[carTemplateName].forEach(name => {
-                carList.push({ name, done: false, type: 'item', sectionId: 'base', unitId: selectedCar });
+            carTmpl.items.forEach(item => {
+                const displayName = typeof item === 'string' ? item : `${item.q}x ${item.n}`;
+                carList.push({ name: displayName, done: false, type: 'item', sectionId: 'base', unitId: selectedCar });
             });
         }
 
-        // --- REFILL-KALKYL START ---
-        // Vi packar för (Dagar - 1) i bilen eftersom Dag 1 finns i vagnen. 
-        // Vi multiplicerar med antal vagnar.
+        // Påfyllning (Refill)
         const refillDaysTotal = Math.max(0, (numDays - 1) * selectedCarts.length);
-        if (cartTemplateName && refillDaysTotal > 0 && PACKING_TEMPLATES.cart[cartTemplateName]) {
+        const cartTmplForRefill = PACKING_TEMPLATES.cart.find(t => t.name === cartTemplateName);
+        
+        if (refillDaysTotal > 0 && cartTmplForRefill) {
             carList.push({ type: 'header', sectionId: 'refill', name: `Sammanställd Påfyllning (${refillDaysTotal} extra dagsransoner)` });
-            PACKING_TEMPLATES.cart[cartTemplateName].forEach(item => {
+            cartTmplForRefill.items.forEach(item => {
                 carList.push({ 
                     name: `${(item.q * refillDaysTotal).toLocaleString('sv-SE')}x ${item.n}`, 
-                    done: false, 
-                    type: 'item',
-                    sectionId: 'refill',
-                    unitId: selectedCar
+                    done: false, type: 'item', sectionId: 'refill', unitId: selectedCar
                 });
             });
         }
-        // --- REFILL-KALKYL SLUT ---
         window.unitChecklists[selectedCar] = carList;
     }
 
-    // 2. VAGNARNA (Alltid 1 dagsranson i vagnen)
-    selectedCarts.forEach(id => {
-        if (cartTemplateName && PACKING_TEMPLATES.cart[cartTemplateName]) {
+    // 2. KAFFEVAGNARNA
+    const cartTmpl = PACKING_TEMPLATES.cart.find(t => t.name === cartTemplateName);
+    if (cartTmpl) {
+        selectedCarts.forEach(id => {
             window.unitChecklists[id] = [
                 { type: 'header', sectionId: 'base', name: `Dag 1 - Lager i vagn`, unitId: id },
-                ...PACKING_TEMPLATES.cart[cartTemplateName].map(item => ({
+                ...cartTmpl.items.map(item => ({
                     name: `${item.q.toLocaleString('sv-SE')}x ${item.n}`,
-                    done: false,
-                    type: 'item',
-                    sectionId: 'base',
-                    unitId: id 
+                    done: false, type: 'item', sectionId: 'base', unitId: id 
                 }))
             ];
-        }
-    });
+        });
+    }
 
     const keys = Object.keys(window.unitChecklists);
     if (keys.length > 0) window.activeUnitId = keys[0];
@@ -424,24 +377,24 @@ function renderChecklist() {
     }
 
     const currentList = window.unitChecklists[window.activeUnitId];
-    const formatItemName = (name) => name.replace(/^([\d,x]+)/, '<strong>$1</strong>');
     const allDone = currentList.filter(i => i.type === 'item').every(i => i.done);
+    // Hämta den generella noten (vi sparar den på själva checklist-objektet)
+    const generalNote = window.unitChecklists[window.activeUnitId + "_note"] || "";
 
     container.innerHTML = `
         <div class="unit-tabs">
             ${unitIds.map(id => {
-        const isDone = window.unitChecklists[id].filter(i => i.type === 'item').every(i => i.done);
-        // LÄGG TILL: En ikon om enheten är klar
-        return `<button class="unit-tab ${window.activeUnitId === id ? 'active' : ''} ${isDone ? 'done' : ''}" 
-                        onclick="window.setActiveUnit('${id}')">
-                            ${isDone ? '<i class="fas fa-check-circle" style="color:#2ecc71; margin-right:5px;"></i>' : ''}
-                            ${id}
-                        </button>`;
-    }).join('')}
+                const isDone = window.unitChecklists[id].filter(i => i.type === 'item').every(i => i.done);
+                return `<button class="unit-tab ${window.activeUnitId === id ? 'active' : ''} ${isDone ? 'done' : ''}" 
+                                onclick="window.setActiveUnit('${id}')">
+                                    ${isDone ? '<i class="fas fa-check-circle"></i>' : ''}
+                                    ${id}
+                                </button>`;
+            }).join('')}
         </div>
 
-        <div class="checklist-header-flex" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding:0 5px;">
-            <h4 style="color:var(--fog-red); margin:0; font-size:1.1rem; font-weight:800;">${window.activeUnitId}</h4>
+        <div class="checklist-header-flex">
+            <h4>${window.activeUnitId}</h4>
             <button class="btn-select-all" onclick="window.toggleAllItems('${window.activeUnitId}')">
                 <i class="fas ${allDone ? 'fa-undo' : 'fa-check-double'}"></i> 
                 ${allDone ? 'Avmarkera alla' : 'Välj alla'}
@@ -450,36 +403,39 @@ function renderChecklist() {
 
         <div class="inner-list-container">
             ${currentList.map((item, i) => {
-        // ... (resten av koden för headers och items är samma som förut)
-        if (item.type === 'header') {
-            const expanded = window.listSectionsExpanded[item.sectionId];
-            return `<div class="list-group-header" onclick="window.toggleSection('${item.sectionId}')">
+                if (item.type === 'header') {
+                    const expanded = window.listSectionsExpanded[item.sectionId];
+                    return `<div class="list-group-header" onclick="window.toggleSection('${item.sectionId}')">
                                 <span>${item.name}</span>
                                 <i class="fas fa-chevron-${expanded ? 'up' : 'down'}"></i>
                             </div>`;
-        }
-        if (!window.listSectionsExpanded[item.sectionId]) return '';
-        return `
+                }
+                if (!window.listSectionsExpanded[item.sectionId]) return '';
+                
+                // RENSAD RAD: Bara namn och checkbox
+                return `
                     <div class="form-check-item ${item.done ? 'checked' : ''}" onclick="window.toggleFormCheck('${window.activeUnitId}', ${i})">
-                        <div class="item-content-wrapper">
-                            <span class="item-main-text">
-                                <strong>${item.qty || ''}${item.qty ? 'x ' : ''}</strong>${item.name}
-                            </span>
-                            
-                            <div class="item-comment-area" onclick="event.stopPropagation()">
-                                <input type="text" 
-                                    placeholder="+ Notering (t.ex. 85x)" 
-                                    value="${item.comment || ''}" 
-                                    onchange="window.updateComment('${window.activeUnitId}', ${i}, this.value)"
-                                    class="comment-input-transparent">
-                            </div>
-                        </div>
-                        <i class="${item.done ? 'fas fa-check-square' : 'far fa-square'}"></i>
+                        <span class="item-text-content">${item.name}</span>
+                        <i class="${item.done ? 'fas fa-check-square' : 'far fa-square'} item-check-icon"></i>
                     </div>`;
-    }).join('')}
+            }).join('')}
+
+            <div class="general-note-section">
+                <label class="note-label"><i class="fas fa-sticky-note"></i> Noteringar för ${window.activeUnitId}</label>
+                <textarea 
+                    placeholder="Skriv om du t.ex. plockat extra av något..." 
+                    onchange="window.updateGeneralUnitNote('${window.activeUnitId}', this.value)"
+                    class="general-note-textarea">${generalNote}</textarea>
+            </div>
         </div>
     `;
 }
+
+// Ny funktion för att spara den generella noten
+window.updateGeneralUnitNote = (unitId, val) => {
+    window.unitChecklists[unitId + "_note"] = val;
+    console.log(`Generell notering sparad för ${unitId}: ${val}`);
+};
 
 function renderCreate(area) {
     const editData = editingAssignmentId ? assignments.find(a => a.id === editingAssignmentId) : null;
@@ -526,14 +482,14 @@ function renderCreate(area) {
                                 <label>Transportbil</label>
                                 <select id="sel-car" class="modern-select">
                                     <option value="">Välj Transportbil</option>
-                                    ${cars.map(c => `<option value="${c.id}" ${(saved.carId || editData?.car) === c.id ? 'selected' : ''}>${c.id}</option>`).join('')}
+                                    ${${cars.filter(c => c.isVisible !== false).map(c => `<option value="${c.id}" ${(saved.carId || editData?.car) === c.id ? 'selected' : ''}>${c.id}</option>`).join('')}
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label>Släpvagn</label>
                                 <select id="sel-trailer" class="modern-select">
                                     <option value="">Välj Släp</option>
-                                    ${trailers.map(t => `<option value="${t.id}" ${(saved.trailerId || editData?.trailer) === t.id ? 'selected' : ''}>${t.id}</option>`).join('')}
+                                    ${${trailers.filter(t => t.isVisible !== false).map(t => `<option value="${t.id}" ${(saved.trailerId || editData?.trailer) === t.id ? 'selected' : ''}>${t.id}</option>`).join('')}
                                 </select>
                             </div>
                         </div>
@@ -542,7 +498,7 @@ function renderCreate(area) {
                             <div class="form-group">
                                 <label>Packmall Transportbil</label>
                                 <select id="sel-car-template" class="modern-select">
-                                    <option value="">-- Välj mall --</option>
+                                    <option value="">Välj mall</option>
                                     ${Object.keys(PACKING_TEMPLATES.car).map(t => `
                                         <option value="${t}" ${(saved.carTemplate || editData?.carTemplate) === t ? 'selected' : ''}>${t}</option>
                                     `).join('')}
@@ -558,7 +514,7 @@ function renderCreate(area) {
                             <div class="form-group">
                                 <label>Packmall Fogarollibil (Tkr)</label>
                                 <select id="sel-cart-template" class="modern-select">
-                                    <option value="">-- Välj nivå --</option>
+                                    <option value="">Välj mall</option>
                                     ${Object.keys(PACKING_TEMPLATES.cart).map(t => `
                                         <option value="${t}" ${(saved.cartTemplate || editData?.cartTemplate) === t ? 'selected' : ''}>${t}</option>
                                     `).join('')}
@@ -569,7 +525,7 @@ function renderCreate(area) {
                         <div class="form-group">
                             <label>Välj Fogarollibilar</label>
                             <div class="cart-chip-container">
-                                ${carts.map(c => {
+                                ${${carts.filter(c => c.isVisible !== false).map(c => {
             // Kontrollera om vagnen finns i sparade listan eller i databasens lista
             const isChecked = (saved.selectedCarts || editData?.carts || []).includes(c.id);
             return `
@@ -901,7 +857,11 @@ window.renderStatsView = (area) => {
                     <canvas id="chartArea"></canvas>
                 </div>
                 <div class="chart-container-card">
-                    <h5>FORDONSUTNYTTJANDE</h5>
+                    <h5>NYTTJANDE FOGAROLLIBIL</h5>
+                    <canvas id="chartCarts"></canvas>
+                </div>
+                <div class="chart-container-card">
+                    <h5>NYTTJANDE TRANSPORTBIL</h5>
                     <canvas id="chartResources"></canvas>
                 </div>
                 <div class="chart-container-card">
@@ -965,117 +925,68 @@ function initStatsCharts() {
         },
         options: { plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } } }
     });
+
+    // 4. Räkna vagnutnyttjande/Fogarollibil
+    const cartUsage = {};
+    assignments.forEach(a => {
+        if (a.carts && Array.isArray(a.carts)) {
+            a.carts.forEach(cartId => {
+                cartUsage[cartId] = (cartUsage[cartId] || 0) + 1;
+            });
+        }
+    });
+    
+    // 2. Sortera för att visa de 5 mest använda vagnarna
+    const sortedCarts = Object.entries(cartUsage)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5);
+    
+    // 3. Skapa grafen
+    statsCharts.carts = new Chart(document.getElementById('chartCarts'), {
+        type: 'bar',
+        data: {
+            labels: sortedCarts.map(c => c[0]),
+            datasets: [{
+                label: 'Antal Uppdrag',
+                data: sortedCarts.map(c => c[1]),
+                backgroundColor: '#e30613', // Fogarolli-röd för vagnarna
+                borderRadius: 5
+            }]
+        },
+        options: {
+            indexAxis: 'y', // Pro-tip: Horisontella staplar är snyggt för vagnnamn
+            scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } },
+            plugins: { legend: { display: false } }
+        }
+    });
 }
 
-// ==========================================
-// LAGER-TV MED TOGGLE OCH KOMPAKT DESIGN
-// ==========================================
-window.renderTVDashboard = (area) => {
-    toggleMainHeader(false); 
-    const now = new Date();
-    const isDarkMode = localStorage.getItem('tv-theme') === 'dark';
-
-    // Beräkna total dags-progress
-    const allItems = assignments.flatMap(a => (a.carItems || []).concat(a.cartItems || [])).filter(i => i.type === 'item');
-    const totalDone = allItems.filter(i => i.done).length;
-    const totalProgress = allItems.length > 0 ? Math.round((totalDone / allItems.length) * 100) : 0;
-
-    const upcoming = assignments
-        .sort((a, b) => a.startDate.localeCompare(b.startDate))
-        .slice(0, 6);
-
-    const fleetAlerts = [...cars, ...trailers, ...carts]
-        .filter(u => u.healthStatus === 'danger' || u.healthStatus === 'warn');
-
-    area.innerHTML = `
-        <div class="tv-screen ${isDarkMode ? 'dark-theme' : 'light-theme'}">
-            <div class="tv-header-glass">
-                <div class="tv-title-group">
-                    <div class="tv-weather-widget">
-                        <i class="fas fa-cloud-sun weather-icon"></i>
-                        <div class="weather-text">
-                            <span class="temp">2°C</span>
-                            <span class="desc">Eslöv | Molnigt</span>
-                        </div>
-                    </div>
-                    <h1>LOGISTIK-PLANERING</h1>
-                </div>
-                
-                <div class="tv-total-progress-box">
-                    <span class="label">TOTAL PACKSTATUS I DAG</span>
-                    <div class="total-bar-container">
-                        <div class="total-bar-fill" style="width: ${totalProgress}%"></div>
-                        <span class="total-percent">${totalProgress}%</span>
-                    </div>
-                </div>
-
-                <div class="tv-controls">
-                    <div class="tv-clock-modern">
-                        <span class="time">${now.toLocaleTimeString('sv-SE', {hour: '2-digit', minute:'2-digit'})}</span>
-                        <span class="date">${now.toLocaleDateString('sv-SE')}</span>
-                    </div>
-                    <button onclick="window.toggleTVTheme()" class="theme-toggle-modern">
-                        <i class="fas ${isDarkMode ? 'fa-sun' : 'fa-moon'}"></i>
-                    </button>
-                    <button onclick="window.showView('calendar')" class="tv-exit-modern"><i class="fas fa-times"></i></button>
-                </div>
-            </div>
-
-            <div class="tv-layout-grid">
-                <div class="tv-main-col">
-                    <h3 class="tv-section-label">KOMMANDE PACKLISTOR</h3>
-                    <div class="tv-mission-list">
-                        ${upcoming.map(a => {
-                            const total = (a.carItems || []).concat(a.cartItems || []).filter(i => i.type === 'item');
-                            const done = total.filter(i => i.done).length;
-                            const prog = total.length > 0 ? Math.round((done/total.length)*100) : 0;
-                            return `
-                                <div class="tv-card-glass ${prog === 100 ? 'complete' : ''}">
-                                    <div class="tv-card-info">
-                                        <span class="tv-event-title">${a.event}</span>
-                                        <span class="tv-event-meta"><i class="fas fa-truck"></i> ${a.car} | <i class="far fa-calendar"></i> ${a.startDate}</span>
-                                    </div>
-                                    <div class="tv-card-progress">
-                                        <div class="prog-label">${prog}%</div>
-                                        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:${prog}%"></div></div>
-                                    </div>
-                                </div>
-                            `;
-                        }).join('')}
-                    </div>
-                </div>
-
-                <div class="tv-side-col">
-                    <div class="side-section">
-                        <h3 class="tv-section-label">FLEET STATUS</h3>
-                        <div class="tv-fleet-list">
-                            ${fleetAlerts.map(u => `
-                                <div class="tv-fleet-tag-row ${u.healthStatus}">
-                                    <span class="unit-name">${u.id}</span>
-                                    <span class="status-badge">${u.healthStatus === 'danger' ? 'KÖRFORBUD' : 'BRIST'}</span>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-
-                    <div class="side-section info-section">
-                        <h3 class="tv-section-label">DAGENS NOTERING</h3>
-                        <div class="tv-info-card">
-                            <i class="fas fa-info-circle"></i>
-                            <p>Kom ihåg att ladda batterierna på vagn Andrea efter dagens pass. Inventering av bönor på fredag!</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
+window.openPackingDirectly = (id) => {
+    // Vi använder din befintliga editAssignment men tvingar den till steg 2
+    window.editAssignment(id);
+    window.isPackingPhase = true; // HOPPA DIREKT TILL PACKLISTAN
+    window.render();
 };
 
-window.toggleTVT
-  heme = () => {
+window.renderTVDashboard = (area) => {
+    toggleMainHeader(false); 
+    const allUnits = [...cars, ...trailers, ...carts];
+    
+    // Rensa gammalt intervall om det finns
+    if (tvRefreshInterval) clearInterval(tvRefreshInterval);
+
+    // Starta nytt intervall (Var 5:e minut för data/väder, men klockan sköts i render)
+    tvRefreshInterval = setInterval(() => {
+        if (currentView === 'tv') window.render();
+    }, 300000); // 300 000 ms = 5 min
+
+    renderTVDashboard(area, assignments, allUnits);
+};
+
+window.toggleTVTheme = () => {
     const current = localStorage.getItem('tv-theme');
     localStorage.setItem('tv-theme', current === 'dark' ? 'light' : 'dark');
-    renderTVDashboard(document.getElementById('content-area'));
+    window.renderTVDashboard(document.getElementById('content-area'));
 };
 
 function fleetAlertsCount() {
@@ -1086,13 +997,190 @@ function fleetAlertsCount() {
 const originalRender = window.render;
 window.render = () => {
     const area = document.getElementById('content-area');
+    if (!area) return;
+
     if (currentView === 'tv') {
-        renderTVDashboard(area);
+        window.renderTVDashboard(area);
         return;
     }
-    if (currentView === 'stats') {
-        renderStatsView(area);
-        return;
+
+    // DIN BEFINTLIGA LOGIK FÖR ANDRA VYER
+    area.innerHTML = '';
+    if (currentView === 'dashboard') renderDashboard(area);
+    if (currentView === 'create') renderCreate(area);
+    if (currentView === 'availability') renderAvailabilityView(area, cars, trailers, carts, db, assignments);
+    if (currentView === 'stats') renderStatsView(area);
+    if (currentView === 'calendar') renderCalendarView(assignments, db, cars, trailers, carts, selectedStartDate);
+};
+
+// Lägg till 'admin' i din showView och render logik
+window.render = () => {
+    const area = document.getElementById('content-area');
+    area.innerHTML = '';
+
+    if (currentView === 'dashboard') renderDashboard(area);
+    if (currentView === 'create') renderCreate(area);
+    if (currentView === 'availability') renderAvailabilityView(area, cars, trailers, carts, db, assignments);
+    if (currentView === 'stats') renderStatsView(area);
+    if (currentView === 'admin') renderAdminView(area); // <--- NY
+    if (currentView === 'calendar') renderCalendarView(assignments, db, cars, trailers, carts, selectedStartDate);
+};
+
+/* =============================================================
+   ADMIN & SYSTEM: FORDONS- OCH MALLHANTERING (FIXAD)
+   ============================================================= */
+
+window.renderAdminView = async (area) => {
+    // Vi använder variablerna direkt från filens topp
+    const allUnits = [...cars, ...trailers, ...carts];
+    
+    area.innerHTML = `
+        <div class="admin-container">
+            <div class="admin-card">
+                <h4><i class="fas fa-bus"></i> Hantera Fordonsparken</h4>
+                <div class="admin-table-wrapper">
+                    <table class="admin-table">
+                        <thead>
+                            <tr><th>Enhet</th><th>Visa i Fleet</th><th>Åtgärd</th></tr>
+                        </thead>
+                        <tbody>
+                            ${allUnits.length > 0 ? allUnits.map(u => {
+                                const isCar = cars.some(c => c.id === u.id);
+                                const isTrailer = trailers.some(t => t.id === u.id);
+                                const uType = isCar ? 'car' : isTrailer ? 'trailer' : 'cart';
+
+                                return `<tr>
+                                    <td><strong>${u.id}</strong> <span class="type-badge">${uType}</span></td>
+                                    <td>
+                                        <label class="switch-ios">
+                                            <input type="checkbox" ${u.isVisible !== false ? 'checked' : ''} 
+                                                   onchange="window.toggleUnitVisibility('${u.id}', '${uType}', this.checked)">
+                                            <span class="slider-ios"></span>
+                                        </label>
+                                    </td>
+                                    <td><button class="btn-delete-icon" onclick="window.deleteUnitPermanent('${u.id}', '${uType}')"><i class="fas fa-trash"></i></button></td>
+                                </tr>`;
+                            }).join('') : '<tr><td colspan="3">Inga fordon hittades i databasen.</td></tr>'}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="admin-card">
+                <h4><i class="fas fa-boxes"></i> Packmallar</h4>
+                <div id="admin-template-editor-container">
+                    <button class="btn-primary-modern" onclick="window.initTemplateEditor()">
+                        <i class="fas fa-edit"></i> Öppna Mall-editor
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+};
+
+window.initTemplateEditor = async () => {
+    const container = document.getElementById('admin-template-editor-container');
+    const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+    const docSnap = await getDoc(doc(window.db, "settings", "packing_templates"));
+
+    if (!docSnap.exists()) return alert("Inga mallar hittades. Kör migreringen i konsolen igen.");
+    window.currentEditingTemplates = docSnap.data();
+
+    container.innerHTML = `
+        <div class="template-editor-ui">
+            <select id="sel-template-to-edit" class="modern-select" style="margin-bottom:15px;" onchange="window.loadTemplateToEdit(this.value)">
+                <option value="">Välj mall att ändra...</option>
+                <optgroup label="Transportbilar">
+                    ${window.currentEditingTemplates.car.map((t, i) => `<option value="car-${i}">${t.name}</option>`).join('')}
+                </optgroup>
+                <optgroup label="Kaffevagnar">
+                    ${window.currentEditingTemplates.cart.map((t, i) => `<option value="cart-${i}">${t.name}</option>`).join('')}
+                </optgroup>
+            </select>
+            <div id="template-items-list"></div>
+        </div>
+    `;
+};
+
+window.loadTemplateToEdit = (val) => {
+    if (!val) return;
+    const [type, index] = val.split('-');
+    const template = window.currentEditingTemplates[type][index];
+    const area = document.getElementById('template-items-list');
+
+    if (!template || !template.items) return alert("Fel vid laddning av mall.");
+
+    area.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; margin-top:20px;">
+            <h5 style="margin:0; color:var(--fog-brown); font-weight:800;">${template.name}</h5>
+            <button class="btn-select-all" onclick="window.addTemplateItem('${type}', ${index})">
+                <i class="fas fa-plus"></i> Ny rad
+            </button>
+        </div>
+        <div class="items-editor-grid" style="display:flex; flex-direction:column; gap:8px;">
+            ${template.items.map((item, i) => {
+                // Hanterar nu både gamla strängar och nya objekt för både bil och vagn
+                const name = typeof item === 'string' ? item : (item.n || "");
+                const qty = typeof item === 'string' ? 1 : (item.q || 1);
+
+                return `
+                    <div class="item-edit-row" style="display:flex; gap:8px;">
+                        <input type="text" value="${name}" placeholder="Namn" style="flex:1; padding:10px; border:1px solid #ddd; border-radius:8px;" 
+                               onchange="window.updateItemValue('${type}', ${index}, ${i}, 'n', this.value)">
+                        <input type="number" step="0.01" value="${qty}" style="width:75px; padding:10px; border:1px solid #ddd; border-radius:8px;" 
+                                     onchange="window.updateItemValue('${type}', ${index}, ${i}, 'q', this.value)">
+                        <button onclick="window.removeTemplateItem('${type}', ${index}, ${i})" style="background:none; border:none; color:#e30613; padding:5px; cursor:pointer;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>`;
+            }).join('')}
+        </div>
+        <button class="btn-primary-modern" style="width:100%; margin-top:25px; background:var(--fog-brown);" onclick="window.saveTemplatesToFirebase()">
+            <i class="fas fa-save"></i> SPARA ÄNDRINGAR I DATABASEN
+        </button>
+    `;
+};
+
+window.addTemplateItem = (type, tIdx) => {
+    // Skapar alltid ett objekt med namn och antal nu
+    window.currentEditingTemplates[type][tIdx].items.push({ n: "Ny artikel", q: 1 });
+    window.loadTemplateToEdit(`${type}-${tIdx}`);
+};
+
+window.removeTemplateItem = (type, tIdx, iIdx) => {
+    window.currentEditingTemplates[type][tIdx].items.splice(iIdx, 1);
+    window.loadTemplateToEdit(`${type}-${tIdx}`);
+};
+
+window.updateItemValue = (type, tIdx, iIdx, key, val) => {
+    const template = window.currentEditingTemplates[type][tIdx];
+    let item = template.items[iIdx];
+    
+    // Om det gamla formatet var en sträng, konvertera till objekt vid ändring
+    if (typeof item === 'string') {
+        item = { n: item, q: 1 };
+        template.items[iIdx] = item;
     }
-    originalRender(); 
+    
+    if (key === 'q') item.q = parseFloat(val) || 0;
+    else item.n = val;
+};
+
+window.saveTemplatesToFirebase = async () => {
+    const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+    await setDoc(doc(window.db, "settings", "packing_templates"), window.currentEditingTemplates);
+    alert("Alla ändringar har sparats!");
+};
+
+window.toggleUnitVisibility = async (id, type, isVisible) => {
+    const colMap = { car: 'cars', trailer: 'trailers', cart: 'carts' };
+    const { doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+    await updateDoc(doc(window.db, colMap[type], id), { isVisible: isVisible });
+};
+
+window.deleteUnitPermanent = async (id, type) => {
+    if (!confirm(`Är du helt säker? Detta raderar ${id} permanent från databasen.`)) return;
+    const colMap = { car: 'cars', trailer: 'trailers', cart: 'carts' };
+    const { doc, deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+    await deleteDoc(doc(window.db, colMap[type], id));
 };
