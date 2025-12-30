@@ -50,6 +50,7 @@
 .sidebar.mobile-active {
     display: flex !important;
     left: 0 !important;
+    background: var(--fog-brown) !important;
 }
 
 /* Gör korten i kalendern bredare */
@@ -979,4 +980,3 @@
         font-size: 1rem;
     }
 }
-
