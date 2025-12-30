@@ -1,8 +1,8 @@
 /* ==========================================================================
-   MOBILE VIEW - ULTIMATE TOP-APP NAV v5
-   Fokus: Borttagen prick, perfekt vertikal centrering & Glassmorphism
+   MOBILE VIEW - ULTIMATE TOP-APP NAV v5 (FINAL PRECISION RENDER)
    ========================================================================== */
 
+/* --- 1. BASLAYOUT & GLOBALA RESET --- */
 .app-container {
     flex-direction: column !important;
     height: 100vh !important;
@@ -11,73 +11,33 @@
 
 .main-content {
     flex: 1;
-    padding: 15px !important;
-    padding-bottom: 110px !important;
-    overflow-y: auto !important;
-}
-
-/* DÖLJ ONÖDIGA ELEMENT */
-.logo-area,
-.user-profile,
-.sidebar-header,
-.user-info,
-.sidebar-top h2 {
-    display: none !important;
-}
-
-/* ==========================================================================
-   DEN FLYTANDE BAREN (Symmetri & Fixerad höjd)
-   ========================================================================== */
-
-/* Minska marginaler för att få mer plats */
-.main-content {
     padding: 10px !important;
-    /* Minskat från 15px */
     padding-bottom: 80px !important;
+    overflow-y: auto !important;
 }
 
 #content-area {
     padding: 0 !important;
-    /* Tar bort dubbel padding inuti vyer */
 }
 
-/* Rensa bort gamla header-ikoner som spökar */
+/* Dölj element som stör mobilvyn */
+.logo-area,
+.user-profile,
+.sidebar-header,
+.user-info,
+.sidebar-top h2,
+.filter-separator {
+    display: none !important;
+}
+
+/* --- 2. SIDEBAR & NAVIGATION --- */
 .sidebar {
-    display: none;
-    /* Döljs som standard, visas via .mobile-active */
-}
-
-.sidebar.mobile-active {
-    display: flex !important;
-    left: 0 !important;
-    background: var(--fog-brown) !important;
-}
-
-/* Gör korten i kalendern bredare */
-.day-card {
-    margin: 0 0 10px 0 !important;
-    width: 100% !important;
-}
-
-/* ==========================================================================
-   NY SIDEBAR-LOGIK (ERSÄTTER BOTTOM BAR)
-   ========================================================================== */
-
-.sidebar {
-    /* Återställ från bottom-bar till sidebar */
     position: fixed !important;
     top: 0 !important;
     left: -280px !important;
-    /* Startposition: utanför skärmen till vänster */
     bottom: 0 !important;
-    right: auto !important;
     width: 240px !important;
     height: 100vh !important;
-    margin: 0 !important;
-    border-radius: 0 !important;
-    overflow-y: auto !important;
-
-    /* Layout */
     display: flex !important;
     flex-direction: column !important;
     background: var(--fog-brown) !important;
@@ -86,21 +46,10 @@
     box-shadow: 5px 0 25px rgba(0, 0, 0, 0.5) !important;
 }
 
-/* När menyn är aktiv */
 .sidebar.mobile-active {
     left: 0 !important;
 }
 
-/* Visa element som tidigare var dolda på mobil */
-.sidebar .logo-area,
-.sidebar .sidebar-header-wrapper,
-.sidebar .nav-item span,
-.sidebar .user-info-text {
-    display: block !important;
-    opacity: 1 !important;
-}
-
-/* Tvinga nav-items att staplas vertikalt */
 .sidebar-nav {
     display: flex !important;
     flex-direction: column !important;
@@ -108,445 +57,30 @@
 }
 
 .nav-item {
-    flex: none !important;
     width: 100% !important;
-    height: auto !important;
     padding: 12px 15px !important;
     justify-content: flex-start !important;
     font-size: 0.9rem !important;
     color: rgba(255, 255, 255, 0.8) !important;
 }
 
-.sidebar-footer {
-    padding: 10px 15px !important;
-}
-
-/* ==========================================================================
-   AKTIV STATUS (Glöd men ingen prick)
-   ========================================================================== */
 .nav-item.active {
     color: #ffffff !important;
 }
 
 .nav-item.active i {
-    color: white !important;
-    /* Ändra från var(--fog-red) till white */
     transform: scale(1.1);
     filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.3));
 }
 
-/* HEADER & WEATHER */
-.top-header {
-    padding: 10px 5px !important;
-    margin-bottom: 0 !important;
-}
-
-.header-info h1 {
-    font-size: 1.1rem !important;
-    font-weight: 900 !important;
-}
-
-.weather-widget {
-    background: #fff !important;
-    border: 1px solid #eee !important;
-    border-radius: 10px;
-    padding: 4px 10px !important;
-    font-size: 0.7rem !important;
-    color: var(--fog-brown) !important;
-}
-
-/**/
-
-/* ==========================================================================
-   JUSTERING AV MODALER FÖR MOBIL
-   ========================================================================== */
-
-/* Gör så att bakgrunden inte centrerar modalen utan låter den fylla allt */
-.modal-overlay {
-    padding: 0 !important;
-    align-items: stretch !important;
-    overflow: hidden !important;
-    /* Förhindrar dubbla scroll-lister */
-}
-
-/* Tvingar modalens innehåll till 100% bredd och höjd */
-.modal-content {
-    width: 100% !important;
-    height: 100% !important;
-    max-width: none !important;
-    border-radius: 0 !important;
-
-    /* NYA REGLER FÖR SCROLL: */
-    display: flex !important;
-    flex-direction: column !important;
-    overflow-y: auto !important;
-    /* Aktiverar vertikal scroll */
-    -webkit-overflow-scrolling: touch;
-    /* Ger mjuk "iOS-känsla" vid scroll */
-    background-color: #fdfcfb !important;
-}
-
-/* ==========================================================================
-   JUSTERING AV SKAPA-VYN/SKAPA EVENT FÖR MOBIL
-   ========================================================================== */
-
-/* --- FULLSKÄRMS-MODALER --- */
-.modal-overlay {
-    padding: 0 !important;
-    align-items: stretch !important;
-}
-
-.modal-content {
-    width: 100% !important;
-    height: 100% !important;
-    max-width: none !important;
-    border-radius: 0 !important;
-    /* Native fullskärmskänsla */
-}
-
-.fm-premium-container {
-    height: 100% !important;
-    border-radius: 0 !important;
-}
-
-/* --- SKAPA UPPDRAG (STEG 1 & 2) --- */
-.create-view-container.single-column {
-    padding: 0 !important;
-    /* Utnyttja hela bredden på mobilen */
-}
-
-.form-container.compact-form {
-    max-width: 100% !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    border: none !important;
-}
-
-.form-grid {
-    grid-template-columns: 1fr !important;
-    /* Tvinga en kolumn för bättre läsbarhet */
-    gap: 15px !important;
-}
-
-.inner-scroll-area {
-    padding: 20px !important;
-}
-
-.form-group label {
-    font-size: 0.85rem !important;
-    margin-bottom: 5px !important;
-    color: var(--fog-brown) !important;
-}
-
-.modern-input,
-.modern-select {
-    height: 50px !important;
-    /* Större klickyta för fingrar */
-    font-size: 1rem !important;
-    /* Förhindrar automatisk zoom på iPhone */
-    background: #fdfcfb !important;
-}
-
-/* Snyggare val av vagnar (Chips) på mobilen */
-.cart-chip-container {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    /* Två vagnar per rad istället för trång rad */
-    gap: 8px !important;
-}
-
-.chip-content {
-    width: 100% !important;
-    justify-content: center !important;
-    padding: 12px !important;
-    border-radius: 12px !important;
-}
-
-/* Fixera knappen längst ner så den alltid är åtkomlig */
-
-.form-footer .btn-primary-modern {
-    width: 100% !important;
-    /* Knappen tar hela bredden på mobilen */
-    height: 55px;
-    justify-content: center !important;
-    font-size: 1rem !important;
-    border-radius: 12px !important;
-}
-
-/* --- PACKLISTA (STEG 2) --- */
-.unit-tabs {
-    overflow-x: auto;
-    /* Gör flikarna scrollbara i sidled */
-    padding-bottom: 5px;
-    -webkit-overflow-scrolling: touch;
-}
-
-.form-check-item {
-    padding: 18px 15px !important;
-    /* Större rader för att enkelt bocka av */
-}
-
-/* ==========================================================================
-   PACKLISTA - MOBILANPASSNING
-   ========================================================================== */
-
-/* 1. FLIKARNA (Husbil, Andrea etc.) */
-.unit-tabs {
-    display: flex !important;
-    gap: 8px !important;
-    padding: 10px 15px !important;
-    background: #fdfcfb;
-    border-bottom: 1px solid #eee;
-    overflow-x: auto !important;
-    /* Scrolla i sidled om det är många vagnar */
-    -webkit-overflow-scrolling: touch;
-}
-
-.unit-tab {
-    padding: 10px 18px !important;
-    font-size: 0.85rem !important;
-    border-radius: 12px !important;
-    white-space: nowrap;
-    /* Hindrar texten från att brytas */
-    border: 1px solid #eee !important;
-    background: #fff !important;
-    color: #666 !important;
-}
-
-.unit-tab.active {
-    background: var(--fog-brown) !important;
-    color: #fff !important;
-    border-color: var(--fog-brown) !important;
-    box-shadow: 0 4px 10px rgba(92, 64, 51, 0.2);
-}
-
-/* 2. TITEL & VÄLJ ALLA */
-.checklist-header-flex {
-    padding: 15px 20px !important;
-    margin-bottom: 0 !important;
-}
-
-.checklist-header-flex h4 {
-    font-size: 1.3rem !important;
-    font-weight: 850 !important;
-}
-
-.btn-select-all {
-    padding: 8px 14px !important;
-    font-size: 0.7rem !important;
-    border-radius: 10px !important;
-}
-
-/* 3. LIST-LAYOUT (Grupper & Items) */
-.inner-list-container {
-    padding: 0 15px 20px 15px !important;
-}
-
-.list-group-header {
-    margin-top: 15px !important;
-    padding: 14px 18px !important;
-    border-radius: 12px !important;
-    font-size: 0.85rem !important;
-    font-weight: 700 !important;
-}
-
-.form-check-item {
-    padding: 18px 15px !important;
-    /* Rejäla klickytor för fingrar */
-    margin-top: 5px;
-    border-radius: 12px;
-    border-bottom: 1px solid #f5f5f5 !important;
-    font-size: 0.95rem !important;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.form-check-item i {
-    font-size: 1.4rem !important;
-    /* Större checkbox-ikon */
-    color: #ddd;
-}
-
-.form-check-item.checked i {
-    color: #2ecc71 !important;
-}
-
-/* 4. FOOTER-KNAPPARNA (Slutför, Avbryt, Radera) */
-.form-footer {
-    flex-direction: column !important;
-    /* Stapla knapparna vertikalt på mobilen */
-    gap: 12px !important;
-    padding: 20px !important;
-    padding-bottom: 110px !important;
-    /* Extra marginal för att inte krocka med Bottom Bar */
-    background: #fff;
-}
-
-/* Behållaren för Avbryt och Slutför */
-.form-footer>div:last-child {
-    display: flex !important;
-    flex-direction: column !important;
-    width: 100% !important;
-    gap: 10px !important;
-}
-
-.btn-primary-modern,
-.btn-secondary-modern {
-    width: 100% !important;
-    height: 55px !important;
-    justify-content: center !important;
-    border-radius: 14px !important;
-    font-size: 1rem !important;
-}
-
-.btn-secondary-modern {
-    background: #f5f5f5 !important;
-    color: #666 !important;
-}
-
-/* Radera-knappen längst ner, diskret men tydlig */
-.btn-delete-main {
-    width: 100% !important;
-    justify-content: center !important;
-    padding: 10px !important;
-    font-size: 0.8rem !important;
-    color: var(--fog-red) !important;
-    opacity: 0.8;
-}
-
-/* 1. FIXA RUBRIK-KROCKEN */
-.panel-header {
-    flex-direction: column !important;
-    /* Stapla titel och ändra-länk vertikalt */
-    align-items: flex-start !important;
-    padding: 20px 20px 10px 20px !important;
-    gap: 8px !important;
-}
-
-.btn-edit-details {
-    font-size: 0.8rem !important;
-    padding: 4px 0 !important;
-    margin-left: 35px;
-    /* Linjerar texten med titeln efter ikonen */
-}
-
-/* ==========================================================================
-   PACKLISTA - GÖRA PLOCKLISTAN MER KOMPAKT ÄN OVAN KOD
-   ========================================================================== */
-
-/* 1. ELIMINERA ALL LUFT PÅ SIDORNA */
-.inner-list-container {
-    padding: 0 !important;
-    margin: 0 !important;
-    width: 100% !important;
-}
-
-/* 2. STEG-INDIKATOR & HEADER (Matcha Steg 1) */
-.checklist-header-flex {
-    padding: 15px 15px 5px 15px !important;
-    background: #fff;
-}
-
-.checklist-header-flex h4 {
-    font-size: 1.2rem !important;
-    color: var(--fog-brown) !important;
-    font-weight: 800 !important;
-}
-
-/* 3. GRUPPRUBRIKER (T.ex. Dag 1 - Lager) - Gör dem superkompakta */
-.list-group-header {
-    margin: 0 !important;
-    padding: 5px 5px !important;
-    background: #f8f9fa !important;
-    /* Ljusgrå system-bakgrund */
-    color: #666 !important;
-    font-size: 0.75rem !important;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border-top: 1px solid #eee;
-    border-bottom: 1px solid #eee;
-    border-radius: 0 !important;
-}
-
-/* 4. PLOCKRADER - MAXIMAL EFFEKTIVITET */
-.form-check-item {
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 5px 5px !important;
-    /* Minskad höjd för att se fler rader */
-    border-radius: 0 !important;
-    border-bottom: 1px solid #f0f0f0 !important;
-    background: #fff !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    box-sizing: border-box !important;
-}
-
-/* Texten i raden */
-.form-check-item span {
-    font-size: 0.95rem !important;
-    font-weight: 500 !important;
-    color: #333;
-    flex: 1;
-    line-height: 1.2;
-}
-
-/* Checkboxen - Matcha Steg 1:s rena stil */
-.form-check-item i {
-    font-size: 1.5rem !important;
-    margin-left: 12px;
-    color: #ddd;
-    flex-shrink: 0;
-}
-
-/* Markerat tillstånd - Snyggt och diskret */
-.form-check-item.checked {
-    background-color: #f8fff9 !important;
-}
-
-.form-check-item.checked span {
-    color: #2ecc71 !important;
-    font-weight: 600 !important;
-}
-
-.form-check-item.checked i {
-    color: #2ecc71 !important;
-}
-
-/* 5. ENHETSTABBARNA (Husbil, Andrea etc) */
-.unit-tabs {
-    padding: 8px 10px !important;
-    gap: 6px !important;
-    border-bottom: 2px solid #eee;
-}
-
-.unit-tab {
-    padding: 6px 14px !important;
-    font-size: 0.8rem !important;
-    border-radius: 8px !important;
-}
-
-/* 6. ÄNDRA EVENTDETALJER-LÄNKEN */
-.btn-edit-details {
-    margin-left: 0 !important;
-    color: var(--fog-red) !important;
-    font-weight: 700;
-    text-decoration: underline;
-}
-
-/* ==========================================================================
-   KALENDER - HORISNOTELL FILTERBAR
-   ========================================================================== */
-
-/* 1. ÅTERSTÄLL HORISONTELL FILTERBAR */
+/* --- 3. KALENDER (ÅTERSTÄLLD HORISONTELL SCROLL & NAVIGERING) --- */
 .calendar-filter-bar {
     display: flex !important;
     flex-direction: row !important;
     flex-wrap: nowrap !important;
-    /* Förhindrar radbrytning */
+    /* Förhindrar stapling */
     overflow-x: auto !important;
+    /* Möjliggör horisontell scroll */
     padding: 12px !important;
     gap: 8px !important;
     -webkit-overflow-scrolling: touch;
@@ -556,10 +90,25 @@
     flex: 0 0 auto !important;
 }
 
-.filter-separator {
-    display: none !important;
+.mobile-nav-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: #fff;
+    margin-bottom: 10px;
+    border-radius: 12px;
 }
 
+.mobile-nav-header button {
+    background: var(--fog-brown);
+    color: #fff;
+    border: none;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    /* Cirkulära nav-knappar */
+}
 
 /* ==========================================================================
    KALENDER - PREMIUM KORTVY FÖR MOBIL
@@ -770,12 +319,256 @@
     transform: scale(0.98);
 }
 
-/* ==========================================================================
-   FLEET-MODAL
-   ========================================================================== */
+/* --- 4. SKAPA UPPDRAG & FORMULÄR --- */
+.create-view-container.single-column {
+    padding: 0 !important;
+}
 
-/* --- MOBILANPASSAD BENTO MODAL --- */
+.form-container.compact-form {
+    max-width: 100% !important;
+    border-radius: 0 !important;
+    border: none !important;
+}
+
+.form-grid {
+    grid-template-columns: 1fr !important;
+    /* En kolumn */
+    gap: 15px !important;
+}
+
+.modern-input,
+.modern-select {
+    height: 50px !important;
+    font-size: 1rem !important;
+}
+
+.cart-chip-container {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+}
+
+/* --- 5. PACKLISTA & PLOCKLISTA --- */
+.unit-tabs {
+    display: flex !important;
+    gap: 6px !important;
+    padding: 8px 10px !important;
+    overflow-x: auto !important;
+    border-bottom: 2px solid #eee;
+}
+
+.list-group-header {
+    margin: 0 !important;
+    padding: 5px 10px !important;
+    background: #f8f9fa !important;
+    font-size: 0.75rem !important;
+    text-transform: uppercase;
+}
+
+.form-check-item {
+    width: 100% !important;
+    padding: 12px 15px !important;
+    border-bottom: 1px solid #f0f0f0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+}
+
+/* --- 6. FLEET MODAL (KOMPLETTA FIXAR FÖR OVERVIEW, HEADER & CHATT) --- */
 @media (max-width: 768px) {
+
+    /* Fullscreen Modal */
+    .bento-modal {
+        width: 100vw !important;
+        height: 100dvh !important;
+        max-width: none !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    /* Scroll-fix för Översikt */
+    .fm-viewport {
+        flex: 1 !important;
+        overflow: hidden !important;
+    }
+
+    #tab-overview {
+        display: none;
+        height: 100% !important;
+        overflow-y: auto !important;
+        /* Återställer scroll */
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #tab-overview.active {
+        display: block !important;
+    }
+
+    /* Header-fix: Byt plats på X och Status */
+    .header-right-actions {
+        flex-direction: row-reverse !important;
+        gap: 8px !important;
+    }
+
+    /* Journal/Chatt-fix: Visa skicka-knapp */
+    .teams-input-bar {
+        width: 100% !important;
+        gap: 8px !important;
+        padding: 6px 12px !important;
+        box-sizing: border-box !important;
+    }
+
+    #chat-text-input {
+        min-width: 0 !important;
+        /* Kritisk för att inte trycka ut knappen */
+        flex: 1 !important;
+    }
+
+    /* Media-flik: Stapla element */
+    #tab-media.active {
+        display: flex !important;
+        flex-direction: column !important;
+        height: 100% !important;
+        padding: 10px !important;
+        overflow-y: auto !important;
+    }
+
+    .image-grid-overview {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 8px !important;
+    }
+
+    /* Övriga layoutjusteringar Fleet */
+    .fm-pane {
+        padding: 0 !important;
+    }
+
+    .bento-grid-modal {
+        display: flex !important;
+        flex-direction: column !important;
+        padding: 10px 8px !important;
+        gap: 15px !important;
+    }
+
+    .bento-box {
+        padding: 15px 12px !important;
+        width: 100% !important;
+    }
+}
+
+/* --- 7. STATISTIK --- */
+@media (max-width: 768px) {
+    .stats-kpi-row {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+    }
+
+    .stats-main-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .chart-container-card {
+        height: 280px !important;
+    }
+}
+
+/*
+BUG FIXES EFTER RENSNING AV CSS KOD
+*/
+
+/* 1. Fixa klippt text i kalenderkort */
+
+.day-card-header {
+    padding: 12px 15px !important;
+    /* Säkerställ tillräcklig luft för datumet */
+    white-space: nowrap !important;
+    /* Hindrar radbrytning */
+    overflow: visible !important;
+    /* Tillåt texten att synas */
+    font-size: 0.75rem !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.day-card {
+    margin: 0 5px 15px 5px !important;
+    /* Ger lite distans till skärmkanten */
+}
+
+/* 2. Justera titlar (Minska storleken) */
+
+.header-info h1 {
+    font-size: 0.95rem !important;
+    /* Tidigare 1.1rem */
+}
+
+.checklist-header-flex h4 {
+    font-size: 1.0rem !important;
+    /* Tidigare 1.2rem/1.3rem */
+}
+
+.m-event-title {
+    font-size: 0.9rem !important;
+    /* Tidigare 1.05rem/1.1rem */
+    line-height: 1.1 !important;
+}
+
+.modal-header-vision h3 {
+    font-size: 0.9rem !important;
+}
+
+/* 3. Åtgärda försvunnen chatt/journal */
+
+#chat-feed-v3 {
+    padding: 15px 15px !important;
+    /* Ökad sidpadding från 10px */
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.teams-content-wrapper {
+    max-width: 90% !important;
+    /* Mer plats men med säkerhetsmarginal */
+    margin-left: 5px !important;
+    /* Puffa ut från absoluta vänsterkanten */
+}
+
+/* 4. Fleet-modal: Snygga till Media-fliken */
+
+/* Stapla innehållet i mediafliken */
+#tab-media.active {
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 15px 10px !important;
+}
+
+/* Tvinga sektioner (Bilder / Dokument) att ligga under varandra */
+#tab-media>div {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 25px !important;
+}
+
+/* Ta bort vertikala linjer och återställ padding för Dokument-sektionen */
+#tab-media div[style*="border-left"] {
+    border-left: none !important;
+    padding-left: 0 !important;
+    margin-top: 10px !important;
+}
+
+/* 3-kolumnsgrid för bilderna */
+.image-grid-overview {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
+}
+
+/* Tvinga Fleet-modalen till absolut fullskärm */
+@media (max-width: 768px) {
+
     /* 1. Tvinga modalen att fylla skärmen */
     .modal-content {
         width: 100% !important;
@@ -794,7 +587,8 @@
 
     /* 2. Stapla Bento-boxarna vertikalt */
     .bento-grid-modal {
-        grid-template-columns: 1fr !important; /* En kolumn istället för två */
+        grid-template-columns: 1fr !important;
+        /* En kolumn istället för två */
         padding: 15px !important;
         gap: 15px !important;
     }
@@ -802,7 +596,8 @@
     /* 3. Justera Headern för små skärmar */
     .modal-header-vision {
         padding: 10px 15px !important;
-        flex-wrap: wrap; /* Tillåt radbrytning om statusen är lång */
+        flex-wrap: wrap;
+        /* Tillåt radbrytning om statusen är lång */
         gap: 10px;
     }
 
@@ -830,405 +625,304 @@
 
     /* 6. Bildgalleri på mobil */
     .image-grid-overview {
-        grid-template-columns: repeat(3, 1fr) !important; /* 3 bilder per rad */
+        grid-template-columns: repeat(3, 1fr) !important;
+        /* 3 bilder per rad */
     }
 
     /* 7. Status-pill i headern */
     .status-pill-header {
-        order: 3; /* Flytta ner statusen under ID:t på extremt smala skärmar */
+        order: 3;
+        /* Flytta ner statusen under ID:t på extremt smala skärmar */
         width: 100%;
         justify-content: center;
     }
-    
+
     .header-right-actions {
         order: 2;
     }
 }
 
-/* ==========================================================================
-   FLEET-MODAL FÖR FORDON FLYTTAR TEKNISKDATA TILL TOPPEN OCH GÖR DET SNYGGARE
-   ========================================================================== */
+/* 5. Korrekt placering av "X" och status i headern */
 
-/* 1. POSITIONERING & BREDD */
-.fm-col-right-compact {
-    order: -1 !important;
-    padding: 0 15px !important;
-    width: 100% !important;
+.modal-header-vision {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
 }
 
-/* 2. DASHBOARD GRID (UTAN BOXAR) */
-.fm-data-grid-minimal {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 15px 10px !important;
-    /* Mer luft mellan rader, mindre mellan kolumner */
-    background: transparent !important;
-    border: none !important;
-    padding: 10px 0 !important;
+.header-right-actions {
+    display: flex !important;
+    flex-direction: row !important;
+    /* Ta bort row-reverse */
+    align-items: center !important;
+    gap: 12px !important;
+    margin-left: auto !important;
+    /* Pushar hela gruppen till höger */
 }
 
-/* 3. RENARE FÄLT UTAN STRECK UNDER VARJE ORD */
-.fm-input-group-minimal {
+.fm-close-icon {
+    order: 2 !important;
+    /* Tvingar krysset att vara efter statusen */
+    padding: 5px !important;
+}
+
+.status-pill-header {
+    order: 1 !important;
+    font-size: 0.65rem !important;
+}
+
+.inner-scroll-area {
+    padding: 10px 5px !important;
+    /* Minskat från 20px för att utnyttja bredden */
+}
+
+/* ============================
+FÖRBÄTTRINGAR / JUSTERINGAR 
+============================= */
+
+/* 1. Minska "luft" (Global kompakt layout) */
+.main-content {
+    padding: 8px !important;
+    /* Minskat från 10px */
+}
+
+.top-header {
+    height: 50px !important;
+    /* Minskat från 60px */
+    padding: 0 12px !important;
+}
+
+.header-info h1 {
+    font-size: 1.0rem !important;
+    /* Mer kompakt titel */
+}
+
+.checklist-header-flex,
+.panel-header {
+    padding: 8px 10px !important;
+    /* Tajtare rubrikområden */
+}
+
+/* 2. Förbättrad Media-flik (Fleet-modal) */
+.image-grid-overview {
+    grid-template-columns: repeat(4, 1fr) !important;
+    /* 4 bilder per rad istället för 3 */
+    gap: 4px !important;
+    padding: 8px !important;
+}
+
+.image-grid-overview img {
+    border-radius: 4px !important;
+    aspect-ratio: 1/1;
+    /* Tvinga kvadratiska bilder för enhetlighet */
+    object-fit: cover;
+}
+
+/* 3. Kritiska åtgärder (Fleet-vy) MINSKAD LUFT MELLAN KORT */
+.mo-grid {
+    gap: 6px !important;
+    /* Tätare mellan korten */
+}
+
+.mo-card {
+    padding: 10px 12px !important;
+    margin-bottom: 0 !important;
+}
+
+/* 4. Separata Kalender-kort */
+
+/* 1. Nollställ bakgrunden för hela kalenderytan */
+.main-content {
+    background-color: transparent !important;
+}
+
+#content-area {
     background: transparent !important;
-    border: none !important;
     padding: 0 !important;
+}
+
+/* Ändrat från .mobile-card-view till .mobile-timeline-view för att matcha calendar.js */
+#calendar-container.mobile-timeline-view {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+/* 2. Dag-korten (Snygga flytande kort med 8px sidmarginal) */
+.day-card {
+    margin: 0 8px 12px 8px !important;
+    /* Ger lagom med "luft" på sidorna */
+    width: auto !important;
+    background: #ffffff !important;
+    border-radius: 18px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid rgba(0, 0, 0, 0.02) !important;
+    overflow: hidden;
+}
+
+.day-card-header {
+    padding: 10px 15px !important;
+    background: rgba(92, 64, 51, 0.03) !important;
+    /* Väldigt ljus Fogarolli-brun */
+    font-weight: 850 !important;
+}
+
+.m-empty-day {
+    padding: 30px 20px !important;
+    text-align: center;
+    background: #fafafa;
+    border-radius: 0 0 16px 16px;
+    color: #bbb !important;
+    font-size: 0.75rem !important;
+    font-weight: 600;
+}
+
+.m-empty-day::before {
+    content: "\f073"; /* Kalender-ikon */
+    font-family: "Font Awesome 6 Free";
+    display: block;
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+    opacity: 0.3;
+}
+
+/* STATISTIKVY FÖRBÄTTRAD */
+
+.stats-dashboard-premium {
+    padding: 5px 10px !important;
+}
+
+/* Premium KPI Cards */
+.premium-kpi-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.p-kpi-card {
+    padding: 20px 15px;
+    border-radius: 20px;
     display: flex;
     flex-direction: column;
+    color: #fff;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
-/* Snyggare etiketter (Labels) */
-.fm-input-group-minimal label {
-    font-size: 0.6rem !important;
-    color: #888 !important;
-    /* Mörkare grå för läsbarhet än i bilden */
-    font-weight: 700 !important;
+.p-kpi-card.mission {
+    background: linear-gradient(135deg, #5c4033 0%, #3d2a22 100%);
+}
+
+.p-kpi-card.fix {
+    background: linear-gradient(135deg, #e30613 0%, #a3050e 100%);
+}
+
+.p-kpi-label {
+    font-size: 0.6rem;
+    font-weight: 850;
+    letter-spacing: 1px;
+    opacity: 0.8;
+}
+
+.p-kpi-total {
+    font-size: 1.8rem;
+    font-weight: 900;
+    margin: 4px 0;
+}
+
+.p-kpi-sub {
+    font-size: 0.65rem;
+    opacity: 0.7;
+}
+
+/* Infographic Cards */
+.infographic-card {
+    background: #fff;
+    border-radius: 24px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.02);
+}
+
+.card-info h5 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 850;
+    color: #333;
+}
+
+.card-info p {
+    margin: 2px 0 15px 0;
+    font-size: 0.7rem;
+    color: #999;
+}
+
+.chart-box {
+    position: relative;
+    height: 180px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.chart-center-label {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none;
+}
+
+.chart-center-label span {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--fog-brown);
+}
+
+.chart-center-label small {
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: #ccc;
     text-transform: uppercase;
-    margin-bottom: 2px !important;
 }
 
-/* Själva textvärdet (Inputs) */
-.fm-input-group-minimal input {
-    font-size: 0.95rem !important;
-    font-weight: 800 !important;
-    color: var(--fog-brown) !important;
-    background: transparent !important;
-    border: none !important;
-    padding: 0 !important;
-    height: auto !important;
-
-    width: 100% !important;
-    max-width: 100% !important;
-    box-sizing: border-box !important;
+.chart-box-bar {
+    height: 200px;
 }
 
-/* 4. STATUS-INDIKERING (Endast för fält med varning) */
-/* Istället för att alla har streck, visar vi det bara vid problem */
-.warning-active.fm-input-group-minimal,
-.danger-active.fm-input-group-minimal {
-    border-bottom: 2px solid transparent !important;
-    padding-bottom: 2px !important;
+/* Minska marginalen under KPI-raden */
+.premium-kpi-grid {
+    margin-bottom: 15px !important;
+    /* Minskat från 25px */
+    gap: 10px !important;
+    /* Något tätare mellan boxarna */
 }
 
-/* 5. MINSKA LUFT TILL SYSTEMSTATUS */
-.fm-col-right-compact .fm-sub-section {
-    margin-bottom: 0px !important;
-    /* Trycker upp nästa sektion */
+/* Minska padding och marginal på själva info-korten */
+.infographic-card {
+    padding: 15px !important;
+    /* Minskat inre avstånd från 20px */
+    margin-bottom: 12px !important;
+    /* Minskat avstånd mellan korten från 20px */
+    border-radius: 20px !important;
+    /* Något mindre rundning för att matcha kompaktare look */
 }
 
-/* ==========================================================================
-   FLEET-MODAL CHAT-VY FÖR MOBIL
-   ========================================================================== */
-
-/* 1. Tvinga modalen att inte växa utanför skärmen */
-.fm-premium-container {
-    height: 100dvh !important;
-    display: flex !important;
-    flex-direction: column !important;
+/* Minska luft mellan rubrik och graf inuti kortet */
+.card-info p {
+    margin: 2px 0 8px 0 !important;
+    /* Minskat från 15px */
 }
 
-/* 2. Låt meddelandena ta upp allt utrymme */
-#tab-journal.active {
-    display: flex !important;
-    flex-direction: column !important;
-    height: 100% !important;
-    padding: 0 !important;
+/* Justera höjden på graferna så de tar mindre vertikal plats */
+.chart-box {
+    height: 160px !important;
+    /* Minskat från 180px */
 }
 
-.fm-chat-wrapper {
-    flex: 1 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    height: 100% !important;
-}
-
-.fm-chat-feed {
-    flex: 1 !important;
-    overflow-y: auto !important;
-}
-
-/* 3. Lås fältet i botten med minimal luft */
-.fm-chat-input-area {
-    flex-shrink: 0 !important;
-    padding: 10px 15px !important;
-    /* Minskad padding för att få bort "luften" */
-    background: #fff !important;
-    border-top: 1px solid #eee !important;
-}
-
-/* ==========================================================================
-   STATISTIK-VY PÅ MOBILEN
-   ========================================================================== */
-
-/* --- MOBILANPASSNING FÖR STATISTIK --- */
-@media (max-width: 768px) {
-    .stats-kpi-row {
-        grid-template-columns: repeat(2, 1fr); /* Två KPI-kort i bredd på mobil */
-        gap: 10px;
-    }
-
-    .stats-main-grid {
-        grid-template-columns: 1fr; /* Stapla graferna vertikalt */
-        gap: 15px;
-    }
-
-    .chart-container-card {
-        min-height: 200px; /* Något lägre grafer på mobil */
-        padding: 10px;
-    }
-
-    .kpi-val {
-        font-size: 1rem;
-    }
-}
-
-/*
-FLEET & STATISTIK TEST CSS
-*/
-
-/* mobile.css - STATISTIK OPTIMERING */
-
-@media (max-width: 768px) {
-    .stats-dashboard-compact {
-        padding: 5px !important;
-    }
-
-    /* KPI:er i 2x2 grid */
-    .stats-kpi-row {
-        grid-template-columns: 1fr 1fr !important;
-        gap: 8px !important;
-    }
-
-    .kpi-box {
-        padding: 12px !important;
-        flex-direction: column !important;
-        text-align: center !important;
-    }
-
-    .kpi-val {
-        font-size: 1.1rem !important;
-    }
-
-    /* Grafer: Stapla vertikalt */
-    .stats-main-grid {
-        grid-template-columns: 1fr !important;
-        gap: 15px !important;
-    }
-
-    .chart-container-card {
-        height: 280px !important; /* Ge grafen plats att andas */
-        padding: 15px !important;
-    }
-    
-    .chart-container-card h5 {
-        font-size: 0.65rem !important;
-        margin-bottom: 10px !important;
-    }
-}
-
-/* ==========================================================================
-   FIXAR FÖR FLEET-VY OCH MODAL
-   ========================================================================== */
-
-@media (max-width: 768px) {
-
-    /* 1. MINSKA MELLANRUM I KRITISKA ÅTGÄRDER (FLEET-VY) */
-    .mo-grid {
-        gap: 8px !important; /* Minskar gapet mellan korten */
-    }
-
-    .mo-card {
-        margin-bottom: 0 !important; /* Tar bort extra marginal i botten */
-        padding: 12px 15px !important; /* Något tajtare padding */
-        min-height: auto !important;
-    }
-
-    /* 2. FIXA SCROLL I OVERVIEW (MODAL) */
-    .bento-modal {
-        height: 100dvh !important; /* Tvinga modalen att hålla sig inom skärmen */
-        display: flex !important;
-        flex-direction: column !important;
-    }
-
-    .fm-viewport {
-        flex: 1 !important;
-        overflow: hidden !important; /* Föräldern ska inte scrolla... */
-    }
-
-    #tab-overview {
-        display: none; /* Hanteras av .active */
-        height: 100% !important;
-        overflow-y: auto !important; /* ...men innehållet i fliken ska scrolla! */
-        -webkit-overflow-scrolling: touch;
-    }
-
-    #tab-overview.active {
-        display: block !important;
-    }
-
-    /* Gör Bento-gridden till en lång lista så inget döljs */
-    .bento-grid-modal {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 15px !important;
-        padding: 15px !important;
-        height: auto !important; /* Låt den expandera vertikalt */
-    }
-
-    /* 3. JUSTERA CHATT-BUBBLOR (BORT MED LUFT PÅ SIDORNA) */
-    #chat-feed-v3 {
-        padding: 15px 10px !important; /* Minskat från 40px till 10px på sidorna */
-        gap: 15px !important;
-    }
-
-    .teams-content-wrapper {
-        max-width: 85% !important; /* Tillåt bubblorna att ta mer plats i bredd */
-    }
-
-    /* 4. FIXA CHATT-INPUT (SYNLIGHET & SKICKA-IKON) */
-    .teams-input-container {
-        padding: 10px !important; /* Mindre luft runt baren */
-    }
-
-    .teams-input-bar {
-        width: 100% !important;
-        gap: 8px !important; /* Tätare mellan ikonerna */
-        padding: 6px 12px !important;
-        box-sizing: border-box !important;
-    }
-
-    #chat-text-input {
-        min-width: 0 !important; /* Viktigt: tillåter fältet att krympa istället för att trycka ut knappen */
-        flex: 1 !important;
-    }
-
-    /* 5. FIXA MODAL-HEADER (BYT PLATS PÅ STÄNG & STATUS) */
-    .header-right-actions {
-        flex-direction: row-reverse !important; /* Swappar plats på status-pill och x-knappen */
-        gap: 8px !important;
-    }
-
-    .status-pill-header {
-        font-size: 0.6rem !important;
-        padding: 4px 10px !important;
-        white-space: nowrap;
-    }
-
-    .fm-close-icon {
-        flex-shrink: 0; /* Hindrar krysset från att tryckas ihop */
-    }
-}
-
-/* ==========================================================================
-   FORCE FULLSCREEN & ZERO MARGINS (FLEET MODAL)
-   ========================================================================== */
-
-@media (max-width: 768px) {
-    /* 1. TVINGA MODALEN TILL FULLSKÄRM (Dödar 850px-bredden) */
-    .bento-modal {
-        width: 100vw !important;
-        height: 100dvh !important; /* Använder dvh för att hantera mobilens adressfält */
-        max-width: none !important;
-        border-radius: 0 !important;
-        margin: 0 !important;
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-    }
-
-    .modal-content {
-        width: 100% !important;
-        height: 100% !important;
-        padding: 0 !important;
-        border-radius: 0 !important;
-    }
-
-    /* 2. TA BORT LUFT PÅ SIDORNA I ÖVERSIKTEN */
-    .bento-grid-modal {
-        grid-template-columns: 1fr !important;
-        padding: 10px 5px !important; /* Minimal luft på sidorna */
-        gap: 15px !important;
-        height: auto !important;
-        display: flex !important;
-        flex-direction: column !important;
-    }
-
-    /* Minska padding i de vita boxarna så innehållet når kanterna */
-    .bento-box {
-        padding: 12px 10px !important;
-        margin: 0 !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
-    }
-
-    /* 3. FIXA MEDIA-FLIKEN (FULL HÖJD & RÄTT LAYOUT) */
-    #tab-media.active {
-        display: flex !important;
-        flex-direction: column !important;
-        height: 100% !important;
-        padding: 10px !important;
-        overflow-y: auto !important;
-    }
-
-    /* Tvinga innehållet i media (Bildgalleri + Dokument) att staplas */
-    #tab-media > div {
-        display: flex !important;
-        flex-direction: column !important;
-        grid-template-columns: 1fr !important; /* Dödar 2-kolumnsgrid */
-        gap: 20px !important;
-        width: 100% !important;
-    }
-
-    /* Ta bort den grå linjen som delar Dokument och Bilder på datorn */
-    #tab-media div[style*="border-left"] {
-        border-left: none !important;
-        padding-left: 0 !important;
-        margin-top: 20px !important;
-    }
-
-    /* Gör bildgalleriet mer kompakt */
-    .image-grid-overview, 
-    #tab-media div[style*="grid-template-columns: repeat(auto-fill"] {
-        grid-template-columns: repeat(3, 1fr) !important;
-        gap: 8px !important;
-    }
-}
-
-/* ==========================================================================
-   FIX FÖR "LUFT" PÅ SIDORNA (OVERVIEW TAB)
-   ========================================================================== */
-
-@media (max-width: 768px) {
-    /* 1. Nollställ padding på flik-nivå (fm-pane) */
-    .fm-pane {
-        padding: 0 !important; /* Tar bort de 20px som trycker in allt från sidorna */
-    }
-
-    /* 2. Minimera padding i själva Bento-gridden */
-    .bento-grid-modal {
-        padding: 10px 8px !important; /* Endast ett litet mellanrum till skärmkanten */
-        width: 100% !important;
-        box-sizing: border-box !important;
-    }
-
-    /* 3. Justera headern och navigeringen så de matchar den nya bredden */
-    .modal-header-vision {
-        padding: 15px 12px !important; /* Matchar sidopaddingen */
-    }
-
-    .fm-nav-tabs {
-        padding: 0 12px !important; /* Matchar sidopaddingen */
-    }
-
-    /* 4. Gör Bento-boxen (den grå-kantade boxen) något bredare */
-    .bento-box {
-        margin: 0 !important;
-        padding: 15px 12px !important; /* Mer plats för texten inuti boxen */
-        border-radius: 12px !important; /* Något tajtare hörn för mobil */
-    }
-
-    /* 5. Se till att åtgärdskorten tar upp hela tillgängliga bredd inuti boxen */
-    .task-bubble-item {
-        width: 100% !important;
-        margin: 5px 0 !important;
-    }
+.chart-box-bar {
+    height: 180px !important;
+    /* Minskat från 200px */
 }
