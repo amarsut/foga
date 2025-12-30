@@ -980,3 +980,135 @@
         font-size: 1rem;
     }
 }
+
+/*
+FLEET & STATISTIK TEST CSS
+*/
+
+/* mobile.css - TOTAL FLEET MODAL FIX */
+
+@media (max-width: 768px) {
+    /* 1. MODAL-CONTAINER: Utnyttja hela skärmen */
+    .modal-content {
+        width: 100% !important;
+        height: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+    }
+
+    .bento-modal {
+        width: 100% !important;
+        height: 100% !important;
+        max-height: 100vh !important;
+        border-radius: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    /* 2. HEADER: Fixa X och Status */
+    .modal-header-vision {
+        padding: 10px 15px !important;
+        display: grid !important;
+        grid-template-columns: auto 1fr auto !important;
+        align-items: center !important;
+        gap: 10px !important;
+    }
+
+    .status-pill-header {
+        grid-column: 2; /* Centrerar statusen mellan ikon och X */
+        justify-self: center;
+        font-size: 0.6rem !important;
+        padding: 4px 10px !important;
+    }
+
+    .fm-close-icon {
+        grid-column: 3;
+        margin: 0 !important;
+    }
+
+    /* 3. SCROLL & CONTENT: Aktivera vertikal scroll för data */
+    .fm-viewport {
+        flex: 1 !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .bento-grid-modal {
+        grid-template-columns: 1fr !important; /* En kolumn på mobil */
+        padding: 10px !important; /* Minimal luft på sidorna */
+        gap: 10px !important;
+    }
+
+    /* 4. KRITISKA ÅTGÄRDER: Minska avståndet */
+    .mo-card {
+        margin-bottom: 8px !important;
+        padding: 12px 15px !important;
+    }
+
+    /* 5. JOURNAL/CHAT: Fixa input-fältet */
+    .fm-chat-input-area {
+        padding: 10px !important;
+        background: #fff !important;
+        border-top: 1px solid #eee !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+    }
+
+    .fm-chat-input-area input {
+        flex: 1 !important;
+        height: 40px !important;
+        font-size: 0.9rem !important;
+    }
+
+    /* Säkerställ att skicka-ikonen syns */
+    .btn-send-chat {
+        width: 40px !important;
+        height: 40px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex-shrink: 0 !important;
+    }
+}
+
+/* mobile.css - STATISTIK OPTIMERING */
+
+@media (max-width: 768px) {
+    .stats-dashboard-compact {
+        padding: 5px !important;
+    }
+
+    /* KPI:er i 2x2 grid */
+    .stats-kpi-row {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+    }
+
+    .kpi-box {
+        padding: 12px !important;
+        flex-direction: column !important;
+        text-align: center !important;
+    }
+
+    .kpi-val {
+        font-size: 1.1rem !important;
+    }
+
+    /* Grafer: Stapla vertikalt */
+    .stats-main-grid {
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
+    }
+
+    .chart-container-card {
+        height: 280px !important; /* Ge grafen plats att andas */
+        padding: 15px !important;
+    }
+    
+    .chart-container-card h5 {
+        font-size: 0.65rem !important;
+        margin-bottom: 10px !important;
+    }
+}
