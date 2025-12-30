@@ -1025,67 +1025,120 @@ FLEET & STATISTIK TEST CSS
     }
 }
 
-/* ==========================================
-   FLEET MODAL - FULL MOBILOPTIMERING
-   ========================================== */
+/* ==========================================================================
+   FLEET MODAL - TOTAL MOBIL-REFORM
+   ========================================================================== */
 
 @media (max-width: 768px) {
-    /* 1. MODAL-GRUND: Ingen padding, 100% höjd */
+    /* 1. MODAL GRUNDSTROME: Tvinga flex-stapling */
     .modal-overlay {
         padding: 0 !important;
         align-items: flex-start !important;
+        overflow: hidden !important; /* Förhindra dubbel scroll */
     }
 
-    .modal-content, .bento-modal {
+    .modal-content, .bento-modal, .fm-premium-container {
         width: 100% !important;
-        height: 100dvh !important; /* Dynamic Viewport Height för mobiler */
+        height: 100dvh !important; /* Hela skärmhöjden */
         max-width: none !important;
-        border-radius: 0 !important;
         margin: 0 !important;
+        border-radius: 0 !important;
+        display: flex !important;
+        flex-direction: column !important; /* Stapla delarna vertikalt */
+        overflow: hidden !important; /* Innehållet ska inte skrolla härifrån */
     }
 
-    /* 2. HEADER: Symmetri för X och Status */
-    .fm-header-slim, .modal-header-vision {
-        padding: 10px 15px !important;
+    /* 2. HEADER: Fixa X och Status */
+    .modal-header-vision, .fm-header-slim {
         display: flex !important;
-        justify-content: space-between !important;
-        align-items: center !important;
-        background: #fff !important;
         height: 60px !important;
+        padding: 0 15px !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        background: #fff !important;
+        flex-shrink: 0 !important; /* Får inte krympa eller skrolla bort */
         border-bottom: 1px solid #eee !important;
     }
 
-    /* Flytta X-knappen längst till höger och status till mitten */
-    .fm-id-block { flex: 1; }
+    /* Se till att Status-pillret ligger rätt och inte flyter iväg */
     .status-pill-header {
-        margin: 0 auto !important;
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
+        position: static !important;
+        transform: none !important;
+        margin: 0 !important;
+        font-size: 0.65rem !important;
+        order: 2; /* Placera mellan namn och X */
     }
 
-    /* 3. SCROLL-LOGIK: Tillåt att man ser allt */
-    .fm-viewport {
-        height: calc(100dvh - 110px) !important; /* Header + Tabs borträknat */
-        overflow-y: auto !important;
-        padding-bottom: 80px !important; /* Plats för chat-input */
-    }
-
-    .bento-grid-modal {
-        grid-template-columns: 1fr !important;
-        padding: 10px !important;
-        gap: 12px !important;
-    }
-
-    /* 4. KRITISKA ÅTGÄRDER: "Fria kort" med minimalt mellanrum */
-    .maintenance-overview {
-        background: transparent !important;
-        padding: 0 !important;
-    }
-
-    .mo-card {
-        margin-bottom: 8px !important; /* Mindre luft mellan korten */
+    /* 3. TABS: Håll dem synliga */
+    .fm-nav-tabs {
+        display: flex !important;
         background: #fff !important;
-        border: 1px solid #eee !important;
+        padding: 0 10px !important;
+        height: 50px !important;
+        flex-shrink: 0 !important;
+        border-bottom: 1px solid #eee !important;
+        overflow-x: auto !important;
+    }
+
+    /* 4. VIEWPORT: Det är här skrollet ska ske */
+    .fm-viewport {
+        flex: 1 !important; /* Ta upp allt ledigt utrymme */
+        overflow-y: auto !important; /* Endast här får det skrollas */
+        -webkit-overflow-scrolling: touch;
+        background: #fbfcfd !important;
+    }
+
+    /* 5. JOURNAL & CHAT FIX */
+    #tab-journal.active {
+        display: flex !important;
+        flex-direction: column !important;
+        height: 100% !important;
+    }
+
+    .fm-chat-wrapper {
+        display: flex !important;
+        flex-direction: column !important;
+        height: 100% !important;
+    }
+
+    .fm-chat-feed {
+        flex: 1 !important;
+        overflow-y: auto !important;
+        padding: 10px !important;
+    }
+
+    /* Ta bort den stora luften på sidorna i chatten */
+    .fm-chat-msg {
+        max-width: 85% !important;
+        margin-left: 5px !important;
+        margin-right: 5px !important;
+    }
+
+    /* Fixa inputfältet längst ner */
+    .fm-chat-input-area {
+        flex-shrink: 0 !important;
+        width: 100% !important;
+        padding: 10px !important;
+        background: #fff !important;
+        border-top: 1px solid #eee !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+    }
+
+    .fm-chat-input-area input {
+        flex: 1 !important;
+        width: auto !important; /* Förhindra att den trycker ut knappen */
+        height: 45px !important;
+        font-size: 16px !important; /* Förhindra zoom på iOS */
+    }
+
+    .btn-send-chat {
+        width: 45px !important;
+        height: 45px !important;
+        flex-shrink: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
 }
