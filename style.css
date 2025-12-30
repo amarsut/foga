@@ -53,33 +53,30 @@ body {
    2. LAYOUT (SIDEBAR & MAIN)
    ========================================================================== */
    
-/* --- MODERNA SIDEBAR VARIABLER --- */
 :root {
     --sidebar-width: 260px;
-    --sidebar-collapsed-width: 90px;
+    --sidebar-collapsed-width: 70px;
     --transition-speed: 0.3s;
 }
 
-/* --- SIDEBAR LAYOUT --- */
 .sidebar {
     width: var(--sidebar-width);
     background: var(--fog-brown);
     color: white;
     display: flex;
     flex-direction: column;
-    padding: 0; /* Ta bort padding för att kontrollera inner-elementen */
+    padding: 0;
     transition: width var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     z-index: 1000;
     flex-shrink: 0;
 }
 
-/* --- COLLAPSED STATE --- */
 .sidebar.collapsed {
     width: var(--sidebar-collapsed-width);
 }
 
-/* Header & Logga */
+/* --- HEADER & LOGGA --- */
 .sidebar-header-wrapper {
     padding: 15px 20px;
     display: flex;
@@ -88,90 +85,120 @@ body {
     min-height: 70px;
 }
 
+/* Centrera toggle-knappen när sidebaren är stängd */
+.sidebar.collapsed .sidebar-header-wrapper {
+    justify-content: center;
+    padding: 15px 0;
+}
+
 .sidebar-logo {
     max-width: 110px;
     transition: opacity var(--transition-speed);
 }
 
 .sidebar.collapsed .sidebar-logo {
-    opacity: 0;
-    pointer-events: none;
+    display: none; /* Helt dold för att inte ta upp plats */
 }
 
-/* Toggle Knapp */
+/* --- TOGGLE KNAPP --- */
 .sidebar-toggle-btn {
     background: rgba(255,255,255,0.1);
     border: none;
     color: white;
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform var(--transition-speed);
+    transition: transform var(--transition-speed), background 0.2s;
+    flex-shrink: 0;
+}
+
+.sidebar-toggle-btn:hover {
+    background: rgba(255,255,255,0.2);
 }
 
 .sidebar.collapsed .sidebar-toggle-btn {
     transform: rotate(180deg);
-    position: absolute;
-    right: 25px;
+    position: static; /* Tar bort absolut positionering för perfekt centrering */
+    margin: 0;
 }
 
-/* Navigation */
+/* --- NAVIGATION --- */
 .sidebar-nav {
     padding: 0 15px;
     flex: 1;
-
     overflow-y: auto;
-    scrollbar-width: none; /* Göm scrollbar Firefox */
+    scrollbar-width: none;
 }
-.sidebar-nav::-webkit-scrollbar { display: none; } /* Göm scrollbar Chrome/Safari */
+.sidebar-nav::-webkit-scrollbar { display: none; }
+
+/* Ta bort sidomarginaler i navigeringsytan vid stängt läge */
+.sidebar.collapsed .sidebar-nav {
+    padding: 0 5px;
+}
 
 .nav-section-label {
     font-size: 0.6rem;
     text-transform: uppercase;
     letter-spacing: 1px;
     color: rgba(255,255,255,0.4);
-    margin: 10px 0 5px 15px;
+    margin: 20px 0 10px 15px;
     transition: opacity var(--transition-speed);
 }
 
 .sidebar.collapsed .nav-section-label {
     opacity: 0;
+    margin: 10px 0;
 }
 
+/* Nav-item med låst höjd för att förhindra "hopp" */
 .nav-item {
     display: flex;
     align-items: center;
-    padding: 8px 15px;
-    margin-bottom: 2px;
+    height: 44px; /* Fast höjd ger vertikal stabilitet */
+    padding: 0 15px;
+    margin-bottom: 4px;
     border-radius: 10px;
     color: rgba(255,255,255,0.7);
     cursor: pointer;
     white-space: nowrap;
     transition: all 0.2s;
     font-size: 0.85rem;
+    text-decoration: none;
+}
+
+/* Centrera ikonen helt när sidebaren är stängd */
+.sidebar.collapsed .nav-item {
+    padding: 0;
+    justify-content: center;
 }
 
 .nav-item i {
     font-size: 1.2rem;
-    min-width: 30px;
-    margin-right: 15px;
+    min-width: 24px;
+    margin-right: 15px; /* Denna nollställs nedan för stängt läge */
     text-align: center;
+    transition: margin 0.2s;
+}
+
+.sidebar.collapsed .nav-item i {
+    margin-right: 0; /* Tar bort marginalen för att centrera ikonen */
 }
 
 .nav-item span {
+    opacity: 1;
     transition: opacity var(--transition-speed);
 }
 
 .sidebar.collapsed .nav-item span {
-    opacity: 0;
+    display: none; /* Döljer texten helt så den inte "spökar" i bakgrunden */
 }
 
 .nav-item:hover {
-    background: rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.08);
     color: white;
 }
 
@@ -180,10 +207,16 @@ body {
     color: white;
 }
 
-/* Footer & Profil */
+/* --- FOOTER & PROFIL --- */
 .sidebar-footer {
-    padding: 20px;
+    padding: 15px 20px;
     background: rgba(0,0,0,0.1);
+}
+
+.sidebar.collapsed .sidebar-footer {
+    padding: 15px 0;
+    display: flex;
+    justify-content: center;
 }
 
 .user-profile-compact {
@@ -193,35 +226,49 @@ body {
     overflow: hidden;
 }
 
+.sidebar.collapsed .user-profile-compact {
+    justify-content: center;
+    gap: 0;
+}
+
 .user-avatar i {
-    font-size: 2rem;
+    font-size: 1.8rem;
     opacity: 0.8;
     min-width: 40px;
+    display: flex;
+    justify-content: center;
+}
+
+.sidebar.collapsed .user-avatar i {
+    min-width: 0; /* Tar bort fast bredd för perfekt centrering */
 }
 
 .user-info-text {
     transition: opacity var(--transition-speed);
+    display: flex;
+    flex-direction: column;
 }
 
 .sidebar.collapsed .user-info-text {
-    opacity: 0;
+    display: none;
 }
 
 /* ==========================================================================
    3. SKAPA UPPDRAG & FORMULÄR (STEG 1)
    ========================================================================== */
+   
 /* Ge rubrikområdet luft från kanterna */
 .panel-header {
-    padding: 25px 40px 0 40px; /* Topp, Höger, Botten, Vänster */
+    padding: 15px 40px 0 40px; /* Minskat topp-padding från 25px till 15px */
 }
 
    /* Behållare som lyfter upp formuläret och centrerar det horisontellt */
 .create-view-container.single-column {
     display: flex;
     justify-content: left;
-    align-items: flex-start; /* Startar från toppen */
-    padding: 15px 20px;      /* Minimal luft i toppen */
-    height: auto;            /* Låter behållaren expandera */
+    align-items: flex-start; 
+    padding: 0 20px;      /* Ändrat från 15px till 0 i toppen för att matcha andra vyer */
+    height: auto;            
     min-height: 100%;
 }
 
@@ -691,31 +738,6 @@ body {
 .fm-status-item.active.danger { border-color: var(--fog-red); border-width: 2px; }
 .fm-status-item.active.danger i { color: var(--fog-red); }
 
-/* 5. Chatt (Historik & Journal) */
-.fm-chat-wrapper { display: flex; flex-direction: column; height: 100%; background: #f3f2f1; border-radius: 12px; overflow: hidden; border: 1px solid #e1dfdd; }
-.fm-chat-feed { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-
-.fm-msg-row { max-width: 85%; align-self: flex-start; display: flex; flex-direction: column; }
-.fm-msg-meta { font-size: 0.65rem; color: #605e5c; margin-bottom: 2px; padding-left: 5px; display: flex; gap: 8px; font-weight: 600; }
-
-.fm-msg-bubble {
-    background: #fff; padding: 8px 12px; border-radius: 6px; border-top-left-radius: 2px;
-    font-size: 0.85rem; line-height: 1.4; color: #323130; box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    display: flex; gap: 10px; align-items: flex-start; border: 1px solid #e1dfdd;
-}
-.fm-msg-bubble i { margin-top: 2px; font-size: 0.8rem; }
-
-/* Chatt-varianter */
-.fm-msg-row.system { align-self: center; max-width: 90%; }
-.fm-msg-row.system .fm-msg-bubble { background: #f3f2f1; border: none; font-style: italic; color: #605e5c; padding: 4px 12px; border-radius: 20px; }
-.fm-msg-row.brist .fm-msg-bubble { border-left: 4px solid var(--fog-red); background: #fff8f8; }
-
-/* Input Bar */
-.fm-chat-input-area { padding: 10px; background: #fff; border-top: 1px solid #edebe9; display: flex; gap: 8px; align-items: center; }
-.fm-mini-select { padding: 6px; border-radius: 4px; border: 1px solid #ddd; font-size: 0.75rem; background: #f5f5f5; font-weight: 700; }
-#chat-text-input { flex: 1; border: 1px solid #ddd; background: #fdfdfd; padding: 8px 15px; border-radius: 20px; font-size: 0.9rem; outline: none; }
-.fm-btn-send { width: 34px; height: 34px; border-radius: 50%; background: var(--fog-brown); color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-.fm-btn-send:hover { background: var(--fog-red); transform: scale(1.1); }
 
 /* ==========================================================================
    FLEET MODAL - REFACTORED PREMIUM (Teams Style)
@@ -886,177 +908,6 @@ body {
 .fm-status-item-mini.active.warn { border-color: #f1c40f; color: #856404; background: #fffdf4; }
 .fm-status-item-mini.active.danger { border-color: var(--fog-red); color: var(--fog-red); background: #fff5f5; }
 
-/* 4. CHATT / JOURNAL (Historik)
-   -------------------------------------------------------------------------- */
-.fm-chat-wrapper {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    background: #f3f2f1;
-    border-radius: 12px;
-    border: 1px solid #e1dfdd;
-}
-
-.fm-chat-feed {
-    flex: 1;
-    overflow-y: auto;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.fm-msg-row { max-width: 90%; align-self: flex-start; }
-
-.fm-msg-meta {
-    font-size: 0.65rem;
-    color: #605e5c;
-    margin-bottom: 2px;
-    padding-left: 5px;
-    font-weight: 600;
-}
-
-.fm-bubble-flex-container {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    width: 100%;
-}
-
-.fm-msg-bubble {
-    flex: 1;
-    max-width: fit-content;
-    background: #fff;
-    padding: 8px 12px;
-    border-radius: 6px;
-    border-top-left-radius: 2px;
-    font-size: 0.85rem;
-    line-height: 1.4;
-    color: #323130;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 15px;
-    border: 1px solid #e1dfdd;
-}
-
-.bubble-content { display: flex; gap: 8px; align-items: flex-start; }
-.bubble-content i { margin-top: 3px; font-size: 0.8rem; }
-
-/* Meddelande-varianter */
-.fm-msg-row.resolved .fm-msg-bubble { background: #f8f9fa; opacity: 0.7; border-left: 4px solid #107c10; }
-.fm-msg-row.brist .fm-msg-bubble { border-left: 4px solid var(--fog-red); background: #fff8f8; }
-.fm-msg-row.system-action .fm-msg-bubble { background: #eef6ff; color: #005a9e; border: 1px solid #deecf9; }
-
-/* 5. INPUT & KONTROLLER
-   -------------------------------------------------------------------------- */
-.fm-chat-input-area {
-    padding: 10px;
-    background: #fff;
-    border-top: 1px solid #edebe9;
-    display: flex;
-    gap: 8px;
-    align-items: center;
-}
-
-/* Modern Kategoriväljare (Ikon) */
-.fm-cat-selector-modern {
-    position: relative;
-    width: 40px; height: 40px;
-    background: #f0f0f0;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: 0.2s;
-    border: 1px solid #ddd;
-    flex-shrink: 0;
-}
-
-.fm-cat-selector-modern i { font-size: 1.1rem; pointer-events: none; }
-.fm-cat-selector-modern i.status-info { color: #005a9e; }
-.fm-cat-selector-modern i.status-brist { color: var(--fog-red); }
-
-.fm-cat-selector-modern select {
-    position: absolute;
-    width: 100%; height: 100%;
-    opacity: 0;
-    cursor: pointer;
-}
-
-#chat-text-input {
-    flex: 1;
-    border: 1px solid #ddd;
-    background: #fdfdfd;
-    padding: 8px 15px;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    outline: none;
-}
-
-/* Knappar */
-.fm-btn-send {
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    background: var(--fog-brown);
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: 0.2s;
-    flex-shrink: 0;
-}
-
-.fm-btn-send i { transform: rotate(45deg); margin-right: 3px; margin-bottom: 2px; transition: 0.2s; }
-.fm-btn-send:hover { background: var(--fog-red); transform: scale(1.1); }
-.fm-btn-send:active i { transform: rotate(45deg) scale(0.9) translateX(5px); }
-
-.fm-btn-save-mini {
-    width: 100%;
-    margin-top: 10px;
-    padding: 12px;
-    background: var(--fog-brown);
-    color: white !important;
-    border: none;
-    border-radius: 8px;
-    font-weight: 700;
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.fm-btn-save-mini:hover { background: var(--fog-red); transform: translateY(-1px); }
-
-.btn-resolve-note {
-    background: #f3f2f1;
-    border: 1px solid #ddd;
-    padding: 4px 10px;
-    border-radius: 4px;
-    font-size: 0.7rem;
-    font-weight: 700;
-    cursor: pointer;
-}
-
-.btn-resolve-note:hover { background: #107c10; color: white; border-color: #107c10; }
-
-.fm-delete-note-inline {
-    background: none;
-    border: none;
-    color: #ccc;
-    cursor: pointer;
-    font-size: 0.85rem;
-    padding: 5px;
-    opacity: 0;
-    transition: 0.2s;
-}
-
-.fm-msg-row:hover .fm-delete-note-inline { opacity: 1; }
-.fm-delete-note-inline:hover { color: var(--fog-red); transform: scale(1.1); }
 
 /* 6. RESPONSIVITET (Consolidated)
    -------------------------------------------------------------------------- */
@@ -1075,11 +926,10 @@ body {
 
 /* Underhålls-översikt (Ersättare för statustavlan) */
 .maintenance-overview {
-    background: #fff;
-    padding: 15px 20px;
-    border-radius: 16px;
-    border: 1px solid #eee;
-    box-shadow: var(--shadow-sm);
+    background: transparent; /* Tar bort den stora vita bakgrunden */
+    padding: 0;             /* Tar bort inre marginaler så korten linjerar med titeln */
+    border: none;           /* Tar bort ramen runt hela sektionen */
+    box-shadow: none;       /* Tar bort skuggan runt hela sektionen */
 }
 
 .mo-title {
@@ -1100,18 +950,24 @@ body {
 }
 
 .mo-card {
-    background: #fbfbfb;
-    border: 1px solid #eee;
-    border-radius: 10px;
-    padding: 10px 15px;
+    background: #fff;       /* Gör själva kortet vitt istället för grått */
+    border: 1px solid var(--border); /* Använder samma ram-färg som fordonskorten */
+    border-radius: 14px;    /* Samma rundning som de andra korten */
+    padding: 15px 20px;
+    margin-bottom: 12px;    /* Avstånd mellan de fria korten */
     display: flex;
     align-items: center;
     justify-content: space-between;
     cursor: pointer;
-    transition: 0.2s;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03); /* Ger korten ett litet lyft */
 }
 
-.mo-card:hover { border-color: var(--fog-brown); background: #fff; transform: translateY(-2px); }
+.mo-card:hover { 
+    border-color: var(--fog-brown); 
+    transform: translateY(-2px); 
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
 
 .mo-unit { display: flex; flex-direction: column; gap: 2px; }
 .mo-unit strong { font-size: 0.9rem; color: var(--fog-brown); }
@@ -1526,283 +1382,102 @@ body {
     opacity: 0.6;
 }
 
-/* ==========================================================================
-   LAGER-TV & STATISTIKVY
-   ========================================================================== */
-
-   /* ==========================================
-   STATISTIK DASHBOARD - KOMPAKT & MODERN
+/* ==========================================
+   STATISTIK: BALANSERAD BENTO (14" OPTIMERAD)
    ========================================== */
+
 .stats-dashboard-compact {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    padding-top: 5px;
+    gap: 20px;
+    padding: 10px;
 }
 
+/* KPI-RADEN: Behålls tydlig och snabbläst */
 .stats-kpi-row {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
 }
 
 .kpi-box {
-    background: white;
-    padding: 12px 15px;
-    border-radius: 12px;
+    background: #ffffff;
+    padding: 15px 20px;
+    border-radius: 18px;
     display: flex;
     align-items: center;
-    gap: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-    border: 1px solid #f0f0f0;
+    gap: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    border: 1px solid rgba(0,0,0,0.02);
 }
 
-.kpi-icon {
-    width: 35px;
-    height: 35px;
-    background: #fdf6f6;
-    color: #e30613;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 10px;
-    font-size: 1.1rem;
+.kpi-val {
+    font-size: 1.25rem;
+    font-weight: 900;
+    color: #1a1a1a;
 }
 
-.kpi-box.warning .kpi-icon { background: #fffdf0; color: #f1c40f; }
-
-.kpi-data { display: flex; flex-direction: column; }
-.kpi-val { font-size: 1.1rem; font-weight: 850; color: #5c4033; line-height: 1.2; }
-.kpi-lab { font-size: 0.7rem; color: #999; font-weight: 700; text-transform: uppercase; }
-
+/* GRAF-KORTEN: "Mitt emellan"-storlek */
 .stats-main-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
+    grid-template-columns: repeat(2, 1fr); /* 2 kolumner är bäst för 14" */
+    gap: 18px;
 }
 
 .chart-container-card {
-    background: white;
-    padding: 15px;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-    border: 1px solid #f0f0f0;
-    min-height: 250px;
-}
-
-.chart-container-card h5 {
-    font-size: 0.75rem;
-    font-weight: 800;
-    color: #bbb;
-    margin-bottom: 15px;
-    text-align: center;
-    letter-spacing: 0.5px;
-}
-
-/* ==========================================================================
-   KOMPLETT CSS FÖR LAGER-TV v3.0 & STATS-DASHBOARD
-   ========================================================================== */
-
-/* 1. GEMENSAMMA MODERNA VARIABLER */
-:root {
-    --tv-glass-white: rgba(255, 255, 255, 0.03);
-    --tv-glass-border: rgba(255, 255, 255, 0.1);
-    --tv-glow-red: rgba(227, 6, 19, 0.4);
-    --tv-glow-green: rgba(46, 204, 113, 0.4);
-}
-
-/* 2. STATISTIK DASHBOARD - KOMPAKT MANAGEMENT-VY */
-.stats-dashboard-compact {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    padding: 10px 0;
-}
-
-.stats-kpi-row {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-}
-
-.kpi-box {
-    background: white;
-    padding: 15px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-    border: 1px solid #f0f0f0;
-    transition: transform 0.2s ease;
-}
-
-.kpi-box:hover { transform: translateY(-2px); }
-
-.kpi-icon {
-    width: 40px;
-    height: 40px;
-    background: #fdf6f6;
-    color: var(--fog-red);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 10px;
-    font-size: 1.2rem;
-}
-
-.kpi-box.warning .kpi-icon { background: #fffdf0; color: #f1c40f; }
-
-.kpi-data { display: flex; flex-direction: column; }
-.kpi-val { font-size: 1.2rem; font-weight: 850; color: var(--fog-brown); line-height: 1.1; }
-.kpi-lab { font-size: 0.65rem; color: #999; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-
-.stats-main-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-}
-
-.chart-container-card {
-    background: white;
+    background: #ffffff;
     padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-    border: 1px solid #f0f0f0;
+    border-radius: 22px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.03);
+    border: 1px solid rgba(0,0,0,0.02);
+    
+    /* Denna höjd gör att 4 grafer syns snyggt på en 14" skärm */
+    height: 250px; 
+    min-height: 250px;
+    
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.3s ease;
+}
+
+.chart-container-card:hover {
+    box-shadow: 0 12px 35px rgba(0,0,0,0.06);
 }
 
 .chart-container-card h5 {
-    font-size: 0.75rem;
-    font-weight: 850;
-    color: #bbb;
-    margin-bottom: 20px;
-    text-align: center;
+    margin: 0 0 15px 0;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #666;
     text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
-/* 3. LAGER-TV v3.0 - TOTAL SCREEN STYLING */
-.tv-screen {
-    position: fixed;
-    top: 0;
-    left: 90px; /* Anpassat för den kollapsade sidebaren */
-    right: 0;
-    bottom: 0;
-    z-index: 999;
-    display: flex;
-    flex-direction: column;
-    padding: 20px 30px;
-    overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+/* Säkerställ att grafen fyller ut kortet ordentligt */
+.chart-container-card canvas {
+    flex: 1;
+    width: 100% !important;
+    max-height: 200px !important;
 }
 
-.tv-screen.dark-theme { background: #0a0a0a; color: #fff; }
-.tv-screen.light-theme { background: #fdfcfb; color: #333; }
+/* --- RESPONSIVITET --- */
 
-/* 4. TV HEADER - GLASSMORPHISM & WIDGETS */
-.tv-header-glass {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 30px;
-    border-radius: 20px;
-    margin-bottom: 25px;
-    border: 1px solid var(--tv-glass-border);
+@media (max-width: 1024px) {
+    .stats-main-grid {
+        grid-template-columns: 1fr; /* Växla till 1 kolumn på mindre surfplattor */
+    }
 }
 
-.dark-theme .tv-header-glass { background: var(--tv-glass-white); backdrop-filter: blur(15px); }
-.light-theme .tv-header-glass { background: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-color: #eee; }
-
-/* Väder & Titel */
-.tv-title-group { display: flex; align-items: center; gap: 30px; }
-.tv-weather-widget { display: flex; align-items: center; gap: 12px; }
-.weather-icon { font-size: 1.8rem; color: #f1c40f; filter: drop-shadow(0 0 10px rgba(241, 196, 15, 0.3)); }
-.weather-text .temp { font-size: 1.1rem; font-weight: 900; display: block; }
-.weather-text .desc { font-size: 0.65rem; font-weight: 700; opacity: 0.6; text-transform: uppercase; }
-
-.tv-title-group h1 { font-size: 1.8rem; font-weight: 900; margin: 0; letter-spacing: -1.5px; }
-
-/* Dagsmätare i headern */
-.tv-total-progress-box { flex: 1; max-width: 350px; padding: 0 40px; }
-.tv-total-progress-box .label { font-size: 0.65rem; font-weight: 900; margin-bottom: 6px; opacity: 0.5; display: block; }
-.total-bar-container { height: 10px; background: rgba(128,128,128,0.15); border-radius: 10px; position: relative; overflow: hidden; }
-.total-bar-fill { height: 100%; background: linear-gradient(90deg, var(--fog-red), #ff4d4d); transition: width 1.5s ease; box-shadow: 0 0 10px var(--tv-glow-red); }
-.total-percent { position: absolute; right: 0; top: -18px; font-size: 0.75rem; font-weight: 900; color: var(--fog-red); }
-
-/* Klocka & Kontroller */
-.tv-controls { display: flex; align-items: center; gap: 20px; }
-.tv-clock-modern { text-align: right; line-height: 1.1; }
-.tv-clock-modern .time { display: block; font-size: 1.2rem; font-weight: 900; color: var(--fog-red); }
-.tv-clock-modern .date { font-size: 0.75rem; font-weight: 700; opacity: 0.5; }
-
-.theme-toggle-modern, .tv-exit-modern {
-    width: 40px; height: 40px; border-radius: 12px; border: none; cursor: pointer;
-    background: rgba(128,128,128,0.1); color: inherit; transition: 0.2s;
+@media (max-width: 600px) {
+    .stats-kpi-row {
+        grid-template-columns: 1fr 1fr; /* 2x2 layout för KPI:er på mobil */
+    }
+    
+    .chart-container-card {
+        height: 220px;
+        padding: 15px;
+    }
 }
-.theme-toggle-modern:hover { background: rgba(128,128,128,0.2); }
-.tv-exit-modern { background: var(--fog-red); color: white; }
-
-/* 5. TV LAYOUT - MISSIONS & SIDEBAR */
-.tv-layout-grid { display: grid; grid-template-columns: 1fr 320px; gap: 25px; flex: 1; overflow: hidden; }
-
-.tv-section-label { font-size: 0.75rem; font-weight: 900; color: #777; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1.5px; }
-
-/* Mission Cards */
-.tv-mission-list { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; padding-right: 5px; }
-.tv-card-glass {
-    padding: 18px 25px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center;
-    border-left: 6px solid #333; transition: 0.3s;
-}
-.dark-theme .tv-card-glass { background: #151515; border-bottom: 1px solid #222; }
-.light-theme .tv-card-glass { background: #fff; border: 1px solid #eee; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
-
-.tv-card-glass.complete { border-left-color: #2ecc71; opacity: 0.7; }
-.tv-card-glass:not(.complete) { border-left-color: var(--fog-red); }
-
-.tv-event-title { font-size: 1.25rem; font-weight: 850; display: block; margin-bottom: 4px; }
-.tv-event-meta { font-size: 0.8rem; opacity: 0.5; font-weight: 600; }
-
-.tv-card-progress { width: 180px; display: flex; flex-direction: column; gap: 6px; }
-.prog-label { font-size: 0.8rem; font-weight: 900; text-align: right; }
-.prog-bar-bg { height: 8px; background: rgba(128,128,128,0.1); border-radius: 10px; overflow: hidden; }
-.prog-bar-fill { height: 100%; background: var(--fog-red); transition: width 1s ease; }
-.complete .prog-bar-fill { background: #2ecc71; box-shadow: 0 0 10px var(--tv-glow-green); }
-
-/* 6. SIDEBAR - FLEET STATUS & INFO */
-.tv-side-col { display: flex; flex-direction: column; gap: 25px; }
-.side-section { background: rgba(128,128,128,0.05); padding: 20px; border-radius: 20px; border: 1px solid rgba(128,128,128,0.1); }
-.light-theme .side-section { background: #fff; border: 1px solid #eee; }
-
-/* Fleet Tags - FIXADE FÄRGER */
-.tv-fleet-list { display: flex; flex-direction: column; gap: 8px; }
-.tv-fleet-tag-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: rgba(0,0,0,0.2); border-radius: 10px; }
-.light-theme .tv-fleet-tag-row { background: #f9f9f9; }
-
-.unit-name { font-weight: 800; font-size: 0.85rem; }
-.status-badge {
-    padding: 3px 10px; border-radius: 6px; font-size: 0.65rem; font-weight: 900;
-    text-transform: uppercase; color: #fff !important; text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-}
-
-.tv-fleet-tag-row.danger .status-badge { background: #e30613 !important; }
-.tv-fleet-tag-row.warn .status-badge { background: #f1c40f !important; color: #5c4033 !important; text-shadow: none; }
-
-/* Info Card */
-.tv-info-card {
-    background: rgba(241, 196, 15, 0.08); border-left: 4px solid #f1c40f;
-    padding: 15px; border-radius: 12px; display: flex; gap: 12px; align-items: flex-start;
-}
-.tv-info-card i { color: #f1c40f; font-size: 1.1rem; margin-top: 2px; }
-.tv-info-card p { font-size: 0.8rem; line-height: 1.5; margin: 0; font-weight: 600; opacity: 0.8; }
-
-/* 7. ANIMATIONER */
-@keyframes shimmer {
-    0% { background-position: -468px 0; }
-    100% { background-position: 468px 0; }
-}
-
-/* Scrollbar-fix för TV */
-.tv-mission-list::-webkit-scrollbar { width: 4px; }
-.tv-mission-list::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.2); border-radius: 10px; }
 
 /* ==========================================================================
    DASHBOARD REFINED - GRID ALIGNMENT
@@ -2041,14 +1716,16 @@ TEST DASHBOARD KORT
 }
 
 .bento-modal {
-    background: #ffffff;
-    border-radius: 24px;
-    width: 100%;
-    max-height: 85vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+    display: flex !important;
+    flex-direction: column !important;
+    width: 850px !important;
+    /* Här låser vi höjden så den inte hoppar */
+    height: 700px !important; 
+    max-height: 90vh !important;
+    background: #fff !important;
+    border-radius: 20px !important;
+    overflow: hidden !important;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2) !important;
 }
 
 .fm-viewport {
@@ -2098,71 +1775,6 @@ TEST DASHBOARD KORT
     letter-spacing: 0.5px;
 }
 
-/* 3. TEAMS CHAT SYSTEM (Journal & Senaste Loggar) */
-#chat-feed-v3 {
-    flex: 1;
-    overflow-y: auto;
-    padding: 20px;
-    background: #f5f5f5; /* Teams ljusgrå bakgrund */
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.teams-msg-row {
-    display: flex;
-    gap: 12px;
-    align-self: flex-start;
-    max-width: 85%;
-}
-
-.teams-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: #d1d1d1;
-    color: #444;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.75rem;
-    font-weight: 700;
-    flex-shrink: 0;
-    border: 1px solid #e1e1e1;
-}
-
-.teams-msg-header {
-    font-size: 0.75rem;
-    margin-bottom: 4px;
-    color: #616161;
-}
-.teams-msg-header strong { color: #242424; margin-right: 8px; }
-
-.teams-bubble {
-    background: #ffffff;
-    padding: 10px 14px;
-    border-radius: 0 8px 8px 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    border: 1px solid #e1dfdd;
-    position: relative;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-}
-
-.teams-bubble p {
-    margin: 0;
-    font-size: 0.85rem;
-    line-height: 1.4;
-    color: #242424;
-}
-
-/* Brist-markering i Teams-stil */
-.teams-msg-row.brist .teams-bubble {
-    border-left: 4px solid var(--fog-red);
-    background: #fff8f8;
-}
-
 /* 4. HEADERS & NAVIGATION */
 .status-pill-header {
     padding: 6px 14px;
@@ -2198,7 +1810,6 @@ TEST DASHBOARD KORT
         grid-template-columns: 1fr !important;
         padding: 15px !important;
     }
-    .teams-msg-row { max-width: 95% !important; }
 }
 
 /* --- REFORMERAD ANVÄNDNINGS-STATUS --- */
@@ -2269,4 +1880,61 @@ TEST DASHBOARD KORT
     border-color: #eee;
     transform: translateX(3px);
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* style.css - Rena rader */
+.form-check-item {
+    display: flex !important;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px !important;
+    border-bottom: 1px solid #f5f5f5 !important;
+    background: #fff;
+}
+
+.item-text-content {
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.item-check-icon {
+    font-size: 1.3rem;
+    color: #ddd;
+}
+
+/* Generell Notering Sektion */
+.general-note-section {
+    margin-top: 25px;
+    padding: 15px;
+    background: #fdfaf8;
+    border-radius: 14px;
+    border: 1px solid #eee;
+}
+
+.note-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--fog-brown);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+}
+
+.general-note-textarea {
+    width: 100%;
+    min-height: 80px;
+    border: 1px solid #e0d8d0;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 0.9rem;
+    background: #fff;
+    resize: none;
+    outline: none;
+    color: #555;
+    transition: border-color 0.2s;
+}
+
+.general-note-textarea:focus {
+    border-color: var(--fog-brown);
 }
