@@ -1193,3 +1193,42 @@ FLEET & STATISTIK TEST CSS
     }
 }
 
+/* ==========================================================================
+   FIX FÖR "LUFT" PÅ SIDORNA (OVERVIEW TAB)
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    /* 1. Nollställ padding på flik-nivå (fm-pane) */
+    .fm-pane {
+        padding: 0 !important; /* Tar bort de 20px som trycker in allt från sidorna */
+    }
+
+    /* 2. Minimera padding i själva Bento-gridden */
+    .bento-grid-modal {
+        padding: 10px 8px !important; /* Endast ett litet mellanrum till skärmkanten */
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* 3. Justera headern och navigeringen så de matchar den nya bredden */
+    .modal-header-vision {
+        padding: 15px 12px !important; /* Matchar sidopaddingen */
+    }
+
+    .fm-nav-tabs {
+        padding: 0 12px !important; /* Matchar sidopaddingen */
+    }
+
+    /* 4. Gör Bento-boxen (den grå-kantade boxen) något bredare */
+    .bento-box {
+        margin: 0 !important;
+        padding: 15px 12px !important; /* Mer plats för texten inuti boxen */
+        border-radius: 12px !important; /* Något tajtare hörn för mobil */
+    }
+
+    /* 5. Se till att åtgärdskorten tar upp hela tillgängliga bredd inuti boxen */
+    .task-bubble-item {
+        width: 100% !important;
+        margin: 5px 0 !important;
+    }
+}
