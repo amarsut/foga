@@ -274,13 +274,13 @@ function renderMissionCard(a) {
 function renderAvailability(area) {
     area.innerHTML = `
         <div class="section-title" style="margin-bottom:20px; font-weight:bold; color:var(--fog-brown);">Företagsbilar</div>
-        <div class="fleet-grid">${cars.map(c => `<div class="unit-card"><i class="fas fa-truck-pickup"></i><h4>${c.id}</h4><span class="status-tag ${c.status === 'Ledig' ? 'bg-ledig' : 'bg-upptagen'}">${c.status}</span></div>`).join('')}</div>
+        <div class="fleet-grid">${${cars.filter(c => c.isVisible !== false).map(c => `<div class="unit-card"><i class="fas fa-truck-pickup"></i><h4>${c.id}</h4><span class="status-tag ${c.status === 'Ledig' ? 'bg-ledig' : 'bg-upptagen'}">${c.status}</span></div>`).join('')}</div>
         
         <div class="section-title" style="margin:40px 0 20px; font-weight:bold; color:var(--fog-brown);">Släpvagnar</div>
-        <div class="fleet-grid">${trailers.map(c => `<div class="unit-card"><i class="fas fa-trailer"></i><h4>${c.id}</h4><span class="status-tag ${c.status === 'Ledig' ? 'bg-ledig' : 'bg-upptagen'}">${c.status}</span></div>`).join('')}</div>
+        <div class="fleet-grid">${${trailers.filter(t => t.isVisible !== false).map(t => `<div class="unit-card"><i class="fas fa-trailer"></i><h4>${c.id}</h4><span class="status-tag ${c.status === 'Ledig' ? 'bg-ledig' : 'bg-upptagen'}">${c.status}</span></div>`).join('')}</div>
         
         <div class="section-title" style="margin:40px 0 20px; font-weight:bold; color:var(--fog-brown);">Kaffevagnar</div>
-        <div class="fleet-grid">${carts.map(c => `<div class="unit-card"><i class="fas fa-coffee"></i><h4>${c.id}</h4><span class="status-tag ${c.status === 'Ledig' ? 'bg-ledig' : 'bg-upptagen'}">${c.status}</span></div>`).join('')}</div>
+        <div class="fleet-grid">${${carts.filter(c => c.isVisible !== false).map(c => `<div class="unit-card"><i class="fas fa-coffee"></i><h4>${c.id}</h4><span class="status-tag ${c.status === 'Ledig' ? 'bg-ledig' : 'bg-upptagen'}">${c.status}</span></div>`).join('')}</div>
     `;
 }
 
@@ -482,14 +482,14 @@ function renderCreate(area) {
                                 <label>Transportbil</label>
                                 <select id="sel-car" class="modern-select">
                                     <option value="">Välj Transportbil</option>
-                                    ${cars.map(c => `<option value="${c.id}" ${(saved.carId || editData?.car) === c.id ? 'selected' : ''}>${c.id}</option>`).join('')}
+                                    ${${cars.filter(c => c.isVisible !== false).map(c => `<option value="${c.id}" ${(saved.carId || editData?.car) === c.id ? 'selected' : ''}>${c.id}</option>`).join('')}
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label>Släpvagn</label>
                                 <select id="sel-trailer" class="modern-select">
                                     <option value="">Välj Släp</option>
-                                    ${trailers.map(t => `<option value="${t.id}" ${(saved.trailerId || editData?.trailer) === t.id ? 'selected' : ''}>${t.id}</option>`).join('')}
+                                    ${${trailers.filter(t => t.isVisible !== false).map(t => `<option value="${t.id}" ${(saved.trailerId || editData?.trailer) === t.id ? 'selected' : ''}>${t.id}</option>`).join('')}
                                 </select>
                             </div>
                         </div>
@@ -525,7 +525,7 @@ function renderCreate(area) {
                         <div class="form-group">
                             <label>Välj Fogarollibilar</label>
                             <div class="cart-chip-container">
-                                ${carts.map(c => {
+                                ${${carts.filter(c => c.isVisible !== false).map(c => {
             // Kontrollera om vagnen finns i sparade listan eller i databasens lista
             const isChecked = (saved.selectedCarts || editData?.carts || []).includes(c.id);
             return `
