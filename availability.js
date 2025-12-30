@@ -16,12 +16,8 @@ export async function renderAvailabilityView(area, cars, trailers, carts, db, as
     const visibleTrailers = trailers.filter(t => t.isVisible !== false);
     const visibleCarts = carts.filter(c => c.isVisible !== false);
     const allVisibleUnits = [...visibleCars, ...visibleTrailers, ...visibleCarts];
-
-    const now = new Date();
-    const oneYearAgo = new Date(); 
-    oneYearAgo.setFullYear(now.getFullYear() - 1);
-    
     const allUnits = [...cars, ...trailers, ...carts];
+
     const now = new Date();
     const oneYearAgo = new Date(); 
     oneYearAgo.setFullYear(now.getFullYear() - 1);
