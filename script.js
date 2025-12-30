@@ -53,58 +53,6 @@ window.saveAndClose = () => {
     window.isPackingPhase = false; // Återställ till steg 1 för nästa gång
 };
 
-// Mallar för packlistor
-const PACKING_TEMPLATES = {
-    car: {
-        "Mall 1 (Low Capacity)": ["Parasoll", "Bord & stolar", "Kabel", "5kg bönor", "Muggar"],
-        "Mall 2 (High Capacity)": ["Stort Tält", "4st Bord", "Långelkabel", "15kg bönor", "Muggar", "Vattentank"]
-    },
-    cart: {
-        "15 Tkr": [
-            { n: "Koppar 16 Oz (rör)", q: 4 }, { n: "Koppar 12 Oz (rör)", q: 5 }, { n: "Koppar 6 Oz (rör)", q: 2 }, { n: "Koppar 4 Oz (rör)", q: 1 }, { n: "Lock 12/16 Oz (rör)", q: 2 },
-            { n: "Diskmedel (flaska)", q: 0.25 }, { n: "Rengöringsspray (flaska)", q: 0.25 },
-            { n: "Hela bönor (kg)", q: 8 }, { n: "Malda bönor (kg)", q: 3 }, { n: "Kaffefilter (burk)", q: 0.5 }, { n: "Socker (låda)", q: 0.5 }, { n: "Rörpinnar (låda)", q: 0.5 },
-            { n: "Earl Gray (st)", q: 7 }, { n: "Gottland (st)", q: 7 }, { n: "Öland (st)", q: 7 }, { n: "Sugrör (låda)", q: 0.5 },
-            { n: "Servetter (påse)", q: 0.5 }, { n: "Torky (rulle)", q: 0.5 },
-            { n: "Karamellsirap (flaska)", q: 1.5 }, { n: "Vaniljsirap (flaska)", q: 1.5 }, { n: "Sopsäckar (rulle)", q: 0.5 },
-            { n: "Burk, malt (st)", q: 4 }, { n: "Burk, choklad (st)", q: 4 }, { n: "Burk, hela bönor (st)", q: 4 },
-            { n: "Förkläde (st)", q: 2 }, { n: "Svarta trasor (st)", q: 4 }, { n: "Grå trasor (st)", q: 2 },
-            { n: "Cantucci (burk)", q: 0.8 }, { n: "Chaipulver (burk)", q: 1.5 }, { n: "Chokladpåsar (st)", q: 6 },
-            { n: "Mjölk (liter)", q: 40 }, { n: "Havremjölk (liter)", q: 8 }, { n: "Grädde (patron)", q: 4 },
-            { n: "Puly caff (burk)", q: 0.25 }, { n: "Plasthandskar (låda)", q: 0.25 }, { n: "Vatten (liter)", q: 60 },
-            { n: "Chokladbollar (st)", q: 45 }, { n: "Kakor (st)", q: 52 }, { n: "Muffins (st)", q: 72 }, { n: "Is (box)", q: 0.66 }
-        ],
-        "25 Tkr": [
-            { n: "Koppar 16 Oz (rör)", q: 6 }, { n: "Koppar 12 Oz (rör)", q: 7 }, { n: "Koppar 6 Oz (rör)", q: 3 }, { n: "Koppar 4 Oz (rör)", q: 1 }, { n: "Lock 12/16 Oz (rör)", q: 4 },
-            { n: "Diskmedel (flaska)", q: 0.25 }, { n: "Rengöringsspray (flaska)", q: 0.25 },
-            { n: "Hela bönor (kg)", q: 10 }, { n: "Malda bönor (kg)", q: 4 }, { n: "Kaffefilter (burk)", q: 0.7 }, { n: "Socker (låda)", q: 0.5 }, { n: "Rörpinnar (låda)", q: 0.5 },
-            { n: "Earl Gray (st)", q: 10 }, { n: "Gottland (st)", q: 10 }, { n: "Öland (st)", q: 10 }, { n: "Sugrör (låda)", q: 0.7 },
-            { n: "Servetter (påse)", q: 0.5 }, { n: "Torky (rulle)", q: 0.5 },
-            { n: "Karamellsirap (flaska)", q: 1.5 }, { n: "Vaniljsirap (flaska)", q: 1.5 }, { n: "Sopsäckar (rulle)", q: 0.5 },
-            { n: "Burk, malt (st)", q: 4 }, { n: "Burk, choklad (st)", q: 4 }, { n: "Burk, hela bönor (st)", q: 4 },
-            { n: "Förkläde (st)", q: 2 }, { n: "Svarta trasor (st)", q: 4 }, { n: "Grå trasor (st)", q: 2 },
-            { n: "Cantucci (burk)", q: 1 }, { n: "Chaipulver (burk)", q: 2 }, { n: "Chokladpåsar (st)", q: 10 },
-            { n: "Mjölk (liter)", q: 65 }, { n: "Havremjölk (liter)", q: 12 }, { n: "Grädde (patron)", q: 6 },
-            { n: "Puly caff (burk)", q: 0.25 }, { n: "Plasthandskar (låda)", q: 0.25 }, { n: "Vatten (liter)", q: 60 },
-            { n: "Chokladbollar (st)", q: 60 }, { n: "Kakor (st)", q: 72 }, { n: "Muffins (st)", q: 96 }, { n: "Is (box)", q: 1 }
-        ],
-        "40 Tkr": [
-            { n: "Koppar 16 Oz (rör)", q: 9 }, { n: "Koppar 12 Oz (rör)", q: 12 }, { n: "Koppar 6 Oz (rör)", q: 3 }, { n: "Koppar 4 Oz (rör)", q: 2 }, { n: "Lock 12/16 Oz (rör)", q: 6 },
-            { n: "Diskmedel (flaska)", q: 0.25 }, { n: "Rengöringsspray (flaska)", q: 0.25 },
-            { n: "Hela bönor (kg)", q: 14 }, { n: "Malda bönor (kg)", q: 6 }, { n: "Kaffefilter (burk)", q: 1 }, { n: "Socker (låda)", q: 0.5 }, { n: "Rörpinnar (låda)", q: 0.5 },
-            { n: "Earl Gray (st)", q: 15 }, { n: "Gottland (st)", q: 15 }, { n: "Öland (st)", q: 15 }, { n: "Sugrör (låda)", q: 1 },
-            { n: "Servetter (påse)", q: 1 }, { n: "Torky (rulle)", q: 0.5 },
-            { n: "Karamellsirap (flaska)", q: 2 }, { n: "Vaniljsirap (flaska)", q: 2 }, { n: "Sopsäckar (rulle)", q: 0.5 },
-            { n: "Burk, malt (st)", q: 4 }, { n: "Burk, choklad (st)", q: 4 }, { n: "Burk, hela bönor (st)", q: 4 },
-            { n: "Förkläde (st)", q: 2 }, { n: "Svarta trasor (st)", q: 4 }, { n: "Grå trasor (st)", q: 2 },
-            { n: "Cantucci (burk)", q: 1 }, { n: "Chaipulver (burk)", q: 3 }, { n: "Chokladpåsar (st)", q: 14 },
-            { n: "Mjölk (liter)", q: 73 }, { n: "Havremjölk (liter)", q: 12 }, { n: "Grädde (patron)", q: 10 },
-            { n: "Puly caff (burk)", q: 0.25 }, { n: "Plasthandskar (låda)", q: 0.25 }, { n: "Vatten (liter)", q: 60 },
-            { n: "Chokladbollar (st)", q: 90 }, { n: "Kakor (st)", q: 108 }, { n: "Muffins (st)", q: 96 }, { n: "Is (box)", q: 1 }
-        ]
-    }
-};
-
 // Hjälpfunktion för att skala upp mängder (t.ex. 5kg -> 10kg)
 function scaleItemQuantity(itemName, multiplier) {
     if (multiplier <= 1) return itemName;
@@ -1074,47 +1022,141 @@ window.render = () => {
     if (currentView === 'calendar') renderCalendarView(assignments, db, cars, trailers, carts, selectedStartDate);
 };
 
-window.renderAdminView = (area) => {
+// Lägg till 'admin' i din showView och render logik
+window.render = () => {
+    const area = document.getElementById('content-area');
+    area.innerHTML = '';
+
+    if (currentView === 'dashboard') renderDashboard(area);
+    if (currentView === 'create') renderCreate(area);
+    if (currentView === 'availability') renderAvailabilityView(area, cars, trailers, carts, db, assignments);
+    if (currentView === 'stats') renderStatsView(area);
+    if (currentView === 'admin') renderAdminView(area); // <--- NY
+    if (currentView === 'calendar') renderCalendarView(assignments, db, cars, trailers, carts, selectedStartDate);
+};
+
+window.renderAdminView = async (area) => {
+    const allUnits = [...cars, ...trailers, ...carts];
+    
     area.innerHTML = `
         <div class="admin-container">
-            <section class="admin-section">
-                <h4><i class="fas fa-truck"></i> Hantera Fordonsparken</h4>
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Typ</th>
-                            <th>Synlig</th>
-                            <th>Åtgärd</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${allUnits.map(u => `
+            <div class="admin-card">
+                <h4><i class="fas fa-bus"></i> Hantera Fordonsparken</h4>
+                <p class="admin-hint">Här kan du dölja fordon från Fleet-vyn eller ta bort dem permanent.</p>
+                <div class="admin-table-wrapper">
+                    <table class="admin-table">
+                        <thead>
                             <tr>
-                                <td><strong>${u.id}</strong></td>
-                                <td>${u.type}</td>
-                                <td>
-                                    <label class="switch">
-                                        <input type="checkbox" ${u.isVisible !== false ? 'checked' : ''} 
-                                               onclick="toggleVisibility('${u.id}', '${u.type}')">
-                                        <span class="slider"></span>
-                                    </label>
-                                </td>
-                                <td>
-                                    <button class="btn-icon" onclick="deleteUnit('${u.id}')"><i class="fas fa-trash"></i></button>
-                                </td>
+                                <th>Enhet</th>
+                                <th>Typ</th>
+                                <th>Visa i Fleet</th>
+                                <th>Åtgärd</th>
                             </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            </section>
+                        </thead>
+                        <tbody>
+                            ${allUnits.map(u => {
+                                const uType = cars.find(c => c.id === u.id) ? 'car' : trailers.find(t => t.id === u.id) ? 'trailer' : 'cart';
+                                return `
+                                <tr>
+                                    <td><strong>${u.id}</strong></td>
+                                    <td><span class="type-badge">${uType}</span></td>
+                                    <td>
+                                        <label class="switch-ios">
+                                            <input type="checkbox" ${u.isVisible !== false ? 'checked' : ''} 
+                                                   onchange="window.toggleUnitVisibility('${u.id}', '${uType}', this.checked)">
+                                            <span class="slider-ios"></span>
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <button class="btn-delete-icon" onclick="window.deleteUnitPermanent('${u.id}', '${uType}')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>`;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-            <section class="admin-section">
-                <h4><i class="fas fa-box-open"></i> Redigera Packmallar</h4>
-                <div id="template-editor-area">
-                    </div>
-            </section>
+            <div class="admin-card">
+                <h4><i class="fas fa-boxes"></i> Packmallar (Kommer snart)</h4>
+                <p>Här kommer du kunna lägga till och ta bort artiklar i dina Tkr-mallar direkt.</p>
+                <button class="btn-primary-modern" onclick="alert('Funktion under uppbyggnad')">Öppna Mall-editor</button>
+            </div>
         </div>
     `;
 };
 
+// Logik för att dölja/visa fordon
+window.toggleUnitVisibility = async (id, type, isVisible) => {
+    const colMap = { car: 'cars', trailer: 'trailers', cart: 'carts' };
+    await updateDoc(doc(db, colMap[type], id), { isVisible: isVisible });
+};
+
+// Logik för att radera fordon permanent
+window.deleteUnitPermanent = async (id, type) => {
+    if (!confirm(`Är du helt säker? Detta raderar ${id} och all dess historik permanent från databasen.`)) return;
+    const colMap = { car: 'cars', trailer: 'trailers', cart: 'carts' };
+    await deleteDoc(doc(db, colMap[type], id));
+};
+
+// Kör denna funktion EN GÅNG i konsolen eller via en knapp för att ladda upp mallarna
+window.migrateTemplatesToFirebase = async () => {
+    const templatesRef = collection(db, "templates");
+    
+    // Dina nuvarande mallar konverterade till Firestore-format
+    const dataToUpload = {
+        carTemplates: [
+            { name: "Mall 1 (Low Capacity)", items: ["Parasoll", "Bord & stolar", "Kabel", "5kg bönor", "Muggar"] },
+            { name: "Mall 2 (High Capacity)", items: ["Stort Tält", "4st Bord", "Långelkabel", "15kg bönor", "Muggar", "Vattentank"] }
+        ],
+        cartTemplates: [
+            { name: "15 Tkr", items: [
+            { n: "Koppar 16 Oz (rör)", q: 4 }, { n: "Koppar 12 Oz (rör)", q: 5 }, { n: "Koppar 6 Oz (rör)", q: 2 }, { n: "Koppar 4 Oz (rör)", q: 1 }, { n: "Lock 12/16 Oz (rör)", q: 2 },
+            { n: "Diskmedel (flaska)", q: 0.25 }, { n: "Rengöringsspray (flaska)", q: 0.25 },
+            { n: "Hela bönor (kg)", q: 8 }, { n: "Malda bönor (kg)", q: 3 }, { n: "Kaffefilter (burk)", q: 0.5 }, { n: "Socker (låda)", q: 0.5 }, { n: "Rörpinnar (låda)", q: 0.5 },
+            { n: "Earl Gray (st)", q: 7 }, { n: "Gottland (st)", q: 7 }, { n: "Öland (st)", q: 7 }, { n: "Sugrör (låda)", q: 0.5 },
+            { n: "Servetter (påse)", q: 0.5 }, { n: "Torky (rulle)", q: 0.5 },
+            { n: "Karamellsirap (flaska)", q: 1.5 }, { n: "Vaniljsirap (flaska)", q: 1.5 }, { n: "Sopsäckar (rulle)", q: 0.5 },
+            { n: "Burk, malt (st)", q: 4 }, { n: "Burk, choklad (st)", q: 4 }, { n: "Burk, hela bönor (st)", q: 4 },
+            { n: "Förkläde (st)", q: 2 }, { n: "Svarta trasor (st)", q: 4 }, { n: "Grå trasor (st)", q: 2 },
+            { n: "Cantucci (burk)", q: 0.8 }, { n: "Chaipulver (burk)", q: 1.5 }, { n: "Chokladpåsar (st)", q: 6 },
+            { n: "Mjölk (liter)", q: 40 }, { n: "Havremjölk (liter)", q: 8 }, { n: "Grädde (patron)", q: 4 },
+            { n: "Puly caff (burk)", q: 0.25 }, { n: "Plasthandskar (låda)", q: 0.25 }, { n: "Vatten (liter)", q: 60 },
+            { n: "Chokladbollar (st)", q: 45 }, { n: "Kakor (st)", q: 52 }, { n: "Muffins (st)", q: 72 }, { n: "Is (box)", q: 0.66 }
+        ] },
+            { name: "25 Tkr", items: [
+            { n: "Koppar 16 Oz (rör)", q: 6 }, { n: "Koppar 12 Oz (rör)", q: 7 }, { n: "Koppar 6 Oz (rör)", q: 3 }, { n: "Koppar 4 Oz (rör)", q: 1 }, { n: "Lock 12/16 Oz (rör)", q: 4 },
+            { n: "Diskmedel (flaska)", q: 0.25 }, { n: "Rengöringsspray (flaska)", q: 0.25 },
+            { n: "Hela bönor (kg)", q: 10 }, { n: "Malda bönor (kg)", q: 4 }, { n: "Kaffefilter (burk)", q: 0.7 }, { n: "Socker (låda)", q: 0.5 }, { n: "Rörpinnar (låda)", q: 0.5 },
+            { n: "Earl Gray (st)", q: 10 }, { n: "Gottland (st)", q: 10 }, { n: "Öland (st)", q: 10 }, { n: "Sugrör (låda)", q: 0.7 },
+            { n: "Servetter (påse)", q: 0.5 }, { n: "Torky (rulle)", q: 0.5 },
+            { n: "Karamellsirap (flaska)", q: 1.5 }, { n: "Vaniljsirap (flaska)", q: 1.5 }, { n: "Sopsäckar (rulle)", q: 0.5 },
+            { n: "Burk, malt (st)", q: 4 }, { n: "Burk, choklad (st)", q: 4 }, { n: "Burk, hela bönor (st)", q: 4 },
+            { n: "Förkläde (st)", q: 2 }, { n: "Svarta trasor (st)", q: 4 }, { n: "Grå trasor (st)", q: 2 },
+            { n: "Cantucci (burk)", q: 1 }, { n: "Chaipulver (burk)", q: 2 }, { n: "Chokladpåsar (st)", q: 10 },
+            { n: "Mjölk (liter)", q: 65 }, { n: "Havremjölk (liter)", q: 12 }, { n: "Grädde (patron)", q: 6 },
+            { n: "Puly caff (burk)", q: 0.25 }, { n: "Plasthandskar (låda)", q: 0.25 }, { n: "Vatten (liter)", q: 60 },
+            { n: "Chokladbollar (st)", q: 60 }, { n: "Kakor (st)", q: 72 }, { n: "Muffins (st)", q: 96 }, { n: "Is (box)", q: 1 }
+        ] },
+            { name: "40 Tkr", items: [
+            { n: "Koppar 16 Oz (rör)", q: 9 }, { n: "Koppar 12 Oz (rör)", q: 12 }, { n: "Koppar 6 Oz (rör)", q: 3 }, { n: "Koppar 4 Oz (rör)", q: 2 }, { n: "Lock 12/16 Oz (rör)", q: 6 },
+            { n: "Diskmedel (flaska)", q: 0.25 }, { n: "Rengöringsspray (flaska)", q: 0.25 },
+            { n: "Hela bönor (kg)", q: 14 }, { n: "Malda bönor (kg)", q: 6 }, { n: "Kaffefilter (burk)", q: 1 }, { n: "Socker (låda)", q: 0.5 }, { n: "Rörpinnar (låda)", q: 0.5 },
+            { n: "Earl Gray (st)", q: 15 }, { n: "Gottland (st)", q: 15 }, { n: "Öland (st)", q: 15 }, { n: "Sugrör (låda)", q: 1 },
+            { n: "Servetter (påse)", q: 1 }, { n: "Torky (rulle)", q: 0.5 },
+            { n: "Karamellsirap (flaska)", q: 2 }, { n: "Vaniljsirap (flaska)", q: 2 }, { n: "Sopsäckar (rulle)", q: 0.5 },
+            { n: "Burk, malt (st)", q: 4 }, { n: "Burk, choklad (st)", q: 4 }, { n: "Burk, hela bönor (st)", q: 4 },
+            { n: "Förkläde (st)", q: 2 }, { n: "Svarta trasor (st)", q: 4 }, { n: "Grå trasor (st)", q: 2 },
+            { n: "Cantucci (burk)", q: 1 }, { n: "Chaipulver (burk)", q: 3 }, { n: "Chokladpåsar (st)", q: 14 },
+            { n: "Mjölk (liter)", q: 73 }, { n: "Havremjölk (liter)", q: 12 }, { n: "Grädde (patron)", q: 10 },
+            { n: "Puly caff (burk)", q: 0.25 }, { n: "Plasthandskar (låda)", q: 0.25 }, { n: "Vatten (liter)", q: 60 },
+            { n: "Chokladbollar (st)", q: 90 }, { n: "Kakor (st)", q: 108 }, { n: "Muffins (st)", q: 96 }, { n: "Is (box)", q: 1 }
+        ] }
+        ]
+    };
+
+    await setDoc(doc(db, "settings", "packing_templates"), dataToUpload);
+    alert("Mallar uppladdade till Firebase!");
+};
