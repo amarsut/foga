@@ -1043,11 +1043,8 @@ window.render = () => {
 };
 
 window.renderAdminView = async (area) => {
-    // Säkerställ att vi har listorna, annars skapa tomma arrayer för att undvika krasch
-    const safeCars = window.cars || [];
-    const safeTrailers = window.trailers || [];
-    const safeCarts = window.carts || [];
-    const allUnits = [...safeCars, ...safeTrailers, ...safeCarts];
+    // Vi använder variablerna direkt (inte window.cars) eftersom de finns i samma fil
+    const allUnits = [...cars, ...trailers, ...carts];
     
     area.innerHTML = `
         <div class="admin-container">
@@ -1060,9 +1057,8 @@ window.renderAdminView = async (area) => {
                         </thead>
                         <tbody>
                             ${allUnits.length > 0 ? allUnits.map(u => {
-                                // Identifiera typ
-                                const isCar = safeCars.some(c => c.id === u.id);
-                                const isTrailer = safeTrailers.some(t => t.id === u.id);
+                                const isCar = cars.some(c => c.id === u.id);
+                                const isTrailer = trailers.some(t => t.id === u.id);
                                 const uType = isCar ? 'car' : isTrailer ? 'trailer' : 'cart';
 
                                 return `<tr>
@@ -1094,27 +1090,26 @@ window.renderAdminView = async (area) => {
     `;
 };
 
-// --- LOGIK FÖR MALL-EDITOR ---
 window.initTemplateEditor = async () => {
     const container = document.getElementById('admin-template-editor-container');
     const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
     const docSnap = await getDoc(doc(window.db, "settings", "packing_templates"));
 
-    if (!docSnap.exists()) return alert("Inga mallar hittades i databasen.");
+    if (!docSnap.exists()) return alert("Inga mallar hittades. Kör migreringen i konsolen igen.");
     window.currentEditingTemplates = docSnap.data();
 
     container.innerHTML = `
         <div class="template-editor-ui">
-            <select id="sel-template-to-edit" class="modern-select" onchange="window.loadTemplateToEdit(this.value)">
+            <select id="sel-template-to-edit" class="modern-select" style="margin-bottom:15px;" onchange="window.loadTemplateToEdit(this.value)">
                 <option value="">Välj mall att ändra...</option>
                 <optgroup label="Transportbilar">
                     ${window.currentEditingTemplates.car.map((t, i) => `<option value="car-${i}">${t.name}</option>`).join('')}
                 </optgroup>
-                <optgroup label="Fogarollibilar">
+                <optgroup label="Kaffevagnar">
                     ${window.currentEditingTemplates.cart.map((t, i) => `<option value="cart-${i}">${t.name}</option>`).join('')}
                 </optgroup>
             </select>
-            <div id="template-items-list" class="items-list-admin"></div>
+            <div id="template-items-list"></div>
         </div>
     `;
 };
@@ -1122,76 +1117,78 @@ window.initTemplateEditor = async () => {
 window.loadTemplateToEdit = (val) => {
     if (!val) return;
     const [type, index] = val.split('-');
-    
-    // Hämta mallen säkert
-    const template = window.currentEditingTemplates && window.currentEditingTemplates[type] 
-                     ? window.currentEditingTemplates[type][index] 
-                     : null;
-
-    if (!template || !template.items) {
-        console.error("Kunde inte ladda mall-items:", template);
-        return alert("Fel: Kunde inte ladda innehållet i denna mall.");
-    }
-
+    const template = window.currentEditingTemplates[type][index];
     const area = document.getElementById('template-items-list');
 
     area.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; margin-top:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; margin-top:20px;">
             <h5 style="margin:0; color:var(--fog-brown);">${template.name}</h5>
-            <button class="btn-add-item-small" onclick="window.addTemplateItem('${type}', ${index})" 
-                    style="padding:5px 10px; font-size:0.7rem; background:#eee; border:none; border-radius:5px;">
+            <button class="btn-select-all" onclick="window.addTemplateItem('${type}', ${index})">
                 <i class="fas fa-plus"></i> Ny rad
             </button>
         </div>
         <div class="items-editor-grid">
             ${template.items.map((item, i) => {
-                // Hantera både enkla strängar (bilar) och objekt (vagnar)
                 const isCar = type === 'car';
                 const name = isCar ? item : (item.n || "");
                 const qty = isCar ? null : (item.q || 0);
 
                 return `
-                    <div class="item-edit-row" style="display:flex; gap:5px; margin-bottom:5px;">
-                        <input type="text" value="${name}" placeholder="Namn" style="flex:1; padding:8px; border:1px solid #ddd; border-radius:5px;" 
+                    <div class="item-edit-row" style="display:flex; gap:8px; margin-bottom:8px;">
+                        <input type="text" value="${name}" placeholder="Namn" style="flex:1; padding:10px; border:1px solid #ddd; border-radius:8px;" 
                                onchange="window.updateItemValue('${type}', ${index}, ${i}, 'n', this.value)">
-                        ${!isCar ? `<input type="number" step="0.01" value="${qty}" style="width:65px; padding:8px; border:1px solid #ddd; border-radius:5px;" 
+                        ${!isCar ? `<input type="number" step="0.01" value="${qty}" style="width:75px; padding:10px; border:1px solid #ddd; border-radius:8px;" 
                                      onchange="window.updateItemValue('${type}', ${index}, ${i}, 'q', this.value)">` : ''}
-                        <button class="btn-remove" style="color:red; background:none; border:none;" 
-                                onclick="window.removeTemplateItem('${type}', ${index}, ${i})"><i class="fas fa-times"></i></button>
+                        <button onclick="window.removeTemplateItem('${type}', ${index}, ${i})" style="background:none; border:none; color:#e30613; padding:5px; cursor:pointer;">
+                            <i class="fas fa-times"></i>
+                        </button>
                     </div>`;
             }).join('')}
         </div>
-        <button class="btn-save-all" style="width:100%; margin-top:15px; padding:12px; background:var(--fog-brown); color:white; border:none; border-radius:10px; font-weight:bold;" 
-                onclick="window.saveTemplatesToFirebase()">SPARA ÄNDRINGAR</button>
+        <button class="btn-primary-modern" style="width:100%; margin-top:20px; background:var(--fog-brown);" onclick="window.saveTemplatesToFirebase()">
+            <i class="fas fa-save"></i> SPARA ÄNDRINGAR I DATABASEN
+        </button>
     `;
+};
+
+window.addTemplateItem = (type, tIdx) => {
+    const newItem = type === 'car' ? "Ny artikel" : { n: "Ny artikel", q: 1 };
+    window.currentEditingTemplates[type][tIdx].items.push(newItem);
+    window.loadTemplateToEdit(`${type}-${tIdx}`);
+};
+
+window.removeTemplateItem = (type, tIdx, iIdx) => {
+    window.currentEditingTemplates[type][tIdx].items.splice(iIdx, 1);
+    window.loadTemplateToEdit(`${type}-${tIdx}`);
 };
 
 window.updateItemValue = (type, tIdx, iIdx, key, val) => {
     const template = window.currentEditingTemplates[type][tIdx];
-    if (typeof template.items[iIdx] === 'string') {
+    if (type === 'car') {
         template.items[iIdx] = val;
     } else {
-        template.items[iIdx][key] = key === 'q' ? parseFloat(val) : val;
+        if (key === 'q') template.items[iIdx].q = parseFloat(val) || 0;
+        else template.items[iIdx].n = val;
     }
 };
 
 window.saveTemplatesToFirebase = async () => {
     const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
     await setDoc(doc(window.db, "settings", "packing_templates"), window.currentEditingTemplates);
-    alert("Alla mallar har uppdaterats!");
+    alert("Alla ändringar har sparats!");
 };
 
-// Logik för att dölja/visa fordon
 window.toggleUnitVisibility = async (id, type, isVisible) => {
     const colMap = { car: 'cars', trailer: 'trailers', cart: 'carts' };
-    await updateDoc(doc(db, colMap[type], id), { isVisible: isVisible });
+    const { doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+    await updateDoc(doc(window.db, colMap[type], id), { isVisible: isVisible });
 };
 
-// Logik för att radera fordon permanent
 window.deleteUnitPermanent = async (id, type) => {
-    if (!confirm(`Är du helt säker? Detta raderar ${id} och all dess historik permanent från databasen.`)) return;
+    if (!confirm(`Är du helt säker? Detta raderar ${id} permanent från databasen.`)) return;
     const colMap = { car: 'cars', trailer: 'trailers', cart: 'carts' };
-    await deleteDoc(doc(db, colMap[type], id));
+    const { doc, deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+    await deleteDoc(doc(window.db, colMap[type], id));
 };
 
 window.renderTemplateEditor = async (container) => {
