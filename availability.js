@@ -248,11 +248,25 @@ function renderFleetGroup(title, icon, items, type) {
             <div class="fleet-cards-grid">
                 ${items.map(item => {
                     const hStatus = item.healthStatus || 'ok';
+                    // Räkna data för ikonerna
                     const notesCount = (item.notes || []).length;
+                    const imagesCount = (item.attachedImages || []).length;
+                    const docsCount = (item.attachedDocs || []).length;
+
                     return `
                     <div class="fleet-card hs-${hStatus}" onclick="window.openUnitDetail('${item.id}', '${type}')">
-                        <div class="fleet-card-header"><span class="fleet-unit-id">${item.id}</span><div class="fleet-status-indicator"></div></div>
-                        <div class="fleet-meta"><span><i class="far fa-comment-dots"></i> ${notesCount}</span><span class="status-text">${hStatus === 'ok' ? 'Driftklar' : hStatus === 'warn' ? 'Brist' : 'Akut'}</span></div>
+                        <div class="fleet-card-header">
+                            <span class="fleet-unit-id">${item.id}</span>
+                            <div class="fleet-status-indicator"></div>
+                        </div>
+                        <div class="fleet-meta">
+                            <div class="fleet-meta-left">
+                                <span><i class="far fa-comment-dots"></i> ${notesCount}</span>
+                                ${imagesCount > 0 ? `<span><i class="far fa-image"></i> ${imagesCount}</span>` : ''}
+                                ${docsCount > 0 ? `<span><i class="far fa-file-alt"></i> ${docsCount}</span>` : ''}
+                            </div>
+                            <i class="fas fa-chevron-right fleet-card-arrow-icon"></i>
+                        </div>
                     </div>`;
                 }).join('')}
             </div>
