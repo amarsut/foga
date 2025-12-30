@@ -1233,7 +1233,7 @@ let deferredPrompt;
 
 // 1. Registrera Service Worker
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js');
+    navigator.serviceWorker.register('sw.js');
 }
 
 // 2. Lyssna efter installations-förfrågan
