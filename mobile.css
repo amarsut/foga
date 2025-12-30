@@ -301,3 +301,185 @@
         height: 280px !important;
     }
 }
+
+/* ==========================================================================
+   OPTIMERAD MOBILE.CSS - FOGAROLLI LOGISTICS v6
+   ========================================================================== */
+
+@media (max-width: 768px) {
+
+    /* --- 1. GENERELL LAYOUT & SIDEBAR --- */
+    .app-container {
+        flex-direction: column !important;
+        height: 100vh !important;
+    }
+
+    .main-content {
+        flex: 1;
+        padding: 10px !important;
+        padding-bottom: 80px !important;
+        overflow-y: auto !important;
+    }
+
+    .sidebar {
+        position: fixed !important;
+        left: -280px !important;
+        width: 240px !important;
+        height: 100vh !important;
+        z-index: 10000 !important;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+
+    .sidebar.mobile-active {
+        left: 0 !important;
+    }
+
+    /* --- 2. MODALER & HEADER (FLEET-MODAL FIX) --- */
+    .modal-overlay {
+        padding: 0 !important;
+        align-items: stretch !important;
+    }
+
+    .modal-content, .bento-modal {
+        width: 100vw !important;
+        height: 100dvh !important;
+        max-width: none !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    /* FIX 6: Header-ordning (Namn till vänster, Status+X till höger) */
+    .modal-header-vision {
+        padding: 15px 12px !important;
+        flex-direction: row !important; /* Fordonsnamn hamnar till vänster */
+        justify-content: space-between !important;
+    }
+
+    .header-right-actions {
+        display: flex !important;
+        flex-direction: row !important; /* Status följt av X */
+        align-items: center !important;
+        gap: 8px !important;
+    }
+
+    /* --- 3. FLEET-MODAL: SCROLL & LUFT --- */
+    .fm-pane {
+        padding: 0 !important;
+        height: 100% !important;
+        display: none;
+    }
+
+    .fm-pane.active {
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    /* FIX 5: Aktivera scroll i översikten för att se status/filer */
+    #tab-overview {
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .bento-grid-modal {
+        display: flex !important;
+        flex-direction: column !important;
+        padding: 10px 8px !important; /* Minimal sidoluft */
+        gap: 15px !important;
+    }
+
+    .bento-box {
+        padding: 15px 12px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* --- 4. FLEET-VY: KRITISKA ÅTGÄRDER --- */
+    /* FIX 4: Minska vertikal luft mellan korten */
+    .mo-grid {
+        gap: 8px !important;
+    }
+
+    .mo-card {
+        margin-bottom: 0 !important;
+        padding: 12px 15px !important;
+    }
+
+    /* --- 5. SKAPA UPPDRAG & PACKLISTOR --- */
+    /* FIX 3: Ta bort onödig luft på sidorna */
+    .create-view-container.single-column {
+        padding: 0 !important;
+    }
+
+    .form-container.compact-form {
+        max-width: 100% !important;
+        padding: 0 !important;
+    }
+
+    .inner-scroll-area {
+        padding: 15px !important; /* Reducerad padding */
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+
+    /* --- 6. KALENDERN: ÅTERSTÄLL KORT-UTSEENDE --- */
+    /* FIX 2: Återställer struktur för mobilvyn */
+    #calendar-container.mobile-card-view {
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+    }
+
+    .day-card {
+        background: #fff !important;
+        margin-bottom: 12px !important;
+        border-radius: 12px !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
+        overflow: hidden;
+    }
+
+    .day-card-header {
+        padding: 10px 15px !important;
+        background: #fcfaf8 !important;
+        font-weight: 800 !important;
+        border-bottom: 1px solid #f0f0f0 !important;
+    }
+
+    .mobile-event-card {
+        padding: 15px !important;
+        border-bottom: 1px solid #f5f5f5 !important;
+    }
+
+    /* Strips för ej klara uppdrag */
+    .m-event-incomplete {
+        border-left: 5px solid #f1c40f !important;
+        background-image: repeating-linear-gradient(45deg, #ffffff, #ffffff 10px, #fdfdfd 10px, #fdfdfd 20px) !important;
+    }
+
+    .m-event-ready {
+        border-left: 5px solid #2ecc71 !important;
+    }
+
+    /* --- 7. JOURNAL & MEDIA --- */
+    #chat-feed-v3 {
+        padding: 15px 10px !important;
+    }
+
+    .teams-input-bar {
+        width: 100% !important;
+        padding: 6px 12px !important;
+        box-sizing: border-box !important;
+    }
+
+    #tab-media.active {
+        padding: 10px !important;
+        overflow-y: auto !important;
+    }
+}
