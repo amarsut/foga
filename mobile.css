@@ -1119,60 +1119,77 @@ FLEET & STATISTIK TEST CSS
 }
 
 /* ==========================================================================
-   FIX FÖR MODAL-HÖJD OCH SIDOPADDING (MOBIL)
+   FORCE FULLSCREEN & ZERO MARGINS (FLEET MODAL)
    ========================================================================== */
 
 @media (max-width: 768px) {
-
-    /* 1. FIXA MEDIA-VYN (Gör den lika hög som de andra vyerna) */
-    #tab-media.active {
-        display: flex !important;
-        flex-direction: column !important;
-        height: 100% !important; /* Tvingar den att fylla hela modalen */
-        padding: 15px 10px !important; /* Minskar padding inuti fliken */
-        overflow-y: auto !important;
-        -webkit-overflow-scrolling: touch;
+    /* 1. TVINGA MODALEN TILL FULLSKÄRM (Dödar 850px-bredden) */
+    .bento-modal {
+        width: 100vw !important;
+        height: 100dvh !important; /* Använder dvh för att hantera mobilens adressfält */
+        max-width: none !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
     }
 
-    /* Stapla bildgalleri och dokument vertikalt på mobil */
-    #tab-media > div {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 25px !important;
+    .modal-content {
         width: 100% !important;
+        height: 100% !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
     }
 
-    /* Ta bort den fasta kanten till vänster om dokumenten på mobil */
-    #tab-media div[style*="border-left"] {
-        border-left: none !important;
-        padding-left: 0 !important;
-        margin-top: 10px !important;
-    }
-
-    /* 2. FIXA LUFTEN PÅ SIDORNA (ÖVERSIKT / BENTO) */
+    /* 2. TA BORT LUFT PÅ SIDORNA I ÖVERSIKTEN */
     .bento-grid-modal {
+        grid-template-columns: 1fr !important;
+        padding: 10px 5px !important; /* Minimal luft på sidorna */
+        gap: 15px !important;
+        height: auto !important;
         display: flex !important;
         flex-direction: column !important;
-        padding: 10px 8px !important; /* Extremt tajt padding på sidorna för att utnyttja bredden */
-        gap: 12px !important;
     }
 
-    /* Minska padding inuti själva bento-boxarna (där korten ligger) */
+    /* Minska padding i de vita boxarna så innehållet når kanterna */
     .bento-box {
-        padding: 12px 10px !important; 
-        border-radius: 14px !important; /* Något mjukare hörn för mobil */
-    }
-
-    /* Se till att uppdragskorten/bubblorna tar hela bredden */
-    .task-bubble-item {
+        padding: 12px 10px !important;
         margin: 0 !important;
         width: 100% !important;
         box-sizing: border-box !important;
     }
 
-    /* Justering för bilderna i media så de inte blir för stora/små */
-    .image-grid-overview {
+    /* 3. FIXA MEDIA-FLIKEN (FULL HÖJD & RÄTT LAYOUT) */
+    #tab-media.active {
+        display: flex !important;
+        flex-direction: column !important;
+        height: 100% !important;
+        padding: 10px !important;
+        overflow-y: auto !important;
+    }
+
+    /* Tvinga innehållet i media (Bildgalleri + Dokument) att staplas */
+    #tab-media > div {
+        display: flex !important;
+        flex-direction: column !important;
+        grid-template-columns: 1fr !important; /* Dödar 2-kolumnsgrid */
+        gap: 20px !important;
+        width: 100% !important;
+    }
+
+    /* Ta bort den grå linjen som delar Dokument och Bilder på datorn */
+    #tab-media div[style*="border-left"] {
+        border-left: none !important;
+        padding-left: 0 !important;
+        margin-top: 20px !important;
+    }
+
+    /* Gör bildgalleriet mer kompakt */
+    .image-grid-overview, 
+    #tab-media div[style*="grid-template-columns: repeat(auto-fill"] {
         grid-template-columns: repeat(3, 1fr) !important;
-        gap: 5px !important;
+        gap: 8px !important;
     }
 }
+
