@@ -11,6 +11,7 @@ let currentCartItems = [];
 
 let currentCarChecklists = {};
 let currentCartChecklists = {};
+let packingTemplates = null;
 
 window.unitChecklists = {};
 window.activeUnitId = null;
@@ -19,6 +20,23 @@ window.listSectionsExpanded = { base: true, refill: true };
 window.carListVisible = true;
 window.cartListVisible = true;
 window.isPackingPhase = false;
+
+// Funktion för att hämta mallar från Firebase vid start
+const loadTemplatesFromDb = async () => {
+    try {
+        const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+        const docSnap = await getDoc(doc(db, "settings", "packing_templates"));
+        if (docSnap.exists()) {
+            packingTemplates = docSnap.data();
+            console.log("Mallar laddade från Firebase");
+        }
+    } catch (err) {
+        console.error("Kunde inte ladda mallar:", err);
+    }
+};
+
+// Starta hämtningen direkt
+loadTemplatesFromDb();
 
 window.goToPacking = () => {
     const eventName = document.getElementById('event-name').value;
@@ -309,15 +327,9 @@ function renderAvailability(area) {
 }
 
 // Uppdaterar vagnens lista när man byter mall i dropdown-menyn
-window.updateTemplateItems = async () => {
+window.updateTemplateItems = () => {
     const data = window.pendingAssignmentData;
-    if (!data) return;
-
-    const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
-    const docSnap = await getDoc(doc(window.db, "settings", "packing_templates"));
-    const PACKING_TEMPLATES = docSnap.exists() ? docSnap.data() : null;
-
-    if (!PACKING_TEMPLATES) return;
+    if (!data || !packingTemplates) return; // Vänta tills mallarna är laddade
 
     const carTemplateName = data.carTemplate;
     const cartTemplateName = data.cartTemplate;
@@ -330,7 +342,7 @@ window.updateTemplateItems = async () => {
     // 1. FÖRETAGSBILEN
     if (selectedCar) {
         let carList = [];
-        const carTmpl = PACKING_TEMPLATES.car.find(t => t.name === carTemplateName);
+        const carTmpl = packingTemplates.car.find(t => t.name === carTemplateName);
         
         if (carTmpl) {
             carList.push({ type: 'header', sectionId: 'base', name: `Basutrustning: ${carTemplateName}`, unitId: selectedCar });
@@ -339,25 +351,11 @@ window.updateTemplateItems = async () => {
                 carList.push({ name: displayName, done: false, type: 'item', sectionId: 'base', unitId: selectedCar });
             });
         }
-
-        // Påfyllning (Refill)
-        const refillDaysTotal = Math.max(0, (numDays - 1) * selectedCarts.length);
-        const cartTmplForRefill = PACKING_TEMPLATES.cart.find(t => t.name === cartTemplateName);
-        
-        if (refillDaysTotal > 0 && cartTmplForRefill) {
-            carList.push({ type: 'header', sectionId: 'refill', name: `Sammanställd Påfyllning (${refillDaysTotal} extra dagsransoner)` });
-            cartTmplForRefill.items.forEach(item => {
-                carList.push({ 
-                    name: `${(item.q * refillDaysTotal).toLocaleString('sv-SE')}x ${item.n}`, 
-                    done: false, type: 'item', sectionId: 'refill', unitId: selectedCar
-                });
-            });
-        }
         window.unitChecklists[selectedCar] = carList;
     }
 
-    // 2. KAFFEVAGNARNA
-    const cartTmpl = PACKING_TEMPLATES.cart.find(t => t.name === cartTemplateName);
+    // 2. VAGNARNA
+    const cartTmpl = packingTemplates.cart.find(t => t.name === cartTemplateName);
     if (cartTmpl) {
         selectedCarts.forEach(id => {
             window.unitChecklists[id] = [
@@ -527,9 +525,9 @@ function renderCreate(area) {
                                 <label>Packmall Transportbil</label>
                                 <select id="sel-car-template" class="modern-select">
                                     <option value="">Välj mall</option>
-                                    ${Object.keys(PACKING_TEMPLATES.car).map(t => `
-                                        <option value="${t}" ${(saved.carTemplate || editData?.carTemplate) === t ? 'selected' : ''}>${t}</option>
-                                    `).join('')}
+                                    ${packingTemplates ? packingTemplates.car.map(t => `
+                                        <option value="${t.name}" ${(saved.carTemplate || editData?.carTemplate) === t.name ? 'selected' : ''}>${t.name}</option>
+                                    `).join('') : '<option disabled>Laddar mallar...</option>'}
                                 </select>
                             </div>
                              <div class="form-group">
@@ -543,9 +541,9 @@ function renderCreate(area) {
                                 <label>Packmall Fogarollibil (Tkr)</label>
                                 <select id="sel-cart-template" class="modern-select">
                                     <option value="">Välj mall</option>
-                                    ${Object.keys(PACKING_TEMPLATES.cart).map(t => `
-                                        <option value="${t}" ${(saved.cartTemplate || editData?.cartTemplate) === t ? 'selected' : ''}>${t}</option>
-                                    `).join('')}
+                                    ${packingTemplates ? packingTemplates.cart.map(t => `
+                                        <option value="${t.name}" ${(saved.cartTemplate || editData?.cartTemplate) === t.name ? 'selected' : ''}>${t.name}</option>
+                                    `).join('') : '<option disabled>Laddar mallar...</option>'}
                                 </select>
                             </div>
                         </div>
