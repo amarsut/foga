@@ -1024,3 +1024,96 @@ FLEET & STATISTIK TEST CSS
         margin-bottom: 10px !important;
     }
 }
+
+/* ==========================================================================
+   FIXAR FÖR FLEET-VY OCH MODAL
+   ========================================================================== */
+
+@media (max-width: 768px) {
+
+    /* 1. MINSKA MELLANRUM I KRITISKA ÅTGÄRDER (FLEET-VY) */
+    .mo-grid {
+        gap: 8px !important; /* Minskar gapet mellan korten */
+    }
+
+    .mo-card {
+        margin-bottom: 0 !important; /* Tar bort extra marginal i botten */
+        padding: 12px 15px !important; /* Något tajtare padding */
+        min-height: auto !important;
+    }
+
+    /* 2. FIXA SCROLL I OVERVIEW (MODAL) */
+    .bento-modal {
+        height: 100dvh !important; /* Tvinga modalen att hålla sig inom skärmen */
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    .fm-viewport {
+        flex: 1 !important;
+        overflow: hidden !important; /* Föräldern ska inte scrolla... */
+    }
+
+    #tab-overview {
+        display: none; /* Hanteras av .active */
+        height: 100% !important;
+        overflow-y: auto !important; /* ...men innehållet i fliken ska scrolla! */
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #tab-overview.active {
+        display: block !important;
+    }
+
+    /* Gör Bento-gridden till en lång lista så inget döljs */
+    .bento-grid-modal {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 15px !important;
+        padding: 15px !important;
+        height: auto !important; /* Låt den expandera vertikalt */
+    }
+
+    /* 3. JUSTERA CHATT-BUBBLOR (BORT MED LUFT PÅ SIDORNA) */
+    #chat-feed-v3 {
+        padding: 15px 10px !important; /* Minskat från 40px till 10px på sidorna */
+        gap: 15px !important;
+    }
+
+    .teams-content-wrapper {
+        max-width: 85% !important; /* Tillåt bubblorna att ta mer plats i bredd */
+    }
+
+    /* 4. FIXA CHATT-INPUT (SYNLIGHET & SKICKA-IKON) */
+    .teams-input-container {
+        padding: 10px !important; /* Mindre luft runt baren */
+    }
+
+    .teams-input-bar {
+        width: 100% !important;
+        gap: 8px !important; /* Tätare mellan ikonerna */
+        padding: 6px 12px !important;
+        box-sizing: border-box !important;
+    }
+
+    #chat-text-input {
+        min-width: 0 !important; /* Viktigt: tillåter fältet att krympa istället för att trycka ut knappen */
+        flex: 1 !important;
+    }
+
+    /* 5. FIXA MODAL-HEADER (BYT PLATS PÅ STÄNG & STATUS) */
+    .header-right-actions {
+        flex-direction: row-reverse !important; /* Swappar plats på status-pill och x-knappen */
+        gap: 8px !important;
+    }
+
+    .status-pill-header {
+        font-size: 0.6rem !important;
+        padding: 4px 10px !important;
+        white-space: nowrap;
+    }
+
+    .fm-close-icon {
+        flex-shrink: 0; /* Hindrar krysset från att tryckas ihop */
+    }
+}
