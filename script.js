@@ -1103,60 +1103,68 @@ window.deleteUnitPermanent = async (id, type) => {
 
 // Kör denna funktion EN GÅNG i konsolen eller via en knapp för att ladda upp mallarna
 window.migrateTemplatesToFirebase = async () => {
-    const templatesRef = collection(db, "templates");
-    
-    // Dina nuvarande mallar konverterade till Firestore-format
-    const dataToUpload = {
-        carTemplates: [
-            { name: "Mall 1 (Low Capacity)", items: ["Parasoll", "Bord & stolar", "Kabel", "5kg bönor", "Muggar"] },
-            { name: "Mall 2 (High Capacity)", items: ["Stort Tält", "4st Bord", "Långelkabel", "15kg bönor", "Muggar", "Vattentank"] }
-        ],
-        cartTemplates: [
-            { name: "15 Tkr", items: [
-            { n: "Koppar 16 Oz (rör)", q: 4 }, { n: "Koppar 12 Oz (rör)", q: 5 }, { n: "Koppar 6 Oz (rör)", q: 2 }, { n: "Koppar 4 Oz (rör)", q: 1 }, { n: "Lock 12/16 Oz (rör)", q: 2 },
-            { n: "Diskmedel (flaska)", q: 0.25 }, { n: "Rengöringsspray (flaska)", q: 0.25 },
-            { n: "Hela bönor (kg)", q: 8 }, { n: "Malda bönor (kg)", q: 3 }, { n: "Kaffefilter (burk)", q: 0.5 }, { n: "Socker (låda)", q: 0.5 }, { n: "Rörpinnar (låda)", q: 0.5 },
-            { n: "Earl Gray (st)", q: 7 }, { n: "Gottland (st)", q: 7 }, { n: "Öland (st)", q: 7 }, { n: "Sugrör (låda)", q: 0.5 },
-            { n: "Servetter (påse)", q: 0.5 }, { n: "Torky (rulle)", q: 0.5 },
-            { n: "Karamellsirap (flaska)", q: 1.5 }, { n: "Vaniljsirap (flaska)", q: 1.5 }, { n: "Sopsäckar (rulle)", q: 0.5 },
-            { n: "Burk, malt (st)", q: 4 }, { n: "Burk, choklad (st)", q: 4 }, { n: "Burk, hela bönor (st)", q: 4 },
-            { n: "Förkläde (st)", q: 2 }, { n: "Svarta trasor (st)", q: 4 }, { n: "Grå trasor (st)", q: 2 },
-            { n: "Cantucci (burk)", q: 0.8 }, { n: "Chaipulver (burk)", q: 1.5 }, { n: "Chokladpåsar (st)", q: 6 },
-            { n: "Mjölk (liter)", q: 40 }, { n: "Havremjölk (liter)", q: 8 }, { n: "Grädde (patron)", q: 4 },
-            { n: "Puly caff (burk)", q: 0.25 }, { n: "Plasthandskar (låda)", q: 0.25 }, { n: "Vatten (liter)", q: 60 },
-            { n: "Chokladbollar (st)", q: 45 }, { n: "Kakor (st)", q: 52 }, { n: "Muffins (st)", q: 72 }, { n: "Is (box)", q: 0.66 }
-        ] },
-            { name: "25 Tkr", items: [
-            { n: "Koppar 16 Oz (rör)", q: 6 }, { n: "Koppar 12 Oz (rör)", q: 7 }, { n: "Koppar 6 Oz (rör)", q: 3 }, { n: "Koppar 4 Oz (rör)", q: 1 }, { n: "Lock 12/16 Oz (rör)", q: 4 },
-            { n: "Diskmedel (flaska)", q: 0.25 }, { n: "Rengöringsspray (flaska)", q: 0.25 },
-            { n: "Hela bönor (kg)", q: 10 }, { n: "Malda bönor (kg)", q: 4 }, { n: "Kaffefilter (burk)", q: 0.7 }, { n: "Socker (låda)", q: 0.5 }, { n: "Rörpinnar (låda)", q: 0.5 },
-            { n: "Earl Gray (st)", q: 10 }, { n: "Gottland (st)", q: 10 }, { n: "Öland (st)", q: 10 }, { n: "Sugrör (låda)", q: 0.7 },
-            { n: "Servetter (påse)", q: 0.5 }, { n: "Torky (rulle)", q: 0.5 },
-            { n: "Karamellsirap (flaska)", q: 1.5 }, { n: "Vaniljsirap (flaska)", q: 1.5 }, { n: "Sopsäckar (rulle)", q: 0.5 },
-            { n: "Burk, malt (st)", q: 4 }, { n: "Burk, choklad (st)", q: 4 }, { n: "Burk, hela bönor (st)", q: 4 },
-            { n: "Förkläde (st)", q: 2 }, { n: "Svarta trasor (st)", q: 4 }, { n: "Grå trasor (st)", q: 2 },
-            { n: "Cantucci (burk)", q: 1 }, { n: "Chaipulver (burk)", q: 2 }, { n: "Chokladpåsar (st)", q: 10 },
-            { n: "Mjölk (liter)", q: 65 }, { n: "Havremjölk (liter)", q: 12 }, { n: "Grädde (patron)", q: 6 },
-            { n: "Puly caff (burk)", q: 0.25 }, { n: "Plasthandskar (låda)", q: 0.25 }, { n: "Vatten (liter)", q: 60 },
-            { n: "Chokladbollar (st)", q: 60 }, { n: "Kakor (st)", q: 72 }, { n: "Muffins (st)", q: 96 }, { n: "Is (box)", q: 1 }
-        ] },
-            { name: "40 Tkr", items: [
-            { n: "Koppar 16 Oz (rör)", q: 9 }, { n: "Koppar 12 Oz (rör)", q: 12 }, { n: "Koppar 6 Oz (rör)", q: 3 }, { n: "Koppar 4 Oz (rör)", q: 2 }, { n: "Lock 12/16 Oz (rör)", q: 6 },
-            { n: "Diskmedel (flaska)", q: 0.25 }, { n: "Rengöringsspray (flaska)", q: 0.25 },
-            { n: "Hela bönor (kg)", q: 14 }, { n: "Malda bönor (kg)", q: 6 }, { n: "Kaffefilter (burk)", q: 1 }, { n: "Socker (låda)", q: 0.5 }, { n: "Rörpinnar (låda)", q: 0.5 },
-            { n: "Earl Gray (st)", q: 15 }, { n: "Gottland (st)", q: 15 }, { n: "Öland (st)", q: 15 }, { n: "Sugrör (låda)", q: 1 },
-            { n: "Servetter (påse)", q: 1 }, { n: "Torky (rulle)", q: 0.5 },
-            { n: "Karamellsirap (flaska)", q: 2 }, { n: "Vaniljsirap (flaska)", q: 2 }, { n: "Sopsäckar (rulle)", q: 0.5 },
-            { n: "Burk, malt (st)", q: 4 }, { n: "Burk, choklad (st)", q: 4 }, { n: "Burk, hela bönor (st)", q: 4 },
-            { n: "Förkläde (st)", q: 2 }, { n: "Svarta trasor (st)", q: 4 }, { n: "Grå trasor (st)", q: 2 },
-            { n: "Cantucci (burk)", q: 1 }, { n: "Chaipulver (burk)", q: 3 }, { n: "Chokladpåsar (st)", q: 14 },
-            { n: "Mjölk (liter)", q: 73 }, { n: "Havremjölk (liter)", q: 12 }, { n: "Grädde (patron)", q: 10 },
-            { n: "Puly caff (burk)", q: 0.25 }, { n: "Plasthandskar (låda)", q: 0.25 }, { n: "Vatten (liter)", q: 60 },
-            { n: "Chokladbollar (st)", q: 90 }, { n: "Kakor (st)", q: 108 }, { n: "Muffins (st)", q: 96 }, { n: "Is (box)", q: 1 }
-        ] }
-        ]
-    };
+    try {
+        // Vi hämtar datan direkt från ditt objekt i script.js
+        // Om PACKING_TEMPLATES inte är global kan vi behöva definiera den här igen
+        const dataToUpload = {
+            car: {
+                "Mall 1 (Low Capacity)": ["Parasoll", "Bord & stolar", "Kabel", "5kg bönor", "Muggar"],
+                "Mall 2 (High Capacity)": ["Stort Tält", "4st Bord", "Långelkabel", "15kg bönor", "Muggar", "Vattentank"]
+            },
+            cart: {
+                "15 Tkr": [
+                    { n: "Koppar 16 Oz (rör)", q: 4 }, { n: "Koppar 12 Oz (rör)", q: 5 }, { n: "Koppar 6 Oz (rör)", q: 2 }, { n: "Koppar 4 Oz (rör)", q: 1 }, { n: "Lock 12/16 Oz (rör)", q: 2 },
+                    { n: "Diskmedel (flaska)", q: 0.25 }, { n: "Rengöringsspray (flaska)", q: 0.25 },
+                    { n: "Hela bönor (kg)", q: 8 }, { n: "Malda bönor (kg)", q: 3 }, { n: "Kaffefilter (burk)", q: 0.5 }, { n: "Socker (låda)", q: 0.5 }, { n: "Rörpinnar (låda)", q: 0.5 },
+                    { n: "Earl Gray (st)", q: 7 }, { n: "Gottland (st)", q: 7 }, { n: "Öland (st)", q: 7 }, { n: "Sugrör (låda)", q: 0.5 },
+                    { n: "Servetter (påse)", q: 0.5 }, { n: "Torky (rulle)", q: 0.5 },
+                    { n: "Karamellsirap (flaska)", q: 1.5 }, { n: "Vaniljsirap (flaska)", q: 1.5 }, { n: "Sopsäckar (rulle)", q: 0.5 },
+                    { n: "Burk, malt (st)", q: 4 }, { n: "Burk, choklad (st)", q: 4 }, { n: "Burk, hela bönor (st)", q: 4 },
+                    { n: "Förkläde (st)", q: 2 }, { n: "Svarta trasor (st)", q: 4 }, { n: "Grå trasor (st)", q: 2 },
+                    { n: "Cantucci (burk)", q: 0.8 }, { n: "Chaipulver (burk)", q: 1.5 }, { n: "Chokladpåsar (st)", q: 6 },
+                    { n: "Mjölk (liter)", q: 40 }, { n: "Havremjölk (liter)", q: 8 }, { n: "Grädde (patron)", q: 4 },
+                    { n: "Puly caff (burk)", q: 0.25 }, { n: "Plasthandskar (låda)", q: 0.25 }, { n: "Vatten (liter)", q: 60 },
+                    { n: "Chokladbollar (st)", q: 45 }, { n: "Kakor (st)", q: 52 }, { n: "Muffins (st)", q: 72 }, { n: "Is (box)", q: 0.66 }
+                ],
+                "25 Tkr": [
+                    { n: "Koppar 16 Oz (rör)", q: 6 }, { n: "Koppar 12 Oz (rör)", q: 7 }, { n: "Koppar 6 Oz (rör)", q: 3 }, { n: "Koppar 4 Oz (rör)", q: 1 }, { n: "Lock 12/16 Oz (rör)", q: 4 },
+                    { n: "Diskmedel (flaska)", q: 0.25 }, { n: "Rengöringsspray (flaska)", q: 0.25 },
+                    { n: "Hela bönor (kg)", q: 10 }, { n: "Malda bönor (kg)", q: 4 }, { n: "Kaffefilter (burk)", q: 0.7 }, { n: "Socker (låda)", q: 0.5 }, { n: "Rörpinnar (låda)", q: 0.5 },
+                    { n: "Earl Gray (st)", q: 10 }, { n: "Gottland (st)", q: 10 }, { n: "Öland (st)", q: 10 }, { n: "Sugrör (låda)", q: 0.7 },
+                    { n: "Servetter (påse)", q: 0.5 }, { n: "Torky (rulle)", q: 0.5 },
+                    { n: "Karamellsirap (flaska)", q: 1.5 }, { n: "Vaniljsirap (flaska)", q: 1.5 }, { n: "Sopsäckar (rulle)", q: 0.5 },
+                    { n: "Burk, malt (st)", q: 4 }, { n: "Burk, choklad (st)", q: 4 }, { n: "Burk, hela bönor (st)", q: 4 },
+                    { n: "Förkläde (st)", q: 2 }, { n: "Svarta trasor (st)", q: 4 }, { n: "Grå trasor (st)", q: 2 },
+                    { n: "Cantucci (burk)", q: 1 }, { n: "Chaipulver (burk)", q: 2 }, { n: "Chokladpåsar (st)", q: 10 },
+                    { n: "Mjölk (liter)", q: 65 }, { n: "Havremjölk (liter)", q: 12 }, { n: "Grädde (patron)", q: 6 },
+                    { n: "Puly caff (burk)", q: 0.25 }, { n: "Plasthandskar (låda)", q: 0.25 }, { n: "Vatten (liter)", q: 60 },
+                    { n: "Chokladbollar (st)", q: 60 }, { n: "Kakor (st)", q: 72 }, { n: "Muffins (st)", q: 96 }, { n: "Is (box)", q: 1 }
+                ],
+                "40 Tkr": [
+                    { n: "Koppar 16 Oz (rör)", q: 9 }, { n: "Koppar 12 Oz (rör)", q: 12 }, { n: "Koppar 6 Oz (rör)", q: 3 }, { n: "Koppar 4 Oz (rör)", q: 2 }, { n: "Lock 12/16 Oz (rör)", q: 6 },
+                    { n: "Diskmedel (flaska)", q: 0.25 }, { n: "Rengöringsspray (flaska)", q: 0.25 },
+                    { n: "Hela bönor (kg)", q: 14 }, { n: "Malda bönor (kg)", q: 6 }, { n: "Kaffefilter (burk)", q: 1 }, { n: "Socker (låda)", q: 0.5 }, { n: "Rörpinnar (låda)", q: 0.5 },
+                    { n: "Earl Gray (st)", q: 15 }, { n: "Gottland (st)", q: 15 }, { n: "Öland (st)", q: 15 }, { n: "Sugrör (låda)", q: 1 },
+                    { n: "Servetter (påse)", q: 1 }, { n: "Torky (rulle)", q: 0.5 },
+                    { n: "Karamellsirap (flaska)", q: 2 }, { n: "Vaniljsirap (flaska)", q: 2 }, { n: "Sopsäckar (rulle)", q: 0.5 },
+                    { n: "Burk, malt (st)", q: 4 }, { n: "Burk, choklad (st)", q: 4 }, { n: "Burk, hela bönor (st)", q: 4 },
+                    { n: "Förkläde (st)", q: 2 }, { n: "Svarta trasor (st)", q: 4 }, { n: "Grå trasor (st)", q: 2 },
+                    { n: "Cantucci (burk)", q: 1 }, { n: "Chaipulver (burk)", q: 3 }, { n: "Chokladpåsar (st)", q: 14 },
+                    { n: "Mjölk (liter)", q: 73 }, { n: "Havremjölk (liter)", q: 12 }, { n: "Grädde (patron)", q: 10 },
+                    { n: "Puly caff (burk)", q: 0.25 }, { n: "Plasthandskar (låda)", q: 0.25 }, { n: "Vatten (liter)", q: 60 },
+                    { n: "Chokladbollar (st)", q: 90 }, { n: "Kakor (st)", q: 108 }, { n: "Muffins (st)", q: 96 }, { n: "Is (box)", q: 1 }
+                ]
+            }
+        };
 
-    await setDoc(doc(db, "settings", "packing_templates"), dataToUpload);
-    alert("Mallar uppladdade till Firebase!");
+        const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+        
+        // Vi sparar i en samling som heter 'settings' och dokumentet 'packing_templates'
+        await setDoc(doc(window.db, "settings", "packing_templates"), dataToUpload);
+        
+        console.log("SUCCESS: Mallar sparade i Firebase!");
+        alert("Mallar sparade! Kontrollera samlingen 'settings' i din Firebase Console.");
+    } catch (e) {
+        console.error("ERROR vid migrering:", e);
+    }
 };
