@@ -2,6 +2,10 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, getDocs, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { renderCalendarView } from './calendar.js';
 import { renderAvailabilityView, initAvailabilityModule } from './availability.js';
+import { renderTVDashboard } from './tv.js'; // Importera den nya filen
+
+let tvRefreshInterval = null;
+
 let currentCarItems = [];
 let currentCartItems = [];
 
@@ -121,6 +125,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+window.db = db;
 initAvailabilityModule(db); // Detta gör att buggrapporten fungerar direkt!
 
 let assignments = [];
@@ -176,7 +181,7 @@ window.editAssignment = (id) => {
         window.activeUnitId = keys[0];
     }
 
-    window.isPackingPhase = false; 
+    window.isPackingPhase = true; 
     window.showView('create');
 };
 
@@ -252,11 +257,15 @@ window.render = () => {
 
 function renderDashboard(area) {
     const freeCars = cars.filter(c => c.status === 'Ledig').length;
+    
+    // 1. Hämta dagens datum i formatet YYYY-MM-DD
+    const today = new Date().toISOString().split('T')[0];
 
-    // Sortera uppdragen kronologiskt baserat på startdatum (närmast i tiden först)
-    const sortedAssignments = [...assignments].sort((a, b) => 
-        (a.startDate || "").localeCompare(b.startDate || "")
-    );
+    // 2. Filtrera bort gamla uppdrag och sortera kommande
+    // Vi använder endDate för filtrering så att pågående flerdagarsevenemang inte försvinner
+    const sortedAssignments = assignments
+        .filter(a => (a.endDate || a.startDate) >= today) 
+        .sort((a, b) => (a.startDate || "").localeCompare(b.startDate || ""));
 
     area.innerHTML = `
         <div class="stats-grid">
@@ -264,7 +273,12 @@ function renderDashboard(area) {
             <div class="stat-card"><h3>${freeCars}</h3><p>Lediga Bilar</p></div>
             <div class="stat-card"><h3>${assignments.filter(a => a.step === 'På plats').length}</h3><p>Vagnar på fältet</p></div>
         </div>
-        <div class="mission-list">${sortedAssignments.map(a => renderMissionCard(a)).join('')}</div>
+        <div class="mission-list">
+            ${sortedAssignments.length > 0 
+                ? sortedAssignments.map(a => renderMissionCard(a)).join('') 
+                : '<div style="text-align:center; width:100%; padding:40px; color:#aaa;">Inga kommande uppdrag hittades.</div>'
+            }
+        </div>
     `;
 }
 
@@ -424,24 +438,24 @@ function renderChecklist() {
     }
 
     const currentList = window.unitChecklists[window.activeUnitId];
-    const formatItemName = (name) => name.replace(/^([\d,x]+)/, '<strong>$1</strong>');
     const allDone = currentList.filter(i => i.type === 'item').every(i => i.done);
+    // Hämta den generella noten (vi sparar den på själva checklist-objektet)
+    const generalNote = window.unitChecklists[window.activeUnitId + "_note"] || "";
 
     container.innerHTML = `
         <div class="unit-tabs">
             ${unitIds.map(id => {
-        const isDone = window.unitChecklists[id].filter(i => i.type === 'item').every(i => i.done);
-        // LÄGG TILL: En ikon om enheten är klar
-        return `<button class="unit-tab ${window.activeUnitId === id ? 'active' : ''} ${isDone ? 'done' : ''}" 
-                        onclick="window.setActiveUnit('${id}')">
-                            ${isDone ? '<i class="fas fa-check-circle" style="color:#2ecc71; margin-right:5px;"></i>' : ''}
-                            ${id}
-                        </button>`;
-    }).join('')}
+                const isDone = window.unitChecklists[id].filter(i => i.type === 'item').every(i => i.done);
+                return `<button class="unit-tab ${window.activeUnitId === id ? 'active' : ''} ${isDone ? 'done' : ''}" 
+                                onclick="window.setActiveUnit('${id}')">
+                                    ${isDone ? '<i class="fas fa-check-circle"></i>' : ''}
+                                    ${id}
+                                </button>`;
+            }).join('')}
         </div>
 
-        <div class="checklist-header-flex" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding:0 5px;">
-            <h4 style="color:var(--fog-red); margin:0; font-size:1.1rem; font-weight:800;">${window.activeUnitId}</h4>
+        <div class="checklist-header-flex">
+            <h4>${window.activeUnitId}</h4>
             <button class="btn-select-all" onclick="window.toggleAllItems('${window.activeUnitId}')">
                 <i class="fas ${allDone ? 'fa-undo' : 'fa-check-double'}"></i> 
                 ${allDone ? 'Avmarkera alla' : 'Välj alla'}
@@ -450,36 +464,39 @@ function renderChecklist() {
 
         <div class="inner-list-container">
             ${currentList.map((item, i) => {
-        // ... (resten av koden för headers och items är samma som förut)
-        if (item.type === 'header') {
-            const expanded = window.listSectionsExpanded[item.sectionId];
-            return `<div class="list-group-header" onclick="window.toggleSection('${item.sectionId}')">
+                if (item.type === 'header') {
+                    const expanded = window.listSectionsExpanded[item.sectionId];
+                    return `<div class="list-group-header" onclick="window.toggleSection('${item.sectionId}')">
                                 <span>${item.name}</span>
                                 <i class="fas fa-chevron-${expanded ? 'up' : 'down'}"></i>
                             </div>`;
-        }
-        if (!window.listSectionsExpanded[item.sectionId]) return '';
-        return `
+                }
+                if (!window.listSectionsExpanded[item.sectionId]) return '';
+                
+                // RENSAD RAD: Bara namn och checkbox
+                return `
                     <div class="form-check-item ${item.done ? 'checked' : ''}" onclick="window.toggleFormCheck('${window.activeUnitId}', ${i})">
-                        <div class="item-content-wrapper">
-                            <span class="item-main-text">
-                                <strong>${item.qty || ''}${item.qty ? 'x ' : ''}</strong>${item.name}
-                            </span>
-                            
-                            <div class="item-comment-area" onclick="event.stopPropagation()">
-                                <input type="text" 
-                                    placeholder="+ Notering (t.ex. 85x)" 
-                                    value="${item.comment || ''}" 
-                                    onchange="window.updateComment('${window.activeUnitId}', ${i}, this.value)"
-                                    class="comment-input-transparent">
-                            </div>
-                        </div>
-                        <i class="${item.done ? 'fas fa-check-square' : 'far fa-square'}"></i>
+                        <span class="item-text-content">${item.name}</span>
+                        <i class="${item.done ? 'fas fa-check-square' : 'far fa-square'} item-check-icon"></i>
                     </div>`;
-    }).join('')}
+            }).join('')}
+
+            <div class="general-note-section">
+                <label class="note-label"><i class="fas fa-sticky-note"></i> Noteringar för ${window.activeUnitId}</label>
+                <textarea 
+                    placeholder="Skriv om du t.ex. plockat extra av något..." 
+                    onchange="window.updateGeneralUnitNote('${window.activeUnitId}', this.value)"
+                    class="general-note-textarea">${generalNote}</textarea>
+            </div>
         </div>
     `;
 }
+
+// Ny funktion för att spara den generella noten
+window.updateGeneralUnitNote = (unitId, val) => {
+    window.unitChecklists[unitId + "_note"] = val;
+    console.log(`Generell notering sparad för ${unitId}: ${val}`);
+};
 
 function renderCreate(area) {
     const editData = editingAssignmentId ? assignments.find(a => a.id === editingAssignmentId) : null;
@@ -542,7 +559,7 @@ function renderCreate(area) {
                             <div class="form-group">
                                 <label>Packmall Transportbil</label>
                                 <select id="sel-car-template" class="modern-select">
-                                    <option value="">-- Välj mall --</option>
+                                    <option value="">Välj mall</option>
                                     ${Object.keys(PACKING_TEMPLATES.car).map(t => `
                                         <option value="${t}" ${(saved.carTemplate || editData?.carTemplate) === t ? 'selected' : ''}>${t}</option>
                                     `).join('')}
@@ -558,7 +575,7 @@ function renderCreate(area) {
                             <div class="form-group">
                                 <label>Packmall Fogarollibil (Tkr)</label>
                                 <select id="sel-cart-template" class="modern-select">
-                                    <option value="">-- Välj nivå --</option>
+                                    <option value="">Välj mall</option>
                                     ${Object.keys(PACKING_TEMPLATES.cart).map(t => `
                                         <option value="${t}" ${(saved.cartTemplate || editData?.cartTemplate) === t ? 'selected' : ''}>${t}</option>
                                     `).join('')}
@@ -1005,114 +1022,32 @@ function initStatsCharts() {
     });
 }
 
-// ==========================================
-// LAGER-TV MED TOGGLE OCH KOMPAKT DESIGN
-// ==========================================
+window.openPackingDirectly = (id) => {
+    // Vi använder din befintliga editAssignment men tvingar den till steg 2
+    window.editAssignment(id);
+    window.isPackingPhase = true; // HOPPA DIREKT TILL PACKLISTAN
+    window.render();
+};
+
 window.renderTVDashboard = (area) => {
     toggleMainHeader(false); 
-    const now = new Date();
-    const isDarkMode = localStorage.getItem('tv-theme') === 'dark';
+    const allUnits = [...cars, ...trailers, ...carts];
+    
+    // Rensa gammalt intervall om det finns
+    if (tvRefreshInterval) clearInterval(tvRefreshInterval);
 
-    // Beräkna total dags-progress
-    const allItems = assignments.flatMap(a => (a.carItems || []).concat(a.cartItems || [])).filter(i => i.type === 'item');
-    const totalDone = allItems.filter(i => i.done).length;
-    const totalProgress = allItems.length > 0 ? Math.round((totalDone / allItems.length) * 100) : 0;
+    // Starta nytt intervall (Var 5:e minut för data/väder, men klockan sköts i render)
+    tvRefreshInterval = setInterval(() => {
+        if (currentView === 'tv') window.render();
+    }, 300000); // 300 000 ms = 5 min
 
-    const upcoming = assignments
-        .sort((a, b) => a.startDate.localeCompare(b.startDate))
-        .slice(0, 6);
-
-    const fleetAlerts = [...cars, ...trailers, ...carts]
-        .filter(u => u.healthStatus === 'danger' || u.healthStatus === 'warn');
-
-    area.innerHTML = `
-        <div class="tv-screen ${isDarkMode ? 'dark-theme' : 'light-theme'}">
-            <div class="tv-header-glass">
-                <div class="tv-title-group">
-                    <div class="tv-weather-widget">
-                        <i class="fas fa-cloud-sun weather-icon"></i>
-                        <div class="weather-text">
-                            <span class="temp">2°C</span>
-                            <span class="desc">Eslöv | Molnigt</span>
-                        </div>
-                    </div>
-                    <h1>LOGISTIK-PLANERING</h1>
-                </div>
-                
-                <div class="tv-total-progress-box">
-                    <span class="label">TOTAL PACKSTATUS I DAG</span>
-                    <div class="total-bar-container">
-                        <div class="total-bar-fill" style="width: ${totalProgress}%"></div>
-                        <span class="total-percent">${totalProgress}%</span>
-                    </div>
-                </div>
-
-                <div class="tv-controls">
-                    <div class="tv-clock-modern">
-                        <span class="time">${now.toLocaleTimeString('sv-SE', {hour: '2-digit', minute:'2-digit'})}</span>
-                        <span class="date">${now.toLocaleDateString('sv-SE')}</span>
-                    </div>
-                    <button onclick="window.toggleTVTheme()" class="theme-toggle-modern">
-                        <i class="fas ${isDarkMode ? 'fa-sun' : 'fa-moon'}"></i>
-                    </button>
-                    <button onclick="window.showView('calendar')" class="tv-exit-modern"><i class="fas fa-times"></i></button>
-                </div>
-            </div>
-
-            <div class="tv-layout-grid">
-                <div class="tv-main-col">
-                    <h3 class="tv-section-label">KOMMANDE PACKLISTOR</h3>
-                    <div class="tv-mission-list">
-                        ${upcoming.map(a => {
-                            const total = (a.carItems || []).concat(a.cartItems || []).filter(i => i.type === 'item');
-                            const done = total.filter(i => i.done).length;
-                            const prog = total.length > 0 ? Math.round((done/total.length)*100) : 0;
-                            return `
-                                <div class="tv-card-glass ${prog === 100 ? 'complete' : ''}">
-                                    <div class="tv-card-info">
-                                        <span class="tv-event-title">${a.event}</span>
-                                        <span class="tv-event-meta"><i class="fas fa-truck"></i> ${a.car} | <i class="far fa-calendar"></i> ${a.startDate}</span>
-                                    </div>
-                                    <div class="tv-card-progress">
-                                        <div class="prog-label">${prog}%</div>
-                                        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:${prog}%"></div></div>
-                                    </div>
-                                </div>
-                            `;
-                        }).join('')}
-                    </div>
-                </div>
-
-                <div class="tv-side-col">
-                    <div class="side-section">
-                        <h3 class="tv-section-label">FLEET STATUS</h3>
-                        <div class="tv-fleet-list">
-                            ${fleetAlerts.map(u => `
-                                <div class="tv-fleet-tag-row ${u.healthStatus}">
-                                    <span class="unit-name">${u.id}</span>
-                                    <span class="status-badge">${u.healthStatus === 'danger' ? 'KÖRFORBUD' : 'BRIST'}</span>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-
-                    <div class="side-section info-section">
-                        <h3 class="tv-section-label">DAGENS NOTERING</h3>
-                        <div class="tv-info-card">
-                            <i class="fas fa-info-circle"></i>
-                            <p>Kom ihåg att ladda batterierna på vagn Andrea efter dagens pass. Inventering av bönor på fredag!</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
+    renderTVDashboard(area, assignments, allUnits);
 };
 
 window.toggleTVTheme = () => {
     const current = localStorage.getItem('tv-theme');
     localStorage.setItem('tv-theme', current === 'dark' ? 'light' : 'dark');
-    renderTVDashboard(document.getElementById('content-area'));
+    window.renderTVDashboard(document.getElementById('content-area'));
 };
 
 function fleetAlertsCount() {
@@ -1123,13 +1058,18 @@ function fleetAlertsCount() {
 const originalRender = window.render;
 window.render = () => {
     const area = document.getElementById('content-area');
+    if (!area) return;
+
     if (currentView === 'tv') {
-        renderTVDashboard(area);
+        window.renderTVDashboard(area);
         return;
     }
-    if (currentView === 'stats') {
-        renderStatsView(area);
-        return;
-    }
-    originalRender(); 
+
+    // DIN BEFINTLIGA LOGIK FÖR ANDRA VYER
+    area.innerHTML = '';
+    if (currentView === 'dashboard') renderDashboard(area);
+    if (currentView === 'create') renderCreate(area);
+    if (currentView === 'availability') renderAvailabilityView(area, cars, trailers, carts, db, assignments);
+    if (currentView === 'stats') renderStatsView(area);
+    if (currentView === 'calendar') renderCalendarView(assignments, db, cars, trailers, carts, selectedStartDate);
 };
