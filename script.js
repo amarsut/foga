@@ -285,9 +285,16 @@ function renderAvailability(area) {
 }
 
 // Uppdaterar vagnens lista när man byter mall i dropdown-menyn
-window.updateTemplateItems = () => {
+window.updateTemplateItems = async () => {
     const data = window.pendingAssignmentData;
     if (!data) return;
+
+    // Hämta mallar från Firebase
+    const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+    const docSnap = await getDoc(doc(window.db, "settings", "packing_templates"));
+    const PACKING_TEMPLATES = docSnap.exists() ? docSnap.data() : null;
+
+    if (!PACKING_TEMPLATES) return;
 
     // Kontroll för att behålla bockar vid redigering
     if (editingAssignmentId && Object.keys(window.unitChecklists).length > 0) {
@@ -1167,4 +1174,54 @@ window.migrateTemplatesToFirebase = async () => {
     } catch (e) {
         console.error("ERROR vid migrering:", e);
     }
+};
+
+window.renderTemplateEditor = async (container) => {
+    const { doc, getDoc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+    const docSnap = await getDoc(doc(window.db, "settings", "packing_templates"));
+    
+    if (!docSnap.exists()) {
+        container.innerHTML = "<p>Inga mallar hittades. Kör migreringen först.</p>";
+        return;
+    }
+
+    const templates = docSnap.data();
+    
+    container.innerHTML = `
+        <div class="template-editor-grid">
+            <div class="template-selector">
+                <select id="admin-sel-template" onchange="window.loadTemplateToEdit(this.value)">
+                    <option value="">Välj mall att redigera...</option>
+                    ${Object.keys(templates.cart).map(name => `<option value="${name}">Vagn: ${name}</option>`).join('')}
+                </select>
+            </div>
+            <div id="active-template-items" class="items-list-admin">
+                </div>
+        </div>
+    `;
+    
+    // Spara global referens för editorn
+    window.currentEditingTemplates = templates;
+};
+
+window.loadTemplateToEdit = (name) => {
+    const items = window.currentEditingTemplates.cart[name];
+    const area = document.getElementById('active-template-items');
+    
+    area.innerHTML = `
+        <div class="admin-template-header">
+            <h5>Redigerar: ${name}</h5>
+            <button onclick="window.addTemplateItem('${name}')" class="btn-add-item"><i class="fas fa-plus"></i> Lägg till artikel</button>
+        </div>
+        <div class="items-table-admin">
+            ${items.map((item, idx) => `
+                <div class="admin-item-row">
+                    <input type="text" value="${item.n}" onchange="window.updateTemplateItem('${name}', ${idx}, 'n', this.value)" placeholder="Namn">
+                    <input type="number" step="0.01" value="${item.q}" onchange="window.updateTemplateItem('${name}', ${idx}, 'q', this.value)" style="width: 70px;">
+                    <button onclick="window.removeTemplateItem('${name}', ${idx})" class="btn-del-mini"><i class="fas fa-times"></i></button>
+                </div>
+            `).join('')}
+        </div>
+        <button onclick="window.saveTemplatesToFirebase()" class="btn-save-templates">SPARA ALLA MALLAR</button>
+    `;
 };
