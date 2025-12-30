@@ -1073,3 +1073,48 @@ window.render = () => {
     if (currentView === 'stats') renderStatsView(area);
     if (currentView === 'calendar') renderCalendarView(assignments, db, cars, trailers, carts, selectedStartDate);
 };
+
+window.renderAdminView = (area) => {
+    area.innerHTML = `
+        <div class="admin-container">
+            <section class="admin-section">
+                <h4><i class="fas fa-truck"></i> Hantera Fordonsparken</h4>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Typ</th>
+                            <th>Synlig</th>
+                            <th>Åtgärd</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${allUnits.map(u => `
+                            <tr>
+                                <td><strong>${u.id}</strong></td>
+                                <td>${u.type}</td>
+                                <td>
+                                    <label class="switch">
+                                        <input type="checkbox" ${u.isVisible !== false ? 'checked' : ''} 
+                                               onclick="toggleVisibility('${u.id}', '${u.type}')">
+                                        <span class="slider"></span>
+                                    </label>
+                                </td>
+                                <td>
+                                    <button class="btn-icon" onclick="deleteUnit('${u.id}')"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </section>
+
+            <section class="admin-section">
+                <h4><i class="fas fa-box-open"></i> Redigera Packmallar</h4>
+                <div id="template-editor-area">
+                    </div>
+            </section>
+        </div>
+    `;
+};
+
