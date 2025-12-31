@@ -1,8 +1,9 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, getDocs, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, getDocs, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { renderCalendarView } from './calendar.js';
 import { renderAvailabilityView, initAvailabilityModule } from './availability.js';
 import { renderTVDashboard } from './tv.js'; // Importera den nya filen
+import { increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 let tvRefreshInterval = null;
 
@@ -825,8 +826,42 @@ window.updateComment = (unitId, index, val) => {
     }
 };
 
+let logoClickCount = 0;
+let logoClickTimer;
+
 // Kör detta när sidan laddas för att återställa tidigare tillstånd
 document.addEventListener('DOMContentLoaded', () => {
+    const logo = document.querySelector('.logo-area'); 
+    
+    if (logo) {
+        logo.addEventListener('click', async () => {
+            logoClickCount++;
+            
+            // Återställ räknaren om man inte klickar snabbt nog (inom 2 sekunder)
+            clearTimeout(logoClickTimer);
+            logoClickTimer = setTimeout(() => { logoClickCount = 0; }, 2000);
+
+            if (logoClickCount === 5) {
+                logoClickCount = 0;
+                const statsSnap = await getDoc(doc(window.db, "settings", "site_stats"));
+                
+                if (statsSnap.exists()) {
+                    const data = statsSnap.data();
+                    const dev = data.devices || {};
+                    
+                    // Skapa en snygg lista över enheter
+                    let deviceList = Object.entries(dev)
+                        .map(([name, count]) => `• ${name}: ${count} st`)
+                        .join('\n');
+
+                    alert(`☕ FOGAROLLI INSIGHTS\n\n` +
+                        `Totala besök: ${data.totalVisits}\n\n` +
+                        `ENHETER:\n${deviceList || "Ingen data än"}`);
+                }
+            }
+        });
+    }
+
     const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
     if (isCollapsed) {
         document.getElementById('sidebar').classList.add('collapsed');
@@ -1298,3 +1333,34 @@ window.showIOSInstallInstructions = () => {
 window.addEventListener('load', () => {
     setTimeout(window.showIOSInstallInstructions, 2000); // Vänta 2 sekunder innan rutan visas
 });
+
+// 2. Funktion för att spåra besök
+const trackVisit = async () => {
+    if (localStorage.getItem('fog_admin')) return;
+
+    // Identifiera enhet
+    let device = "Övrigt";
+    const ua = navigator.userAgent;
+
+    if (/android/i.test(ua)) device = "Android";
+    else if (/iPhone|iPad|iPod/i.test(ua)) device = "iPhone/iOS";
+    else if (/Macintosh/i.test(ua)) device = "Mac";
+    else if (/Windows/i.test(ua)) device = "Windows";
+
+    try {
+        const statsRef = doc(window.db, "settings", "site_stats");
+        await updateDoc(statsRef, {
+            totalVisits: increment(1),
+            [`devices.${device}`]: increment(1) // Skapar fält som devices.iPhone, devices.Android osv.
+        });
+    } catch (e) {
+        // Om dokumentet inte finns, skapa det med startvärden
+        await setDoc(doc(window.db, "settings", "site_stats"), { 
+            totalVisits: 1,
+            devices: { [device]: 1 }
+        });
+    }
+};
+
+// Kör spårningen direkt när sidan laddas
+trackVisit();
