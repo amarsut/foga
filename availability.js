@@ -107,9 +107,9 @@ export async function renderAvailabilityView(area, cars, trailers, carts, db, as
 
             <div class="fleet-container">
                 <div class="fleet-sections-grid">
-                    ${renderFleetGroup('Företagsbilar', 'fa-truck-pickup', visibleCars, 'car')}
+                    ${renderFleetGroup('Transportbilar', 'fa-truck-pickup', visibleCars, 'car')}
                     ${renderFleetGroup('Släpvagnar', 'fa-trailer', visibleTrailers, 'trailer')}
-                    ${renderFleetGroup('Kaffevagnar', 'fa-coffee', visibleCarts, 'cart')}
+                    ${renderFleetGroup('Fogarollibilar', 'fa-coffee', visibleCarts, 'cart')}
                 </div>
             </div>
         </div>
