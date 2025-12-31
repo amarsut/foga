@@ -1,5 +1,5 @@
 /* ==========================================================================
-   FLEET MANAGEMENT CHAT & JOURNAL - CLEANED v2
+   FLEET MANAGEMENT CHAT & JOURNAL - CLEANED v3
    Microsoft Teams Inspired UI for Logistics Journal
    ========================================================================== */
 
@@ -8,7 +8,8 @@
     display: flex !important;
     flex-direction: column !important;
     gap: 20px !important;
-    padding: 20px 40px !important; /* Desktop-padding för luft vid raderingsknappar */
+    /* JUSTERING: Ändrat från 40px till 20px på sidorna för att minska "luft" på desktop */
+    padding: 20px !important; 
     background: #f5f5f5 !important;
     overflow-y: auto !important;
 }
@@ -38,8 +39,9 @@
 .teams-content-wrapper {
     display: flex !important;
     flex-direction: column !important;
-    max-width: 75% !important;
-    margin-left: 0 !important; /* Säkerställer ingen glipa efter borttagna avatarer */
+    /* JUSTERING: Ökat från 75% till 85% för att bubblorna ska kunna utnyttja mer bredd */
+    max-width: 85% !important; 
+    margin-left: 0 !important;
 }
 
 .user-msg .teams-content-wrapper { align-items: flex-start !important; }
@@ -51,7 +53,7 @@
     color: #616161; 
 }
 
-/* Avatarer är dolda per design */
+/* Avatarer dolda */
 .teams-avatar {
     display: none !important;
 }
@@ -73,10 +75,9 @@
     border: 1px solid #e1dfdd !important;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
     width: fit-content !important;
-    border-radius: 10px !important; /* Standard-radius */
+    border-radius: 10px !important;
 }
 
-/* Teams-specifika hörn */
 .user-msg .teams-bubble { border-top-left-radius: 0px !important; }
 .system-msg .teams-bubble { border-top-right-radius: 0px !important; }
 
@@ -101,9 +102,7 @@
     max-width: 100%;
 }
 
-/* 6. KNAPPAR & IKONER INUTI CHATTEN */
-
-/* Radera-knapp (Papperskorg) */
+/* 6. RADERA & ÅTGÄRDA */
 .teams-del-btn {
     color: #ccc !important;
     cursor: pointer !important;
@@ -112,15 +111,9 @@
     transition: 0.2s !important;
 }
 
-.teams-msg-row:hover .teams-del-btn {
-    opacity: 1 !important;
-}
+.teams-msg-row:hover .teams-del-btn { opacity: 1 !important; }
+.teams-del-btn:hover { color: #e30613 !important; }
 
-.teams-del-btn:hover {
-    color: #e30613 !important;
-}
-
-/* Åtgärda-knapp (Grön knapp) */
 .teams-res-btn {
     display: block !important;
     margin-top: 10px !important;
@@ -131,7 +124,7 @@
     border-radius: 4px !important;
     font-size: 0.75rem !important;
     font-weight: 800 !important;
-    cursor: pointer !important;
+    cursor: pointer;
 }
 
 /* 7. MODERN INPUT-RAD (NEDERKANT) */
@@ -173,10 +166,6 @@
     transition: color 0.2s !important;
 }
 
-.chat-action-btn:hover {
-    color: var(--fog-brown) !important;
-}
-
 /* 8. INFO/BRIST TOGGLE */
 .chat-category-pill {
     display: flex !important;
@@ -186,8 +175,6 @@
     cursor: pointer !important;
     border: 1px solid #e1dfdd !important;
     transition: 0.3s !important;
-    width: fit-content !important;
-    margin: 0 5px !important;
     transform: scale(0.9) !important;
 }
 
@@ -205,19 +192,9 @@
     box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
 }
 
-.chat-category-pill .opt-brist {
-    color: #999 !important;
-}
-
 .chat-category-pill.is-brist {
     border-color: #e30613 !important;
     background: #fff5f5 !important;
-}
-
-.chat-category-pill.is-brist .opt-info {
-    background: transparent !important;
-    color: #999 !important;
-    box-shadow: none !important;
 }
 
 .chat-category-pill.is-brist .opt-brist {
@@ -225,7 +202,7 @@
     color: #fff !important;
 }
 
-/* 9. MOBILANPASSNING (768px och neråt) */
+/* 9. MOBILANPASSNING */
 @media (max-width: 768px) {
     #chat-feed-v3 {
         padding: 15px 10px !important; 
@@ -233,7 +210,7 @@
     }
 
     .teams-content-wrapper {
-        max-width: 85% !important; /* Utnyttjar mer av skärmbredden på mobil */
+        max-width: 85% !important; 
     }
 
     .teams-input-container {
@@ -242,13 +219,11 @@
 
     .teams-input-bar {
         width: 100% !important;
-        margin: 0 !important;
         gap: 8px !important;
         padding: 6px 10px !important;
     }
 
     #chat-text-input {
-        flex: 1 !important;
-        font-size: 16px !important; /* Förhindrar zoom vid fokus på iPhone */
+        font-size: 16px !important; 
     }
 }
