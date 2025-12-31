@@ -1060,47 +1060,56 @@ window.render = () => {
    ============================================================= */
 
 window.renderAdminView = async (area) => {
-    // Vi använder variablerna direkt från filens topp
     const allUnits = [...cars, ...trailers, ...carts];
     
     area.innerHTML = `
-        <div class="admin-container">
-            <div class="admin-card">
-                <h4><i class="fas fa-bus"></i> Hantera Fordonsparken</h4>
-                <div class="admin-table-wrapper">
-                    <table class="admin-table">
-                        <thead>
-                            <tr><th>Enhet</th><th>Visa i Fleet</th><th>Åtgärd</th></tr>
-                        </thead>
-                        <tbody>
-                            ${allUnits.length > 0 ? allUnits.map(u => {
-                                const isCar = cars.some(c => c.id === u.id);
-                                const isTrailer = trailers.some(t => t.id === u.id);
-                                const uType = isCar ? 'car' : isTrailer ? 'trailer' : 'cart';
+        <div class="admin-container-vision">
+            <div class="admin-card-vision">
+                <div class="admin-card-header-minimal">
+                    <h4><i class="fas fa-truck-pickup"></i> Fordonsparken</h4>
+                    <span class="admin-unit-count">${allUnits.length} enheter</span>
+                </div>
+                
+                <div class="admin-list-wrapper">
+                    ${allUnits.length > 0 ? allUnits.map(u => {
+                        const isCar = cars.some(c => c.id === u.id);
+                        const isTrailer = trailers.some(t => t.id === u.id);
+                        const uType = isCar ? 'car' : isTrailer ? 'trailer' : 'cart';
+                        const typeLabel = isCar ? 'BIL' : isTrailer ? 'SLÄP' : 'VAGN';
 
-                                return `<tr>
-                                    <td><strong>${u.id}</strong> <span class="type-badge">${uType}</span></td>
-                                    <td>
+                        return `
+                            <div class="admin-unit-item">
+                                <div class="unit-info-side">
+                                    <span class="unit-id-text">${u.id}</span>
+                                    <span class="unit-type-tag ${uType}">${typeLabel}</span>
+                                </div>
+                                <div class="unit-control-side">
+                                    <div class="visibility-toggle">
+                                        <span class="toggle-label-text">Visa i Fleet</span>
                                         <label class="switch-ios">
                                             <input type="checkbox" ${u.isVisible !== false ? 'checked' : ''} 
                                                    onchange="window.toggleUnitVisibility('${u.id}', '${uType}', this.checked)">
                                             <span class="slider-ios"></span>
                                         </label>
-                                    </td>
-                                    <td><button class="btn-delete-icon" onclick="window.deleteUnitPermanent('${u.id}', '${uType}')"><i class="fas fa-trash"></i></button></td>
-                                </tr>`;
-                            }).join('') : '<tr><td colspan="3">Inga fordon hittades i databasen.</td></tr>'}
-                        </tbody>
-                    </table>
+                                    </div>
+                                    <button class="btn-delete-minimal" onclick="window.deleteUnitPermanent('${u.id}', '${uType}')">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </div>`;
+                    }).join('') : '<div class="admin-empty">Inga fordon hittades.</div>'}
                 </div>
             </div>
 
-            <div class="admin-card">
-                <h4><i class="fas fa-boxes"></i> Packmallar</h4>
-                <div id="admin-template-editor-container">
+            <div class="admin-card-vision" style="margin-top: 30px;">
+                <div class="admin-card-header-minimal">
+                    <h4><i class="fas fa-boxes"></i> Packmallar</h4>
+                </div>
+                <div class="admin-template-action">
                     <button class="btn-primary-modern" onclick="window.initTemplateEditor()">
                         <i class="fas fa-edit"></i> Öppna Mall-editor
                     </button>
+                    <div id="admin-template-editor-container" style="margin-top:20px;"></div>
                 </div>
             </div>
         </div>
