@@ -2293,3 +2293,54 @@ input:checked + .slider-ios:before { transform: translateX(18px); }
 }
 
 .btn-delete-minimal:hover { color: var(--fog-red); }
+
+/* Ghost Date Input - Ser ut som text, fungerar som input */
+.ghost-date-input {
+    border: none !important;
+    background: transparent !important;
+    font-family: inherit !important;
+    font-size: 0.8rem !important;
+    font-weight: 700 !important;
+    color: inherit !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    cursor: pointer;
+    outline: none;
+    display: block;
+    width: 100%;
+}
+
+/* Subtil indikator vid hover */
+.ghost-date-input:hover {
+    background: rgba(0,0,0,0.03) !important;
+    border-radius: 4px;
+}
+
+/* Döljer kalenderikonen på vissa webbläsare för en renare look */
+.ghost-date-input::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.3;
+}
+
+/* Behållare för datumfälten i modalen */
+.date-input-wrap {
+    padding: 5px;
+    border-radius: 6px;
+    transition: background 0.3s ease;
+}
+
+/* GUL STATUS: Service behövs (> 1 år sedan sist) */
+.date-input-wrap.status-warn {
+    background: rgba(241, 196, 15, 0.15) !important;
+}
+.date-input-wrap.status-warn .ghost-date-input {
+    color: #d4ac0d !important;
+}
+
+/* RÖD STATUS: Besiktning har passerats */
+.date-input-wrap.status-danger {
+    background: rgba(227, 6, 19, 0.1) !important;
+}
+.date-input-wrap.status-danger .ghost-date-input {
+    color: #e30613 !important;
+}
