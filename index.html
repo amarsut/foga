@@ -6,10 +6,11 @@
     <title>Fogarolli Logistics Hub v2.0</title>
     <link rel="icon" type="image/x-icon" href="icons/favicon.ico">
     
-    <link rel="stylesheet" href="tv.css">
-    <link rel="stylesheet" href="chat.css">
-    <link rel="stylesheet" href="mobile.css" media="(max-width: 768px)">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="chat.css">
+    <link rel="stylesheet" href="tv.css">
+    <link rel="stylesheet" href="mobile.css" media="(max-width: 768px)">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
@@ -29,79 +30,6 @@
         });
     }
     </script>
-
-    <style>
-        /* --- NY MOBIL-STRUKTUR --- */
-        
-        /* Overlay som mörkar ner sidan när menyn är öppen */
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 998;
-        }
-
-        @media (max-width: 768px) {
-            /* Tvinga bort den gamla röriga toppmenyn från bilden */
-            .top-header {
-                display: flex !important;
-                padding: 10px 15px !important;
-                background: #fff !important;
-                border-bottom: 1px solid #eee !important;
-                height: 60px !important;
-                align-items: center !important;
-                justify-content: flex-start !important;
-            }
-
-            /* Göm alla nav-element som ligger löst i headern */
-            .top-header nav, .top-header .menu-items { 
-                display: none !important; 
-            }
-
-            /* Hamburgarknappen */
-            .mobile-nav-toggle {
-                display: block !important;
-                background: none;
-                border: none;
-                font-size: 24px;
-                color: #333;
-                margin-right: 15px;
-                cursor: pointer;
-            }
-
-            /* Sidebar-justering för mobil */
-            .sidebar {
-                position: fixed !important;
-                left: -280px !important; /* Startläge: utanför skärmen */
-                top: 0 !important;
-                bottom: 0 !important;
-                width: 280px !important;
-                z-index: 9999 !important;
-                transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-                display: flex !important;
-                background: #1a1a1a !important;
-            }
-
-            .sidebar.mobile-active {
-                left: 0 !important; /* Glider in */
-            }
-
-            .sidebar-overlay.active {
-                display: block;
-            }
-
-            /* Fixa kalender-vyn så den inte trycks ihop */
-            #content-area {
-                width: 100% !important;
-                padding: 10px !important;
-                overflow-x: hidden !important;
-            }
-        }
-    </style>
 </head>
 <body>
     <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
