@@ -1,391 +1,469 @@
 /* ==========================================================================
    MOBILE VIEW - ULTIMATE TOP-APP NAV v5 (FINAL PRECISION RENDER)
    ========================================================================== */
+@media (max-width: 768px) {
 
-/* --- 1. BASLAYOUT & GLOBALA RESET --- */
-.app-container {
-    flex-direction: column !important;
-    height: 100vh !important;
-    background-color: #fdfcfb;
-}
+    /* --- 1. BASLAYOUT & GLOBALA RESET --- */
+    .app-container {
+        flex-direction: column !important;
+        height: 100vh !important;
+        background-color: #fdfcfb;
+        /* Appens huvudfärg */
+    }
 
-.main-content {
-    flex: 1;
-    padding: 10px !important;
-    padding-bottom: 80px !important;
-    overflow-y: auto !important;
-}
+    .main-content {
+        flex: 1;
+        /* MINSKA LUFT: Sätt padding-top till 0 och sidorna till 8px */
+        padding: 0 8px 80px 8px !important;
+        overflow-y: auto !important;
+        /* FIXA BAKGRUND: Tvinga transparent så att .app-container syns */
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
 
-#content-area {
-    padding: 0 !important;
-}
+    #content-area {
+        padding: 0 !important;
+    }
 
-/* Dölj element som stör mobilvyn */
-.logo-area,
-.user-profile,
-.sidebar-header,
-.user-info,
-.sidebar-top h2,
-.filter-separator {
-    display: none !important;
-}
+    /* Dölj element som stör mobilvyn */
+    .logo-area,
+    .user-profile,
+    .sidebar-header,
+    .user-info,
+    .sidebar-top h2,
+    .filter-separator {
+        display: none !important;
+    }
 
-/* --- 2. SIDEBAR & NAVIGATION --- */
-.sidebar {
-    position: fixed !important;
-    top: 0 !important;
-    left: -280px !important;
-    bottom: 0 !important;
-    width: 240px !important;
-    height: 100vh !important;
-    display: flex !important;
-    flex-direction: column !important;
-    background: var(--fog-brown) !important;
-    z-index: 10000 !important;
-    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    box-shadow: 5px 0 25px rgba(0, 0, 0, 0.5) !important;
-}
+    .top-header {
+        height: 60px !important;
+        /* Lås höjden här om du vill ha den fast */
+        padding: 10px 15px !important;
+        margin-bottom: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+    }
 
-.sidebar.mobile-active {
-    left: 0 !important;
-}
+    .header-info h1 {
+        font-size: 1.0rem !important;
+        /* Mer kompakt titel */
+    }
 
-.sidebar-nav {
-    display: flex !important;
-    flex-direction: column !important;
-    padding: 10px !important;
-}
+    .checklist-header-flex,
+    .panel-header {
+        /* Ta bort sidpaddling så titeln nuddar kanten */
+        padding: 10px 0px !important;
+        margin: 0 !important;
+        display: flex !important;
+        justify-content: flex-start !important;
+    }
 
-.nav-item {
-    width: 100% !important;
-    padding: 12px 15px !important;
-    justify-content: flex-start !important;
-    font-size: 0.9rem !important;
-    color: rgba(255, 255, 255, 0.8) !important;
-}
+    /* Hamburgarknappen */
+    .mobile-nav-toggle {
+        display: block !important;
+        background: none;
+        border: none;
+        font-size: 24px;
+        color: #333;
+        margin-right: 15px;
+        cursor: pointer;
+    }
 
-.nav-item.active {
-    color: #ffffff !important;
-}
+    /* --- 2. SIDEBAR & NAVIGATION --- */
+    .sidebar {
+        position: fixed !important;
+        top: 0 !important;
+        left: -280px !important;
+        bottom: 0 !important;
+        width: 240px !important;
+        height: 100vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+        background: var(--fog-brown) !important;
+        z-index: 10000 !important;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 5px 0 25px rgba(0, 0, 0, 0.5) !important;
+    }
 
-.nav-item.active i {
-    transform: scale(1.1);
-    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.3));
-}
+    .sidebar.mobile-active {
+        left: 0 !important;
+    }
 
-/* --- 3. KALENDER (ÅTERSTÄLLD HORISONTELL SCROLL & NAVIGERING) --- */
-.calendar-filter-bar {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    /* Förhindrar stapling */
-    overflow-x: auto !important;
-    /* Möjliggör horisontell scroll */
-    padding: 12px !important;
-    gap: 8px !important;
-    -webkit-overflow-scrolling: touch;
-}
+    .sidebar-nav {
+        display: flex !important;
+        flex-direction: column !important;
+        padding: 10px !important;
+    }
 
-.filter-btn {
-    flex: 0 0 auto !important;
-}
+    .nav-item {
+        width: 100% !important;
+        padding: 12px 15px !important;
+        justify-content: flex-start !important;
+        font-size: 0.9rem !important;
+        color: rgba(255, 255, 255, 0.8) !important;
+    }
 
-.mobile-nav-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px;
-    background: #fff;
-    margin-bottom: 10px;
-    border-radius: 12px;
-}
+    .nav-item.active {
+        color: #ffffff !important;
+    }
 
-.mobile-nav-header button {
-    background: var(--fog-brown);
-    color: #fff;
-    border: none;
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    /* Cirkulära nav-knappar */
-}
+    .nav-item.active i {
+        transform: scale(1.1);
+        filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.3));
+    }
 
-/* ==========================================================================
+    /* --- 3. KALENDER (ÅTERSTÄLLD HORISONTELL SCROLL & NAVIGERING) --- */
+    .calendar-filter-bar {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        /* Förhindrar stapling */
+        overflow-x: auto !important;
+        /* Möjliggör horisontell scroll */
+        padding: 12px !important;
+        gap: 8px !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .filter-btn {
+        flex: 0 0 auto !important;
+    }
+
+    .mobile-nav-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        background: #fff;
+        margin-bottom: 10px;
+        border-radius: 12px;
+    }
+
+    .mobile-nav-header button {
+        background: var(--fog-brown);
+        color: #fff;
+        border: none;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        /* Cirkulära nav-knappar */
+    }
+
+    /* ==========================================================================
    KALENDER - PREMIUM KORTVY FÖR MOBIL
    ========================================================================== */
 
-#calendar-container.mobile-card-view {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    padding: 0 !important;
-}
+    #calendar-container.mobile-timeline-view {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+    }
 
-/* Vecko-navigering i toppen */
-.mobile-nav-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px;
-    background: #fff;
-    margin-bottom: 10px;
-    border-radius: 12px;
-    box-shadow: var(--shadow);
-}
+    /* Vecko-navigering i toppen */
+    .mobile-nav-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        background: #fff;
+        margin-bottom: 10px;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+    }
 
-.mobile-nav-header span {
-    font-weight: 850;
-    color: var(--fog-brown);
-}
+    .mobile-nav-header span {
+        font-weight: 850;
+        color: var(--fog-brown);
+    }
 
-.mobile-nav-header button {
-    background: var(--fog-brown);
-    color: #fff;
-    border: none;
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-}
+    .mobile-nav-header button {
+        background: var(--fog-brown);
+        color: #fff;
+        border: none;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+    }
 
-/* Dag-kortet */
-.day-card {
-    margin-bottom: 15px;
-    background: #fff;
-    border-radius: 16px;
-    overflow: hidden;
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
-}
+    /* Dag-kortet */
+    .day-card {
+        margin-bottom: 12px !important;
+        border-radius: 12px !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+        /* Subtil skugga för "kort"-känsla */
+        border: 1px solid rgba(0, 0, 0, 0.05) !important;
+        background: #fff !important;
+    }
 
-.day-card-header {
-    padding: 10px 15px;
-    background: #fcfaf8;
-    font-size: 0.75rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    color: #999;
-    border-bottom: 1px solid #f0f0f0;
-}
+    .day-card-header {
+        padding: 10px 15px;
+        background: #fcfaf8;
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: #999;
+        border-bottom: 1px solid #f0f0f0;
 
-.day-card.has-events .day-card-header {
-    color: var(--fog-brown);
-    background: rgba(92, 64, 51, 0.05);
-}
+        white-space: nowrap !important;
+        overflow: visible !important;
+    }
 
-/* Inuti varje uppdragskort */
-.mobile-event-card {
-    padding: 15px;
-    border-bottom: 1px solid #f5f5f5;
-    background: #fff;
-}
+    .day-card.has-events .day-card-header {
+        color: var(--fog-brown);
+        background: rgba(92, 64, 51, 0.05);
+    }
 
-.mobile-event-card:last-child {
-    border-bottom: none;
-}
+    /* Inuti varje uppdragskort */
+    .mobile-event-card {
+        padding: 15px;
+        border-bottom: 1px solid #f5f5f5;
+        background: #fff;
+    }
 
-.m-event-top {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 8px;
-}
+    .mobile-event-card:last-child {
+        border-bottom: none;
+    }
 
-.m-event-area {
-    font-size: 0.6rem;
-    font-weight: 900;
-    padding: 2px 6px;
-    border-radius: 4px;
-    color: #fff;
-}
+    .m-event-top {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }
 
-.m-event-title {
-    font-size: 1.1rem;
-    font-weight: 800;
-    color: #333;
-    margin-bottom: 5px;
-}
+    .m-event-area {
+        font-size: 0.6rem;
+        font-weight: 900;
+        padding: 2px 6px;
+        border-radius: 4px;
+        color: #fff;
+    }
 
-.m-event-meta {
-    display: flex;
-    gap: 15px;
-    font-size: 0.75rem;
-    color: #777;
-}
+    .m-event-title {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #333;
+        margin-bottom: 5px;
+    }
 
-.status-ok {
-    color: #2ecc71;
-}
+    .m-event-meta {
+        display: flex;
+        gap: 15px;
+        font-size: 0.75rem;
+        color: #777;
+    }
 
-.status-wait {
-    color: #f1c40f;
-}
+    .status-ok {
+        color: #2ecc71;
+    }
 
-.m-empty-day {
-    padding: 20px;
-    text-align: center;
-    font-size: 0.8rem;
-    color: #ccc;
-    font-style: italic;
-}
+    .status-wait {
+        color: #f1c40f;
+    }
 
-/* 1. STRIPS FÖR EJ KLARA UPPDRAG (Liknar datorvyn) */
-.m-event-incomplete {
-    background-image: repeating-linear-gradient(45deg,
-            #ffffff,
-            #ffffff 10px,
-            #f9f9f9 10px,
-            #f9f9f9 20px) !important;
-    border-left: 4px solid #f1c40f !important;
-    /* Gul varningskant */
-}
+    .m-empty-day {
+        padding: 20px;
+        text-align: center;
+        font-size: 0.8rem;
+        color: #ccc;
+        font-style: italic;
+    }
 
-/* 2. BADGES & INDIKATORER */
-.m-badge-group {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-}
+    /* 1. STRIPS FÖR EJ KLARA UPPDRAG (Liknar datorvyn) */
+    .m-event-incomplete {
+        background-image: repeating-linear-gradient(45deg,
+                #ffffff,
+                #ffffff 10px,
+                #f9f9f9 10px,
+                #f9f9f9 20px) !important;
+        border-left: 4px solid #f1c40f !important;
+        /* Gul varningskant */
+    }
 
-.m-event-badge {
-    font-size: 0.55rem;
-    font-weight: 900;
-    padding: 2px 5px;
-    border-radius: 4px;
-    color: #fff;
-    text-transform: uppercase;
-}
+    /* 2. BADGES & INDIKATORER */
+    .m-badge-group {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+    }
 
-.m-day-indicator {
-    font-size: 0.6rem;
-    font-weight: 700;
-    color: #777;
-    background: #eee;
-    padding: 2px 5px;
-    border-radius: 4px;
-}
+    .m-event-badge {
+        font-size: 0.55rem;
+        font-weight: 900;
+        padding: 2px 5px;
+        border-radius: 4px;
+        color: #fff;
+        text-transform: uppercase;
+    }
 
-/* 3. TYDLIGHET FÖR FLERDAGARSEVENT */
-.m-event-multi {
-    border-left: 4px solid var(--fog-brown);
-}
+    .m-day-indicator {
+        font-size: 0.6rem;
+        font-weight: 700;
+        color: #777;
+        background: #eee;
+        padding: 2px 5px;
+        border-radius: 4px;
+    }
 
-.m-event-multi.m-event-incomplete {
-    /* Kombinerad stil om det är både flerdagars och ej klart */
-    border-left: 4px solid #f1c40f;
-}
+    /* 3. TYDLIGHET FÖR FLERDAGARSEVENT */
+    .m-event-multi {
+        border-left: 4px solid var(--fog-brown);
+    }
 
-/* Justering av titel för bättre läsbarhet */
-.m-event-title {
-    margin-top: 5px;
-    font-size: 1.05rem;
-    line-height: 1.2;
-}
+    .m-event-multi.m-event-incomplete {
+        /* Kombinerad stil om det är både flerdagars och ej klart */
+        border-left: 4px solid #f1c40f;
+    }
 
-/* Grön linje för färdiga kort */
-.m-event-ready {
-    border-left: 5px solid #2ecc71 !important;
-    background: #fff !important;
-    box-shadow: 0 2px 8px rgba(46, 204, 113, 0.1) !important;
-}
+    /* Justering av titel för bättre läsbarhet */
+    .m-event-title {
+        margin-top: 5px;
+        font-size: 1.05rem;
+        line-height: 1.2;
+    }
 
-/* Gul linje för ej klara (behåll strips från förra steget) */
-.m-event-incomplete {
-    border-left: 5px solid #f1c40f !important;
-}
+    /* Grön linje för färdiga kort */
+    .m-event-ready {
+        border-left: 5px solid #2ecc71 !important;
+        background: #fff !important;
+        box-shadow: 0 2px 8px rgba(46, 204, 113, 0.1) !important;
+    }
 
-/* Indikator för flerdagars-koppling */
-.m-multi-label {
-    font-size: 0.55rem;
-    font-weight: 900;
-    background: #5c4033;
-    color: #fff;
-    padding: 2px 6px;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    letter-spacing: 0.5px;
-}
+    /* Gul linje för ej klara (behåll strips från förra steget) */
+    .m-event-incomplete {
+        border-left: 5px solid #f1c40f !important;
+    }
 
-.m-multi-label i {
-    font-size: 0.5rem;
-}
+    /* Indikator för flerdagars-koppling */
+    .m-multi-label {
+        font-size: 0.55rem;
+        font-weight: 900;
+        background: #5c4033;
+        color: #fff;
+        padding: 2px 6px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        letter-spacing: 0.5px;
+    }
 
-/* Gör korten lite mer kompakta vid behov */
-.mobile-event-card {
-    transition: transform 0.1s ease;
-}
+    .m-multi-label i {
+        font-size: 0.5rem;
+    }
 
-.mobile-event-card:active {
-    transform: scale(0.98);
-}
+    /* Gör korten lite mer kompakta vid behov */
+    .mobile-event-card {
+        transition: transform 0.1s ease;
+    }
 
-/* --- 4. SKAPA UPPDRAG & FORMULÄR --- */
-.create-view-container.single-column {
-    padding: 0 !important;
-}
+    .mobile-event-card:active {
+        transform: scale(0.98);
+    }
 
-.form-container.compact-form {
-    max-width: 100% !important;
-    border-radius: 0 !important;
-    border: none !important;
-}
+    /* --- 4. SKAPA UPPDRAG & FORMULÄR --- */
+    .create-view-container.single-column {
+        padding: 0 !important;
+    }
 
-.form-grid {
-    grid-template-columns: 1fr !important;
-    /* En kolumn */
-    gap: 15px !important;
-}
+    .form-container.compact-form {
+        max-width: 100% !important;
+        border-radius: 0 !important; /* Tar bort runda hörn */
+        border: none !important;        /* Tar bort ramen */
+        box-shadow: none !important;    /* Tar bort skuggan du ser på bilden */
+    }
 
-.modern-input,
-.modern-select {
-    height: 50px !important;
-    font-size: 1rem !important;
-}
+    .form-grid {
+        grid-template-columns: 1fr !important;
+        /* En kolumn */
+        gap: 15px !important;
+    }
 
-.cart-chip-container {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 8px !important;
-}
+    .modern-input,
+    .modern-select {
+        height: 50px !important;
+        font-size: 1rem !important;
+    }
 
-/* --- 5. PACKLISTA & PLOCKLISTA --- */
-.unit-tabs {
-    display: flex !important;
-    gap: 6px !important;
-    padding: 8px 10px !important;
-    overflow-x: auto !important;
-    border-bottom: 2px solid #eee;
-}
+    .cart-chip-container {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+    }
 
-.list-group-header {
-    margin: 0 !important;
-    padding: 5px 10px !important;
-    background: #f8f9fa !important;
-    font-size: 0.75rem !important;
-    text-transform: uppercase;
-}
+    /* --- 5. PACKLISTA & PLOCKLISTA --- */
+    /*
+    Snyggar till packlistan
+    */
+    .panel-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 8px !important;
+        padding: 15px 10px !important;
+    }
 
-.form-check-item {
-    width: 100% !important;
-    padding: 12px 15px !important;
-    border-bottom: 1px solid #f0f0f0 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-}
+    .btn-edit-details {
+        font-size: 0.75rem !important;
+        background: #f0f0f0 !important;
+        padding: 6px 12px !important;
+        border-radius: 6px !important;
+        align-self: flex-start; /* Flyttar knappen till höger under titeln */
+    }
 
-/* --- 6. FLEET MODAL (KOMPLETTA FIXAR FÖR OVERVIEW, HEADER & CHATT) --- */
-@media (max-width: 768px) {
+    /* Överraskning: Packlistan som "Kort" */
+    .form-check-item {
+        background: #fff !important;
+        margin-bottom: 8px !important;
+        border: 1px solid #eee !important;
+        border-radius: 10px !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important;
+    }
+
+    .item-text-content {
+        font-weight: 600 !important;
+        color: #444 !important;
+    }
+
+    /* Gör checkboxen enorm så man inte missar */
+    .item-check-icon {
+        font-size: 1.6rem !important;
+        color: #ccc !important;
+    }
+
+    /* 
+    Begränsa åtgärdslistan så man ser Teknik-boxen under 
+    */
+    #tab-overview .bento-box:first-child {
+        max-height: 300px !important;
+        overflow-y: auto !important;
+        background: #fff4f4 !important; /* Svag röd toning för att markera fokus */
+        border: 1px solid #ffebeb !important;
+    }
+
+    .task-bubble-item {
+        padding: 10px !important;
+        margin-bottom: 8px !important;
+    }
+
+    /* 
+    Fixar Skapa nytt uppdrag till full bred och inte smal 
+    */
+    .inner-scroll-area {
+        padding: 10px 5px !important;
+        /* Minskat från 20px för att utnyttja bredden */
+    }
+
+    /* --- 6. FLEET MODAL (KOMPLETTA FIXAR FÖR OVERVIEW, HEADER & CHATT) --- */
 
     /* Fullscreen Modal */
+
     .bento-modal {
-        width: 100vw !important;
-        height: 100dvh !important;
-        max-width: none !important;
+        width: 100% !important;
+        height: 100% !important;
+        max-height: 100vh !important;
         border-radius: 0 !important;
-        margin: 0 !important;
-        display: flex !important;
-        flex-direction: column !important;
     }
 
     /* Scroll-fix för Översikt */
@@ -426,18 +504,41 @@
         flex: 1 !important;
     }
 
-    /* Media-flik: Stapla element */
+    /* Stapla innehållet i mediafliken */
     #tab-media.active {
         display: flex !important;
         flex-direction: column !important;
-        height: 100% !important;
-        padding: 10px !important;
-        overflow-y: auto !important;
+        padding: 15px 10px !important;
     }
 
+    /* Tvinga sektioner (Bilder / Dokument) att ligga under varandra */
+    #tab-media>div {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 25px !important;
+    }
+
+    /* Ta bort vertikala linjer och återställ padding för Dokument-sektionen */
+    #tab-media div[style*="border-left"] {
+        border-left: none !important;
+        padding-left: 0 !important;
+        margin-top: 10px !important;
+    }
+
+    /* 2. Förbättrad Media-flik (Fleet-modal) */
     .image-grid-overview {
-        grid-template-columns: repeat(3, 1fr) !important;
-        gap: 8px !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        /* 4 bilder per rad istället för 3 */
+        gap: 4px !important;
+        padding: 8px !important;
+    }
+
+    .image-grid-overview img {
+        border-radius: 4px !important;
+        aspect-ratio: 1/1;
+        /* Tvinga kvadratiska bilder för enhetlighet */
+        object-fit: cover;
     }
 
     /* Övriga layoutjusteringar Fleet */
@@ -456,118 +557,130 @@
         padding: 15px 12px !important;
         width: 100% !important;
     }
-}
 
-/* --- 7. STATISTIK --- */
-@media (max-width: 768px) {
-    .stats-kpi-row {
-        grid-template-columns: 1fr 1fr !important;
-        gap: 8px !important;
+    /* ============================
+    FÖRBÄTTRINGAR / JUSTERINGAR 
+    ============================= */
+
+    /* 3. Kritiska åtgärder (Fleet-vy) MINSKAD LUFT MELLAN KORT */
+    .mo-grid {
+        gap: 6px !important;
+        /* Tätare mellan korten */
     }
 
-    .stats-main-grid {
-        grid-template-columns: 1fr !important;
+    .mo-card {
+        padding: 10px 12px !important;
+        margin-bottom: 0 !important;
     }
 
-    .chart-container-card {
-        height: 280px !important;
+    /* FÖRBÄTTRAD STATISTIKVY */
+
+    .stats-dashboard-premium {
+        padding: 5px 10px !important;
     }
-}
 
-/*
-BUG FIXES EFTER RENSNING AV CSS KOD
-*/
+    /* Premium KPI Cards */
+    .premium-kpi-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 25px;
+    }
 
-/* 1. Fixa klippt text i kalenderkort */
+    .p-kpi-card {
+        padding: 20px 15px;
+        border-radius: 20px;
+        display: flex;
+        flex-direction: column;
+        color: #fff;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
 
-.day-card-header {
-    padding: 12px 15px !important;
-    /* Säkerställ tillräcklig luft för datumet */
-    white-space: nowrap !important;
-    /* Hindrar radbrytning */
-    overflow: visible !important;
-    /* Tillåt texten att synas */
-    font-size: 0.75rem !important;
-    display: flex !important;
-    align-items: center !important;
-}
+    .p-kpi-card.mission {
+        background: linear-gradient(135deg, #5c4033 0%, #3d2a22 100%);
+    }
 
-.day-card {
-    margin: 0 5px 15px 5px !important;
-    /* Ger lite distans till skärmkanten */
-}
+    .p-kpi-card.fix {
+        background: linear-gradient(135deg, #e30613 0%, #a3050e 100%);
+    }
 
-/* 2. Justera titlar (Minska storleken) */
+    .p-kpi-label {
+        font-size: 0.6rem;
+        font-weight: 850;
+        letter-spacing: 1px;
+        opacity: 0.8;
+    }
 
-.header-info h1 {
-    font-size: 0.95rem !important;
-    /* Tidigare 1.1rem */
-}
+    .p-kpi-total {
+        font-size: 1.8rem;
+        font-weight: 900;
+        margin: 4px 0;
+    }
 
-.checklist-header-flex h4 {
-    font-size: 1.0rem !important;
-    /* Tidigare 1.2rem/1.3rem */
-}
+    .p-kpi-sub {
+        font-size: 0.65rem;
+        opacity: 0.7;
+    }
 
-.m-event-title {
-    font-size: 0.9rem !important;
-    /* Tidigare 1.05rem/1.1rem */
-    line-height: 1.1 !important;
-}
+    /* Infographic Cards */
+    .infographic-card {
+        background: #fff;
+        border-radius: 24px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+        border: 1px solid rgba(0, 0, 0, 0.02);
+    }
 
-.modal-header-vision h3 {
-    font-size: 0.9rem !important;
-}
+    .card-info h5 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 850;
+        color: #333;
+    }
 
-/* 3. Åtgärda försvunnen chatt/journal */
+    .card-info p {
+        margin: 2px 0 15px 0;
+        font-size: 0.7rem;
+        color: #999;
+    }
 
-#chat-feed-v3 {
-    padding: 15px 15px !important;
-    /* Ökad sidpadding från 10px */
-    width: 100% !important;
-    box-sizing: border-box !important;
-}
+    .chart-box {
+        position: relative;
+        height: 180px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 
-.teams-content-wrapper {
-    max-width: 90% !important;
-    /* Mer plats men med säkerhetsmarginal */
-    margin-left: 5px !important;
-    /* Puffa ut från absoluta vänsterkanten */
-}
+    .chart-center-label {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        pointer-events: none;
+    }
 
-/* 4. Fleet-modal: Snygga till Media-fliken */
+    .chart-center-label span {
+        font-size: 1.6rem;
+        font-weight: 900;
+        color: var(--fog-brown);
+    }
 
-/* Stapla innehållet i mediafliken */
-#tab-media.active {
-    display: flex !important;
-    flex-direction: column !important;
-    padding: 15px 10px !important;
-}
+    .chart-center-label small {
+        font-size: 0.6rem;
+        font-weight: 700;
+        color: #ccc;
+        text-transform: uppercase;
+    }
 
-/* Tvinga sektioner (Bilder / Dokument) att ligga under varandra */
-#tab-media>div {
-    display: flex !important;
-    flex-direction: column !important;
-    width: 100% !important;
-    gap: 25px !important;
-}
+    .chart-box-bar {
+        height: 200px;
+    }
 
-/* Ta bort vertikala linjer och återställ padding för Dokument-sektionen */
-#tab-media div[style*="border-left"] {
-    border-left: none !important;
-    padding-left: 0 !important;
-    margin-top: 10px !important;
-}
-
-/* 3-kolumnsgrid för bilderna */
-.image-grid-overview {
-    display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: 8px !important;
-}
-
-/* Tvinga Fleet-modalen till absolut fullskärm */
-@media (max-width: 768px) {
+    /* 
+    Tvinga Fleet-modalen till absolut fullskärm 
+    */
 
     /* 1. Tvinga modalen att fylla skärmen */
     .modal-content {
@@ -578,58 +691,9 @@ BUG FIXES EFTER RENSNING AV CSS KOD
         border-radius: 0 !important;
     }
 
-    .bento-modal {
-        width: 100% !important;
-        height: 100% !important;
-        max-height: 100vh !important;
-        border-radius: 0 !important;
-    }
-
-    /* 2. Stapla Bento-boxarna vertikalt */
-    .bento-grid-modal {
-        grid-template-columns: 1fr !important;
-        /* En kolumn istället för två */
-        padding: 15px !important;
-        gap: 15px !important;
-    }
-
-    /* 3. Justera Headern för små skärmar */
-    .modal-header-vision {
-        padding: 10px 15px !important;
-        flex-wrap: wrap;
-        /* Tillåt radbrytning om statusen är lång */
-        gap: 10px;
-    }
-
-    .modal-header-vision h3 {
-        font-size: 1rem !important;
-    }
-
-    /* 4. Gör flikarna större för fingrar */
-    .fm-nav-tabs {
-        padding: 0 15px !important;
-        gap: 15px !important;
-    }
-
-    .fm-tab-link {
-        font-size: 0.8rem !important;
-        padding: 15px 0 !important;
-        flex: 1;
-        text-align: center;
-    }
-
-    /* 5. Anpassa användningsboxen */
-    .usage-tile-vision {
-        padding: 15px !important;
-    }
-
-    /* 6. Bildgalleri på mobil */
-    .image-grid-overview {
-        grid-template-columns: repeat(3, 1fr) !important;
-        /* 3 bilder per rad */
-    }
-
-    /* 7. Status-pill i headern */
+    /* 
+    7. Status-pill i headern samt sätter rätt på badgen och "x"
+    */
     .status-pill-header {
         order: 3;
         /* Flytta ner statusen under ID:t på extremt smala skärmar */
@@ -640,221 +704,70 @@ BUG FIXES EFTER RENSNING AV CSS KOD
     .header-right-actions {
         order: 2;
     }
-}
 
-/* 5. Korrekt placering av "X" och status i headern */
+    /* 1. FOOTER-RENSNING: Ingen sticky, staplas på höjden */
+    .form-footer {
+        display: flex !important;
+        flex-direction: column !important; /* Staplar knappar vertikalt */
+        gap: 12px !important;
+        padding: 20px 15px !important;
+        background: #fff !important;
+        border-top: 1px solid #eee !important;
+        width: 100% !important;
+        box-sizing: border-box !important; /* Viktigt för att slippa sidoscroll */
+        position: relative !important; /* Inte längre sticky */
+        margin: 0 0 0 0 !important; /* Ger luft ovanför men inte åt sidorna */
+    }
 
-.modal-header-vision {
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-}
+    .form-footer div {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 10px !important;
+    }
 
-.header-right-actions {
-    display: flex !important;
-    flex-direction: row !important;
-    /* Ta bort row-reverse */
-    align-items: center !important;
-    gap: 12px !important;
-    margin-left: auto !important;
-    /* Pushar hela gruppen till höger */
-}
+    .form-footer button, 
+    .btn-primary-modern, 
+    .btn-secondary-modern {
+        width: 100% !important; /* Knappen tar hela bredden */
+        min-height: 55px !important; /* Stor och tryckvänlig */
+        margin: 0 !important;
+        font-size: 1rem !important;
+        justify-content: center !important;
+    }
 
-.fm-close-icon {
-    order: 2 !important;
-    /* Tvingar krysset att vara efter statusen */
-    padding: 5px !important;
-}
+    /* Radera-knappen hamnar längst ner och blir diskretare men bred */
+    .btn-delete-main {
+        order: 10; /* Hamnar sist i listan */
+        width: 100% !important;
+        padding: 15px !important;
+        justify-content: center !important;
+        border: 1px solid #ffebeb !important;
+        border-radius: 10px !important;
+    }
 
-.status-pill-header {
-    order: 1 !important;
-    font-size: 0.65rem !important;
-}
+    /* FIX: Skapar avstånd mellan fordonsnamn och "Avmarkera alla" */
+    .checklist-header-flex {
+        display: flex !important;
+        justify-content: space-between !important; /* Trycker ut elementen till kanterna */
+        align-items: center !important;
+        padding: 15px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
 
-.inner-scroll-area {
-    padding: 10px 5px !important;
-    /* Minskat från 20px för att utnyttja bredden */
-}
+    .checklist-header-flex h4 {
+        margin: 0 !important;
+        font-size: 1.1rem !important;
+    }
 
-/* ============================
-FÖRBÄTTRINGAR / JUSTERINGAR 
-============================= */
-
-/* 1. Minska "luft" (Global kompakt layout) */
-.main-content {
-    padding: 8px !important;
-    /* Minskat från 10px */
-}
-
-.top-header {
-    height: 50px !important;
-    /* Minskat från 60px */
-    padding: 0 12px !important;
-}
-
-.header-info h1 {
-    font-size: 1.0rem !important;
-    /* Mer kompakt titel */
-}
-
-.checklist-header-flex,
-.panel-header {
-    padding: 0px 10px !important;
-    /* Tajtare rubrikområden */
-}
-
-/* 2. Förbättrad Media-flik (Fleet-modal) */
-.image-grid-overview {
-    grid-template-columns: repeat(4, 1fr) !important;
-    /* 4 bilder per rad istället för 3 */
-    gap: 4px !important;
-    padding: 8px !important;
-}
-
-.image-grid-overview img {
-    border-radius: 4px !important;
-    aspect-ratio: 1/1;
-    /* Tvinga kvadratiska bilder för enhetlighet */
-    object-fit: cover;
-}
-
-/* 3. Kritiska åtgärder (Fleet-vy) MINSKAD LUFT MELLAN KORT */
-.mo-grid {
-    gap: 6px !important;
-    /* Tätare mellan korten */
-}
-
-.mo-card {
-    padding: 10px 12px !important;
-    margin-bottom: 0 !important;
-}
-
-/* 4. Separata Kalender-kort */
-#calendar-container.mobile-card-view {
-    background: transparent !important;
-    /* Tar bort den stora vita ytan */
-    box-shadow: none !important;
-    border: none !important;
-}
-
-.day-card {
-    margin-bottom: 12px !important;
-    border-radius: 12px !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
-    /* Subtil skugga för "kort"-känsla */
-    border: 1px solid rgba(0, 0, 0, 0.05) !important;
-    background: #fff !important;
-}
-
-/* Ändrat från .mobile-card-view till .mobile-timeline-view för att matcha calendar.js */
-#calendar-container.mobile-timeline-view {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    padding: 0 !important;
-}
-
-/* FÖRBÄTTRAD STATISTIKVY */
-
-.stats-dashboard-premium {
-    padding: 5px 10px !important;
-}
-
-/* Premium KPI Cards */
-.premium-kpi-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 25px;
-}
-
-.p-kpi-card {
-    padding: 20px 15px;
-    border-radius: 20px;
-    display: flex;
-    flex-direction: column;
-    color: #fff;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-}
-
-.p-kpi-card.mission {
-    background: linear-gradient(135deg, #5c4033 0%, #3d2a22 100%);
-}
-
-.p-kpi-card.fix {
-    background: linear-gradient(135deg, #e30613 0%, #a3050e 100%);
-}
-
-.p-kpi-label {
-    font-size: 0.6rem;
-    font-weight: 850;
-    letter-spacing: 1px;
-    opacity: 0.8;
-}
-
-.p-kpi-total {
-    font-size: 1.8rem;
-    font-weight: 900;
-    margin: 4px 0;
-}
-
-.p-kpi-sub {
-    font-size: 0.65rem;
-    opacity: 0.7;
-}
-
-/* Infographic Cards */
-.infographic-card {
-    background: #fff;
-    border-radius: 24px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
-    border: 1px solid rgba(0, 0, 0, 0.02);
-}
-
-.card-info h5 {
-    margin: 0;
-    font-size: 1rem;
-    font-weight: 850;
-    color: #333;
-}
-
-.card-info p {
-    margin: 2px 0 15px 0;
-    font-size: 0.7rem;
-    color: #999;
-}
-
-.chart-box {
-    position: relative;
-    height: 180px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.chart-center-label {
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    pointer-events: none;
-}
-
-.chart-center-label span {
-    font-size: 1.6rem;
-    font-weight: 900;
-    color: var(--fog-brown);
-}
-
-.chart-center-label small {
-    font-size: 0.6rem;
-    font-weight: 700;
-    color: #ccc;
-    text-transform: uppercase;
-}
-
-.chart-box-bar {
-    height: 200px;
+    /* FIX: Tvingar bocken att ligga till vänster om namnet */
+    .unit-tab {
+        display: flex !important;
+        flex-direction: row !important; /* Tvingar ikon och text på samma rad */
+        align-items: center !important;
+        gap: 8px !important;
+        padding: 10px 18px !important;
+        white-space: nowrap !important;
+    }
 }
