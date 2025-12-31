@@ -36,7 +36,7 @@ export async function renderAvailabilityView(area, cars, trailers, carts, db, as
                         text: "SYSTEM: Status ändrad till Körförbud p.g.a. utgången besiktning.",
                         category: "besiktning",
                         author: "System",
-                        date: new Date().toLocaleString('sv-SE'),
+                        date: new Date().toLocaleString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
                         id: "sys-auto-" + Date.now()
                     })
                 });
@@ -181,7 +181,7 @@ export async function renderAvailabilityView(area, cars, trailers, carts, db, as
         
         await updateDoc(doc(db, colMap[uType], id), {
             notes: arrayUnion({
-                text, category, author: 'Admin', date: new Date().toLocaleString('sv-SE'), id: noteId 
+                text, category, author: 'Admin', date: new Date().toLocaleString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }), id: noteId 
             })
         });
         input.value = '';
@@ -240,7 +240,7 @@ export async function renderAvailabilityView(area, cars, trailers, carts, db, as
         if (docSnap.exists()) {
             const data = docSnap.data();
             const updatedNotes = data.notes.map(n => {
-                if (String(n.id) === String(noteId)) return { ...n, resolved: true, resolvedDate: new Date().toLocaleString('sv-SE') };
+                if (String(n.id) === String(noteId)) return { ...n, resolved: true, resolvedDate: new Date().toLocaleString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) };
                 return n;
             });
             await updateDoc(docRef, { notes: updatedNotes });
@@ -300,10 +300,16 @@ window.showUnitManagementModal = function(unit, type, db, activeTab = 'tab-overv
     const activeDays = unitEvents.filter(e => new Date(e.startDate) >= thirtyDaysAgo).length;
     const usagePercent = Math.round((activeDays / 30) * 100);
 
-    // 2. Kontrollera besiktning
+    // 2. Kontrollera besiktning och service
     const now = new Date();
+    const oneYearAgo = new Date(); 
+    oneYearAgo.setFullYear(now.getFullYear() - 1); // Gräns för service (12 månader)
+
     const nextInsp = unit.nextInspection ? new Date(unit.nextInspection) : null;
-    const isInspExpired = nextInsp && now > nextInsp;
+    const lastServ = unit.lastService ? new Date(unit.lastService) : null;
+
+    const isInspExpired = nextInsp && now > nextInsp; // Röd om datumet passerat
+    const isServExpired = lastServ && lastServ < oneYearAgo; // Gul om > 1 år sedan service
 
     // 3. Status-konfiguration för headern
     const statusCfg = {
@@ -316,7 +322,7 @@ window.showUnitManagementModal = function(unit, type, db, activeTab = 'tab-overv
 
     // 4. Data-urval för Översikt
     const activeTasks = notes.filter(n => n.category === 'brist' && !n.resolved).reverse().slice(0, 5);
-    const recentImages = [...images].reverse().slice(0, 6); // Ökat till 6 för att passa 3-kolumnsgrid bättre
+    const recentImages = [...images].reverse().slice(0, 6);
     const recentDocs = [...docs].reverse().slice(0, 3);
 
     body.innerHTML = `
@@ -373,8 +379,20 @@ window.showUnitManagementModal = function(unit, type, db, activeTab = 'tab-overv
                             <div class="bento-box">
                                 <span class="bento-title">Besiktning & Service</span>
                                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;">
-                                    <div><label style="font-size:0.5rem; font-weight:800; color:#999;">SERVICE</label><div style="font-weight:700; font-size:0.8rem;">${unit.lastService || '---'}</div></div>
-                                    <div><label style="font-size:0.5rem; font-weight:800; color:#999;">BESIKTNING</label><div style="font-weight:700; font-size:0.8rem; color:${isInspExpired ? '#e30613' : 'inherit'};">${unit.nextInspection || '---'}</div></div>
+                                    <div class="date-input-wrap ${isServExpired ? 'status-warn' : ''}">
+                                        <label style="font-size:0.5rem; font-weight:800; color:#999;">SENASTE SERVICE</label>
+                                        <input type="date" 
+                                            class="ghost-date-input" 
+                                            value="${unit.lastService || ''}" 
+                                            onchange="window.updateUnitField('${unit.id}', '${type}', 'lastService', this.value)">
+                                    </div>
+                                    <div class="date-input-wrap ${isInspExpired ? 'status-danger' : ''}">
+                                        <label style="font-size:0.5rem; font-weight:800; color:#999;">NÄSTA BESIKTNING</label>
+                                        <input type="date" 
+                                            class="ghost-date-input" 
+                                            value="${unit.nextInspection || ''}" 
+                                            onchange="window.updateUnitField('${unit.id}', '${type}', 'nextInspection', this.value)">
+                                    </div>
                                 </div>
                                 <div style="margin-top:15px; border-top:1px solid #f5f5f5; padding-top:12px;">
                                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;"><span style="font-size:0.6rem; font-weight:800; color:#bbb; text-transform:uppercase;">Användningsgrad</span><span style="font-size:0.85rem; font-weight:900; color:var(--fog-brown);">${usagePercent}%</span></div>
@@ -392,7 +410,7 @@ window.showUnitManagementModal = function(unit, type, db, activeTab = 'tab-overv
                                     <button onclick="window.setFleetStatus('${unit.id}', '${type}', 'danger')" style="flex:1; padding:7px 0; border-radius:8px; border:1px solid #eee; font-size:0.65rem; background:${hStatus === 'danger' ? '#e30613' : 'white'}; color:${hStatus === 'danger' ? 'white' : '#666'};">FÖRBUD</button>
                                 </div>
                             </div>
-
+                            
                             <div class="bento-box">
                                 <span class="bento-title">Senaste Bilder</span>
                                 ${images.length > 0 ? `
@@ -598,7 +616,7 @@ window.saveSystemLog = async () => {
         // setDoc skriver över det fasta dokumentet i Firebase
         await setDoc(doc(dbInstance, "bugreports", SYSTEM_LOG_ID), {
             text: text,
-            lastUpdated: new Date().toLocaleString('sv-SE'),
+            lastUpdated: new Date().toLocaleString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
             updatedBy: 'Admin'
         });
 
@@ -619,7 +637,7 @@ window.handleImageUpload = async function(inputElement, unitId, unitType) {
 
     // Komprimera bilden först (kräver din compressImage funktion)
     const base64String = await window.compressImage(file);
-    const timestamp = new Date().toLocaleString('sv-SE');
+    const timestamp = new Date().toLocaleString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
     try {
         const { doc, updateDoc, arrayUnion } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
@@ -664,7 +682,7 @@ window.handleDocUpload = async function(inputElement, unitId, unitType) {
     reader.onload = async (e) => {
         const base64String = e.target.result;
         const today = new Date().toISOString().split('T')[0];
-        const timestamp = new Date().toLocaleString('sv-SE');
+        const timestamp = new Date().toLocaleString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
         try {
             const { doc, updateDoc, arrayUnion } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
@@ -809,5 +827,26 @@ window.deleteDoc = async function(unitId, unitType, index) {
         docs.splice(index, 1);
         await updateDoc(docRef, { attachedDocs: docs });
         window.refreshModal(unitId, unitType);
+    }
+};
+
+window.updateUnitField = async (unitId, uType, field, newValue) => {
+    const colMap = { car: 'cars', trailer: 'trailers', cart: 'carts' };
+    const collectionName = colMap[uType];
+
+    try {
+        const { doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+        const docRef = doc(window.db, collectionName, unitId);
+        
+        await updateDoc(docRef, {
+            [field]: newValue
+        });
+
+        console.log(`System: ${field} uppdaterat till ${newValue} för ${unitId}`);
+        
+        // Valfritt: Om du vill att vyn ska räkna om ifall datumet gått ut (för att byta färg till röd)
+        // window.refreshModal(unitId, uType); 
+    } catch (error) {
+        console.error("Fel vid auto-save av datum:", error);
     }
 };
