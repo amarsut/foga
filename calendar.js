@@ -114,11 +114,14 @@ export function renderCalendarView(assignments, db, cars = [], trailers = [], ca
     function renderDesktopFullCalendar(data, target) {
         const calendarEl = document.getElementById('calendar-container');
         calendarEl.classList.remove('mobile-timeline-view');
+
+        
         const events = data.map(a => ({
             id: a.id, title: a.event, start: a.startDate, end: a.endDate,
             extendedProps: { area: a.businessArea || 'Event', car: a.car, carts: a.carts || [], carItems: a.carItems || [], cartItems: a.cartItems || [] }
         }));
         const calendar = new FullCalendar.Calendar(calendarEl, {
+            dateClick: (info) => window.showView('create', info.dateStr),
             initialDate: target || new Date(),
             initialView: 'dayGridMonth',
             locale: 'sv',
