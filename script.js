@@ -181,6 +181,7 @@ document.querySelectorAll('.nav-item').forEach(item => {
             window.isPackingPhase = false;
             window.pendingAssignmentData = null; // Detta rensar "minnet" från tidigare besök
             window.unitChecklists = {};          // Detta rensar packlistorna helt
+            selectedStartDate = null;
         }
         
         showView(view);
@@ -466,11 +467,13 @@ window.updateGeneralUnitNote = (unitId, val) => {
 
 function renderCreate(area) {
     const editData = editingAssignmentId ? assignments.find(a => a.id === editingAssignmentId) : null;
-    // Hämta det temporärt sparade data-objektet
     const saved = window.pendingAssignmentData || {};
 
+    const today = new Date().toLocaleDateString('sv-SE'); 
+    let defaultStart = editData?.startDate || selectedStartDate || saved.startDate || today;
+    let defaultEnd = editData?.endDate || selectedStartDate || saved.endDate || today;
+
     if (!window.isPackingPhase) {
-        // STEG 1: EVENTDETALJER
         area.innerHTML = `
             <div class="create-view-container single-column">
                 <div class="form-container compact-form">
@@ -487,7 +490,7 @@ function renderCreate(area) {
                                 <label>Affärsområde</label>
                                 <select id="sel-area" class="modern-select">
                                     ${['Event', 'Catering', 'Street', 'FPJ'].map(area => `
-                                        <option value="${area}" ${(saved.businessArea || editData?.businessArea) === area ? 'selected' : ''}>${area}</option>
+                                        <option value="${area}" ${(saved.businessArea || editData?.businessArea || 'Event') === area ? 'selected' : ''}>${area}</option>
                                     `).join('')}
                                 </select>
                             </div>
@@ -495,11 +498,11 @@ function renderCreate(area) {
                         <div class="form-grid">
                             <div class="form-group">
                                 <label>Startdatum</label>
-                                <input type="date" id="start-date" value="${saved.startDate || editData?.startDate || (selectedStartDate || '')}" class="modern-input" onclick="this.showPicker()">
+                                <input type="date" id="start-date" value="${defaultStart}" class="modern-input" onclick="this.showPicker()">
                             </div>
                             <div class="form-group">
                                 <label>Slutdatum</label>
-                                <input type="date" id="end-date" value="${saved.endDate || editData?.endDate || (selectedStartDate || '')}" class="modern-input" onclick="this.showPicker()">
+                                <input type="date" id="end-date" value="${defaultEnd}" class="modern-input" onclick="this.showPicker()">
                             </div>
                         </div>
 
