@@ -228,29 +228,105 @@ window.showView = (view, preDate = null) => {
     render();
 };
 
-function renderDashboard(area) {
-    const freeCars = cars.filter(c => c.status === 'Ledig').length;
-    
-    // 1. Hämta dagens datum i formatet YYYY-MM-DD
-    const today = new Date().toISOString().split('T')[0];
+const getWeatherData = () => ({ temp: 14, desc: 'Växlande molnighet', icon: 'cloud-sun' });
 
-    // 2. Filtrera bort gamla uppdrag och sortera kommande
-    // Vi använder endDate för filtrering så att pågående flerdagarsevenemang inte försvinner
-    const sortedAssignments = assignments
-        .filter(a => (a.endDate || a.startDate) >= today) 
-        .sort((a, b) => (a.startDate || "").localeCompare(b.startDate || ""));
+function renderDashboard(area) {
+    const today = new Date();
+    const thirtyDaysAhead = new Date();
+    thirtyDaysAhead.setDate(today.getDate() + 30);
+
+    // 1. Beräkna data för korten
+    const upcoming30Days = assignments.filter(a => {
+        const d = new Date(a.startDate);
+        return d >= today && d <= thirtyDaysAhead;
+    });
+
+    const packingNow = assignments.filter(a => a.step === 'Packar'); //
+    
+    // AI Val 1: Fleet Health (Fordon som behöver kärlek)
+    const fleetAlerts = [...cars, ...trailers, ...carts].filter(u => u.healthStatus === 'danger' || u.healthStatus === 'warn');
+    
+    // AI Val 2: Tillgängliga resurser just nu
+    const freeCarts = carts.filter(c => c.status === 'Ledig').length;
+
+    const weather = getWeatherData();
 
     area.innerHTML = `
-        <div class="stats-grid">
-            <div class="stat-card"><h3>${sortedAssignments.length}</h3><p>Aktiva Uppdrag</p></div>
-            <div class="stat-card"><h3>${freeCars}</h3><p>Lediga Bilar</p></div>
-            <div class="stat-card"><h3>${assignments.filter(a => a.step === 'På plats').length}</h3><p>Vagnar på fältet</p></div>
-        </div>
-        <div class="mission-list">
-            ${sortedAssignments.length > 0 
-                ? sortedAssignments.map(a => renderMissionCard(a)).join('') 
-                : '<div style="text-align:center; width:100%; padding:40px; color:#aaa;">Inga kommande uppdrag hittades.</div>'
-            }
+        <div class="dashboard-root">
+            <div class="kpi-row">
+                <div class="kpi-card">
+                    <i class="fas fa-calendar-alt kpi-icon"></i>
+                    <span class="label">Kommande 30 dagar</span>
+                    <span class="value">${upcoming30Days.length}</span>
+                    <span class="sub">Totalt ${assignments.length} uppdrag</span>
+                </div>
+                <div class="kpi-card">
+                    <i class="fas fa-box-open kpi-icon"></i>
+                    <span class="label">Packas just nu</span>
+                    <span class="value">${packingNow.length}</span>
+                    <span class="sub">Uppdrag ej klara</span>
+                </div>
+                <div class="kpi-card">
+                    <i class="fas fa-tools kpi-icon"></i>
+                    <span class="label">Fleet Attention</span>
+                    <span class="value">${fleetAlerts.length}</span>
+                    <span class="sub">Fordon behöver åtgärd</span>
+                </div>
+                <div class="kpi-card">
+                    <i class="fas fa-coffee kpi-icon"></i>
+                    <span class="label">Lediga Vagnar</span>
+                    <span class="value">${freeCarts}</span>
+                    <span class="sub">Klara för bokning</span>
+                </div>
+            </div>
+
+            <div class="dashboard-main">
+                <div class="side-section-title"><i class="fas fa-list-ul"></i> Kommande Schema</div>
+                <div class="mission-list" style="grid-template-columns: 1fr;">
+                    ${upcoming30Days.length > 0 
+                        ? upcoming30Days.sort((a,b) => a.startDate.localeCompare(b.startDate)).map(a => renderMissionCard(a)).join('') 
+                        : '<div class="m-empty-day">Inga uppdrag närmsta 30 dagarna.</div>'}
+                </div>
+            </div>
+
+            <div class="dashboard-sidebar">
+                <div class="side-section-title"><i class="fas fa-cloud-sun"></i> Lokalt Väder</div>
+                
+                <div class="weather-widget">
+                    <div class="weather-info">
+                        <h4>Eslöv, SE</h4>
+                        <span>${weather.desc}</span>
+                    </div>
+                    <div class="weather-temp">
+                        <i class="fas fa-${weather.icon}"></i> ${weather.temp}°
+                    </div>
+                </div>
+
+                <div class="side-section-title"><i class="fas fa-exclamation-triangle"></i> Fleet To-Do</div>
+                <div class="fleet-attention-list">
+                    ${fleetAlerts.length > 0 ? fleetAlerts.slice(0, 4).map(u => `
+                        <div class="mo-card" style="margin-bottom:8px; background:white;">
+                            <div class="mo-unit">
+                                <strong>${u.id}</strong>
+                                <span>${u.healthStatus === 'danger' ? 'KRITISK ÅTGÄRD' : 'Service behövs'}</span>
+                            </div>
+                            <div class="mo-alerts">
+                                <span class="mo-tag ${u.healthStatus === 'danger' ? 'danger' : 'warn'}">
+                                    <i class="fas fa-tools"></i>
+                                </span>
+                            </div>
+                        </div>
+                    `).join('') : '<p style="font-size:0.8rem; color:#999;">Alla fordon är OK!</p>'}
+                </div>
+
+                <div class="dashboard-actions">
+                    <button class="btn-dash-primary" onclick="showView('create')">
+                        <i class="fas fa-plus-circle"></i> Nytt Uppdrag
+                    </button>
+                    <button class="btn-dash-outline" onclick="showView('availability')">
+                        <i class="fas fa-truck-moving"></i> Fleet Management
+                    </button>
+                </div>
         </div>
     `;
 }
