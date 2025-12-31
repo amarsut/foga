@@ -771,3 +771,41 @@
         white-space: nowrap !important;
     }
 }
+
+/* ADMIN & SYSTEM */
+@media (max-width: 768px) {    
+    /* 1. Ta bort bakgrund och ram på containern */
+    .admin-card-vision {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    /* 2. Minska luften på sidorna */
+    .admin-container-vision {
+        padding: 0 !important;
+        max-width: 100% !important;
+    }
+
+    /* 3. Fixa linjeringen i raderna */
+    .admin-unit-item {
+        padding: 10px 5px !important; /* Minimal luft på sidorna */
+        background: transparent !important;
+        border-bottom: 1px solid rgba(0,0,0,0.05) !important;
+    }
+
+    /* 4. Dölj hjälptexten på mobil för att få plats */
+    .toggle-label-text {
+        display: none !important;
+    }
+
+    /* 5. Se till att kontrollerna ligger snyggt till höger */
+    .unit-control-side {
+        gap: 15px !important;
+    }
+
+    .admin-card-header-minimal {
+        padding: 10px 5px !important;
+        background: transparent !important;
+    }
+}
