@@ -1426,101 +1426,133 @@ body {
     opacity: 0.6;
 }
 
-/* ==========================================
-   STATISTIK: BALANSERAD BENTO (14" OPTIMERAD)
-   ========================================== */
+/* ==========================================================================
+   STATISTICS VIEW - PREMIUM DASHBOARD (COMMON STYLES)
+   ========================================================================== */
 
-.stats-dashboard-compact {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    padding: 10px;
-}
-
-/* KPI-RADEN: Behålls tydlig och snabbläst */
-.stats-kpi-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 15px;
-}
-
-.kpi-box {
-    background: #ffffff;
-    padding: 15px 20px;
-    border-radius: 18px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-    border: 1px solid rgba(0,0,0,0.02);
-}
-
-.kpi-val {
-    font-size: 1.25rem;
-    font-weight: 900;
-    color: #1a1a1a;
-}
-
-/* GRAF-KORTEN: "Mitt emellan"-storlek */
-.stats-main-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); /* 2 kolumner är bäst för 14" */
-    gap: 18px;
-}
-
-.chart-container-card {
-    background: #ffffff;
+.stats-dashboard-premium {
     padding: 20px;
-    border-radius: 22px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.03);
-    border: 1px solid rgba(0,0,0,0.02);
-    
-    /* Denna höjd gör att 4 grafer syns snyggt på en 14" skärm */
-    height: 250px; 
-    min-height: 250px;
-    
+    max-width: 1400px; /* Optimerat för 14-tums skärmar */
+    margin: 0 auto;
+}
+
+/* --- KPI-KORT (Högst upp) --- */
+.premium-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.p-kpi-card {
+    padding: 25px;
+    border-radius: 20px;
     display: flex;
     flex-direction: column;
-    transition: box-shadow 0.3s ease;
+    color: #fff;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
 }
 
-.chart-container-card:hover {
-    box-shadow: 0 12px 35px rgba(0,0,0,0.06);
+.p-kpi-card:hover {
+    transform: translateY(-5px);
 }
 
-.chart-container-card h5 {
-    margin: 0 0 15px 0;
+.p-kpi-card.mission {
+    background: linear-gradient(135deg, #5c4033 0%, #3d2a22 100%);
+}
+
+.p-kpi-card.fix {
+    background: linear-gradient(135deg, #e30613 0%, #a3050e 100%);
+}
+
+.p-kpi-label {
     font-size: 0.7rem;
     font-weight: 800;
-    color: #666;
+    letter-spacing: 1.2px;
+    opacity: 0.8;
     text-transform: uppercase;
-    letter-spacing: 1px;
 }
 
-/* Säkerställ att grafen fyller ut kortet ordentligt */
-.chart-container-card canvas {
+.p-kpi-total {
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin: 8px 0;
+}
+
+.p-kpi-sub {
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+/* --- INFOGRAPHIC GRID (Graferna) --- */
+.info-card-container {
+    display: grid;
+    /* 3 kolumner på dator, ändras i media query för mobil */
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 20px;
+}
+
+.infographic-card {
+    background: #fff;
+    border-radius: 24px;
+    padding: 25px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.02);
+    display: flex;
+    flex-direction: column;
+    min-height: 350px; /* Säkerställer jämn höjd på datorn */
+}
+
+.card-info h5 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #333;
+}
+
+.card-info p {
+    margin: 5px 0 20px 0;
+    font-size: 0.85rem;
+    color: #999;
+}
+
+/* --- GRAF-CONTAINERS --- */
+.chart-box {
+    position: relative;
     flex: 1;
-    width: 100% !important;
-    max-height: 200px !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
 }
 
-/* --- RESPONSIVITET --- */
-
-@media (max-width: 1024px) {
-    .stats-main-grid {
-        grid-template-columns: 1fr; /* Växla till 1 kolumn på mindre surfplattor */
-    }
+.chart-box-bar {
+    flex: 1;
+    min-height: 220px;
+    width: 100%;
 }
 
-@media (max-width: 600px) {
-    .stats-kpi-row {
-        grid-template-columns: 1fr 1fr; /* 2x2 layout för KPI:er på mobil */
-    }
-    
-    .chart-container-card {
-        height: 220px;
-        padding: 15px;
-    }
+.chart-center-label {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.chart-center-label span {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: #5c4033;
+}
+
+.chart-center-label small {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #bbb;
+    text-transform: uppercase;
 }
 
 /* ==========================================================================
